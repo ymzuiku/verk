@@ -1,0 +1,26 @@
+{
+  "name": "violent",
+  "version": "0.0.1",
+  "description": "Only a library, Use library create web application, We don't need a framework",
+  "main": "umd/index.js",
+  "types": "umd/index.d.ts",
+  "private": false,
+  "scripts": {
+    "lib": "node rollup.config.js"
+  },
+  "devDependencies": {
+    "rollup": "^1.24.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "rollup-plugin-uglify": "^6.0.3",
+    "typescript": "3.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ymzuiku/stayjs.git"
+  },
+  "bugs": {
+    "url": "git+https://github.com/ymzuiku/stayjs.git"
+  },
+  "homepage": "git+https://github.com/ymzuiku/stayjs.git"
+}
