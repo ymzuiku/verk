@@ -941,9 +941,12 @@ export function mkStyle(str: string, id: string) {
 
 mkStyle(baseCss, 'flavorcss-base-css')
 
-if (document.querySelector('[flavorcss-effect]')) {
-  mkStyle(effect, 'flavorcss-effect-css')
+export function initEffetcFlavorcss() {
+  if (document.querySelector('[flavorcss-effect]')) {
+    mkStyle(effect, 'flavorcss-effect-css')
+  }
 }
+
 
 
 const cacheCss = {} as any;
@@ -981,6 +984,3 @@ export function flavorcssReBuild() {
     buildCss(node.className)
   })
 }
-
-(window as any).flavorcssReBuild = flavorcssReBuild;
-// flavorcssReBuild()

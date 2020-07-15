@@ -76,10 +76,6 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    // const files = fs.readdirSync(pwd('umd/react-consumer'));
-    // files.forEach(file => {
-    //   fs.moveSync(pwd('umd/react-consumer', file), pwd('umd', file));
-    // });
-    // fs.removeSync(pwd('umd/react-consumer'));
+    fs.copySync("./umd/index.js", "./example/violent.js");
   }
 });

@@ -1,8 +1,9 @@
 import { update, queryUpdate, middlewareByUpdate } from './update'
 import { bindInit, middlewareByInit } from './bindInit'
 import bindTemplate from './bindTemplate';
+import { initObserver } from './obs';
+import { initEffetcFlavorcss } from './runtimeFlavorcss';
 import './fixParams';
-import './obs';
 
 const violent = {
   init: bindInit,
@@ -13,7 +14,9 @@ const violent = {
 };
 
 window.addEventListener('load', function () {
-  document.querySelectorAll('template').forEach(function(node){
+  initObserver();
+  initEffetcFlavorcss();
+  document.querySelectorAll('template').forEach(function (node) {
     bindTemplate(node);
   })
   bindInit(document.body);

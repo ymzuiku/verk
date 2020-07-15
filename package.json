@@ -6,6 +6,7 @@
   "types": "umd/index.d.ts",
   "private": false,
   "scripts": {
+    "dev": "cd example && browser-sync start --no-open --no-ui --no-notify --server --files '**/*'",
     "lib": "node rollup.config.js"
   },
   "devDependencies": {
@@ -17,10 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ymzuiku/stayjs.git"
+    "url": "git+https://github.com/ymzuiku/violent.git"
   },
   "bugs": {
-    "url": "git+https://github.com/ymzuiku/stayjs.git"
+    "url": "git+https://github.com/ymzuiku/violent.git"
   },
-  "homepage": "git+https://github.com/ymzuiku/stayjs.git"
+  "homepage": "git+https://github.com/ymzuiku/violent.git"
 }
