@@ -1,6 +1,6 @@
 {
   "name": "violent",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Only a library, Use library create web application, We don't need a framework",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",

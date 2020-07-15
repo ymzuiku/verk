@@ -1,4 +1,12 @@
-# dite
+# violent
+
+## Use
+
+Includ or download the violent.js:
+
+```html
+<script src="https://unpkg.com/violent@0.0.2/umd/index.js"></script>
+```
 
 ### Base
 
@@ -25,4 +33,5 @@
 - [x] template/init route
 
 ### Debug
+
 - [x] error in Element
