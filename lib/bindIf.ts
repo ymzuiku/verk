@@ -12,8 +12,7 @@ export default function bindIf(node: HTMLAny) {
     } catch (err) {
       onError(err, el);
     }
-
-    console.log(ifData);
+    
     let id = el.getAttribute('uuid')!
 
     if (ifData) {
