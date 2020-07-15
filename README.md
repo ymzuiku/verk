@@ -3,6 +3,7 @@
 ### Base
 
 - [x] if
+- [x] show
 - [x] for
 - [x] for in for
 - [x] text
@@ -20,7 +21,8 @@
 - [x] template/init props
 - [x] template/init slot
 - [x] template/init renderState
-- [x] template/route
+- [x] template/init if
+- [x] template/init route
 
 ### Debug
 - [x] error in Element

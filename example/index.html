@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="/violent.js"></script>
 </head>
+
 <body flavorcss-effect>
-  <div>hello</div>
+  <div watch="console.log(data)" role="button">button</div>
+  <button click="data.aaa()">change hash aaa</button>
+  <button click="data.bbb()">change hash bbb</button>
+  <button click="data.ifHello = !data.ifHello">change ifHello</button>
+  <template if="data.ifHello">
+    <div>ifHello</div>
+  </template>
+  <h2 show="data.ifHello">showHello</h2>
+  <template if="data.show" init="user"></template>
+  <template route="/aaa" init="dog"></template>
+  <script>
+    var data = {
+      show: true,
+      ifHello: true,
+      aaa: function () {
+        data.show = !data.show;
+        location.href = '#/aaa'
+      },
+      bbb: function () {
+        location.href = '#/bbb'
+      }
+    }
+  </script>
 </body>
+
+<template fetch="/user.html"></template>
+<template lib="dog">
+  <div>the dog1</div>
+  <div>the dog2</div>
+</template>
+
 </html>
