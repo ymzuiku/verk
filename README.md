@@ -35,3 +35,4 @@ Includ or download the violent.js:
 ### Debug
 
 - [x] error in Element
+- [x] fetch no cache

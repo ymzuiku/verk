@@ -137,7 +137,12 @@ function fetchTemplate(node: HTMLAny) {
       return;
     }
 
-    fetch(url).then(v => v.text()).then(code => {
+    fetch(url, {
+      headers: {
+        'Content-Encoding': 'gzip'
+      },
+      cache: 'no-cache',
+    }).then(v => v.text()).then(code => {
       if (!code) return;
       const ele = document.createElement('div');
       ele.innerHTML = code;
