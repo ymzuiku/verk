@@ -11,9 +11,10 @@ export function uuid(name = 'u') {
   if (n > 999) {
     n = 0;
   }
-  return name + Date.now() + '_' + (n + '')
+  return name + Date.now().toString().slice(5, 13) + (n + '')
 }
 
+(window as any).$uuid = uuid;
 
 export function Reducer(fn: (v: any) => any) {
 

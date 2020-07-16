@@ -39,7 +39,7 @@ function comTemplate(node: HTMLAny) {
     frag.innerHTML = tmp.innerHTML;
     const sc = frag.querySelector('script:not([src])');
     if (sc) {
-      comScripts[name] = new Function('$props', sc.innerHTML);
+      comScripts[name] = new Function('$id', '$props', '$ref', '$refs', sc.innerHTML);
       sc.remove();
       tmp.remove();
     }
@@ -119,6 +119,7 @@ export function byTemplate(node: HTMLAny) {
     const id = name + '_' + baseId;
     const pid = name + '_props_' + baseId;
     tmp.setAttribute('uuid', id);
+    tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
 
     try {
       (window as any)[pid] = new Function('return ' + props)();
@@ -126,14 +127,13 @@ export function byTemplate(node: HTMLAny) {
       onError(err, tmp as any, props);
     }
 
-    let html = comp.replace(/\$state/g, id);
-    html = comp.replace(/\$id/g, "'" + id + "'");
-    html = html.replace(/\$props/g, pid);
-
-    tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
 
     const div = document.createElement('div');
+    let html = comp.replace(/\$state/g, id);
+    html = html.replace(/\$id/g, "'" + id + "'");
+    html = html.replace(/\$props/g, pid);
     div.innerHTML = html;
+
     div.querySelectorAll('*').forEach((el, i) => {
       el.setAttribute(id, (i + 1) as any);
     });
@@ -144,6 +144,22 @@ export function byTemplate(node: HTMLAny) {
         div.replaceChild(next, el);
       }
     });
+
+    const refs = {} as any;
+    div.querySelectorAll('[ref]').forEach(el => {
+      const ref = el.getAttribute('ref')!;
+      refs[ref] = 'ref_' + ref + '_' + id;
+      el.removeAttribute('ref');
+      el.setAttribute(refs[ref], "1");
+    });
+
+    function $ref(k: string, isAll?: any) {
+      return document.body.querySelector('[' + refs[k] + ']');
+    }
+
+    function $refs(k: string) {
+      return document.body.querySelectorAll('[' + refs[k] + ']');
+    }
 
     if (div.querySelector('[defer]')) {
       await srcLoader(div, 'script[src]:not([defer])');
@@ -170,7 +186,7 @@ export function byTemplate(node: HTMLAny) {
       try {
         // window[pid] 为之前计算好的 $props
         // 通过计算获取 $state, 赋值至 window[id]
-        ((window as any)[id]) = sc((window as any)[pid]);
+        ((window as any)[id]) = sc(id, (window as any)[pid], $ref, $refs);
       } catch (err) {
         onError(err, tmp as any, sc);
       }
@@ -207,6 +223,7 @@ function fetchTemplate(node: HTMLAny) {
       const dirURL = dir.join('/') + '/';
       code = code.replace(regSrc, 'src="' + dirURL);
       code = code.replace(regHref, 'href="' + dirURL);
+      code = code.replace(/\$dir/, "'" + dirURL + "'");
 
       ele.innerHTML = code;
 

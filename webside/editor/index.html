@@ -1,18 +1,22 @@
 <template component="editor">
-  <script src="./codemirror.js"></script>
-  <link rel="stylesheet" href="./codemirror.css">
-  <link rel="stylesheet" href="./theme/dracula.css">
+  <script src="./codemirror/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="./codemirror/theme/dracula.css">
+  <link rel="stylesheet" href="./codemirror/theme/solarized.css">
   <script defer src="./mode/javascript/javascript.js"></script>
   <script defer src="./mode/jsx/jsx.js"></script>
   <script defer src="./mode/xml/xml.js"></script>
   </script>
   </script>
-  <h1>editor</h1>
+  <textarea ref="dog" css="h-3xl"></textarea>
   <script>
-    var myCodeMirror = CodeMirror(document.body, {
+    var myCodeMirror = CodeMirror.fromTextArea($ref('dog'), {
       value: $props.value || "<div>Hello Editor</div>",
       mode: $props.mode || "xml",
       theme: $props.theme || "dracula",
     });
+    return {
+      area: $uuid(),
+    }
   </script>
 </template>

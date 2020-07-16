@@ -12,7 +12,7 @@ export default function bindCss(node: HTMLAny) {
       return;
     }
     let code = '';
-    if (str.indexOf('{') > -1) {
+    if (/\{/.test(str)) {
       let list: any;
       try {
         list = new Function('return ' + str)();
