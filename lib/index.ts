@@ -2,7 +2,6 @@ import { update, queryUpdate, middlewareByUpdate } from './update'
 import { bindReload, middlewareByInit } from './bindReload'
 import bindTemplate from './bindTemplate';
 import { initObserver } from './obs';
-import { initEffetcFlavorcss } from './runtimeFlavorcss';
 import './fixParams';
 
 const violent = {
@@ -14,8 +13,8 @@ const violent = {
 };
 
 window.addEventListener('load', function () {
+  console.log('bbbbbbb');
   initObserver();
-  initEffetcFlavorcss();
   document.querySelectorAll('template').forEach(function (node) {
     bindTemplate(node);
   })

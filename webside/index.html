@@ -6,16 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="icon" href="data:image/ico;base64,aWNv">
-  <script src="/js/violent.js"></script>
+  <script src="./violent/index.js"></script>
+  <script src="./violent/bindcss.js"></script>
 </head>
 
 <body style="visibility: hidden;" flavorcss-effect>
+  <div css="fs-4xl" >dog</div>
   <div query="*" onclick="data.show = !data.show">1</div>
   <div show="data.show">hello</div>
   <template by="editor">
     <div loading>loading...</div>
   </template>
   <script>
+    console.log(violent);
     var data = {
       show: true,
     }

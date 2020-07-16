@@ -1,22 +1,24 @@
 <template component="editor">
-  <script src="./codemirror/lib/codemirror.js"></script>
-  <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
-  <link rel="stylesheet" href="./codemirror/theme/dracula.css">
-  <link rel="stylesheet" href="./codemirror/theme/solarized.css">
-  <script defer src="./mode/javascript/javascript.js"></script>
-  <script defer src="./mode/jsx/jsx.js"></script>
-  <script defer src="./mode/xml/xml.js"></script>
-  </script>
-  </script>
-  <textarea ref="dog" css="h-3xl"></textarea>
+  <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+  <div ref="editor" css="h-4xl w-4xl"></div>
+  <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
-    var myCodeMirror = CodeMirror.fromTextArea($ref('dog'), {
-      value: $props.value || "<div>Hello Editor</div>",
-      mode: $props.mode || "xml",
-      theme: $props.theme || "dracula",
+    require.config({ paths: { 'vs': $dir + '/vs' } });
+    window.MonacoEnvironment = {
+      getWorkerUrl: function (workerId, label) {
+        return $dir + '/monaco-editor-worker-loader-proxy.js';
+      }
+    };
+    require(["vs/editor/editor.main"], function () {
+      var editor = monaco.editor.create($ref('editor'), {
+        value: $props.value || [
+          'function x() {',
+          '\tconsole.log("Hello world!");',
+          '}'
+        ].join('\n'),
+        language: $props.language || 'javascript',
+      });
     });
-    return {
-      area: $uuid(),
-    }
   </script>
+
 </template>

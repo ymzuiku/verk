@@ -3,7 +3,6 @@ import bindIf from './bindIf';
 import bindFor from './bindFor';
 import bindText from './bindText';
 import bindBind from './bindBind';
-import bindCss from './bindCss';
 import bindWatch from './bindWatch';
 import bindShow from './bindShow';
 import { updateTemplate, byTemplate } from './bindTemplate';
@@ -23,7 +22,7 @@ export const update = Reducer(function (node) {
   updateAsync(node)
 });
 
-export const middlewareByUpdate: Function[] = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindCss, bindBind, bindText, bindWatch]
+export const middlewareByUpdate: Function[] = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindBind, bindText, bindWatch]
 
 
 export function updateAsync(node: HTMLAny) {

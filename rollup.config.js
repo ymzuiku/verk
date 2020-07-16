@@ -4,7 +4,7 @@ const rollup = require("rollup");
 const rollupTypescript = require("rollup-plugin-typescript2");
 const { uglify } = require("rollup-plugin-uglify");
 const { resolve } = require("path");
-const reso = require("rollup-plugin-node-resolve");
+const nodeResolve = require("rollup-plugin-node-resolve");
 const pwd = (...args) => resolve(process.cwd(), ...args);
 const fs = require("fs-extra");
 const argv = process.argv.splice(2);
@@ -35,6 +35,27 @@ clearDir(pwd("umd"));
 
 const watchOptions = [
   {
+    input: "./lib/addon/bindCss.ts",
+    output: {
+      file: "./umd/bindcss.js",
+      format: "umd",
+      name: "violent",
+      sourcemap: false,
+      // globals: {
+      //   keyframesSpring: 'keyframes-spring',
+      // },
+    },
+    plugins: [
+      nodeResolve(),
+      rollupTypescript({
+        useTsconfigDeclarationDir: false,
+      }),
+      // uglify({
+      //   sourcemap: false,
+      // }),
+    ],
+  },
+  {
     input: "./lib/index.ts",
     output: {
       file: "./umd/index.js",
@@ -46,13 +67,13 @@ const watchOptions = [
       // },
     },
     plugins: [
-      reso(),
+      nodeResolve(),
       rollupTypescript({
         useTsconfigDeclarationDir: false,
       }),
-      uglify({
-        sourcemap: false,
-      }),
+      // uglify({
+      //   sourcemap: false,
+      // }),
     ],
   },
 ];
@@ -76,6 +97,7 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./umd/index.js", "./webside/js/violent.js");
+    fs.copySync("./umd/index.js", "./webside/violent/index.js");
+    fs.copySync("./umd/index.js", "./webside/violent/bindcss.js");
   }
 });
