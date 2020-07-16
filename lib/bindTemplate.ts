@@ -184,14 +184,8 @@ function fetchTemplate(node: HTMLAny) {
 
     fetch(url, {
       mode: 'cors',
-      // headers: {
-      //   'Content-Encoding': 'gzip',
-      // },
       cache: (tmp.getAttribute('cache') as any) || 'no-cache',
-    }).then(v => {
-      console.log(v);
-      return v.text();
-    }).then(code => {
+    }).then(v => v.text()).then(code => {
 
       if (!code) return;
       const ele = document.createElement('div');
