@@ -10,7 +10,7 @@ import { updateTemplate, initTemplate } from './bindTemplate';
 import { Reducer } from './utils';
 
 export function queryUpdate(query: string | null) {
-  if (query) {
+  if (query && query !== '*') {
     document.body.querySelectorAll(query).forEach(function (v) {
       update(v)
     })
