@@ -38,7 +38,6 @@ export default function bindCss(node: HTMLAny) {
   checkSingle(node, bind, 'css', '[css]')
 }
 
-console.log('1111111111');
 console.log((window as any).violent)
 if (typeof (window as any).violent !== 'undefined') {
   (window as any).violent.middlewareByUpdate.push(bindCss);

@@ -98,6 +98,6 @@ watcher.on("event", (event) => {
     }
 
     fs.copySync("./umd/index.js", "./webside/violent/index.js");
-    fs.copySync("./umd/index.js", "./webside/violent/bindcss.js");
+    fs.copySync("./umd/bindcss.js", "./webside/violent/bindcss.js");
   }
 });

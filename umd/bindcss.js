@@ -646,7 +646,6 @@
       }
       checkSingle(node, bind, 'css', '[css]');
   }
-  console.log('1111111111');
   console.log(window.violent);
   if (typeof window.violent !== 'undefined') {
       window.violent.middlewareByUpdate.push(bindCss);

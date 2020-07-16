@@ -621,7 +621,6 @@
       middlewareByInit: middlewareByInit,
   };
   window.addEventListener('load', function () {
-      console.log('bbbbbbb');
       initObserver();
       document.querySelectorAll('template').forEach(function (node) {
           bindTemplate(node);
