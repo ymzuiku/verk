@@ -3,7 +3,8 @@ import { uuid } from './utils';
 import { onError } from './onError';
 
 
-
+const regSrc = new RegExp('src="./', 'g')
+const regHref = new RegExp('href="./', 'g')
 const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
@@ -187,8 +188,8 @@ function fetchTemplate(node: HTMLAny) {
       const dir = url.split('/');
       dir.pop();
       const dirURL = dir.join('/') + '/';
-      code = code.replace(new RegExp('src="./', 'g'), 'src="' + dirURL);
-      code = code.replace(new RegExp('href="./', 'g'), 'href="' + dirURL);
+      code = code.replace(regSrc, 'src="' + dirURL);
+      code = code.replace(regHref, 'href="' + dirURL);
 
       ele.innerHTML = code;
 

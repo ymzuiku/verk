@@ -1,5 +1,8 @@
 <template lib="editor">
   <script src="./codemirror.js"></script>
+  <script src="./mode/javascript/javascript.js"></script>
+  <script src="./mode/jsx/jsx.js"></script>
+  <script src="./mode/xml/xml.js"></script>
   <link rel="stylesheet" href="./codemirror.css">
   <link rel="stylesheet" href="./theme/dracula.css">
   </script>
@@ -7,8 +10,8 @@
   <h1>editor</h1>
   <script>
     var myCodeMirror = CodeMirror(document.body, {
-      value: "function myScript(){return 100;}\n",
-      mode: "javascript",
+      value: "function myScript(){return <div>hello</div>;}\n",
+      mode: "jsx",
       theme: "dracula",
     });
   </script>
