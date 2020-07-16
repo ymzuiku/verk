@@ -2,12 +2,29 @@ import { HTMLAny } from './interface'
 import { uuid } from './utils';
 import { onError } from './onError';
 
-
 const regSrc = new RegExp('src="./', 'g')
 const regHref = new RegExp('href="./', 'g')
 const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
+
+async function srcLoader(div: HTMLElement, query: string) {
+  // fix load
+  const scripts = [] as any[];
+  const loaded = [] as any[];
+  div.querySelectorAll(query).forEach(v => {
+    const sv = document.createElement('script');
+    sv.setAttribute('src', v.getAttribute('src')!);
+    scripts.push(sv);
+    loaded.push(new Promise(res => sv.onload = res))
+    v.remove();
+  });
+
+  if (scripts.length > 0) {
+    document.head.append(...scripts);
+    await Promise.all(loaded);
+  }
+}
 
 
 function comTemplate(node: HTMLAny) {
@@ -128,21 +145,8 @@ export function initTemplate(node: HTMLAny) {
       }
     });
 
-    // fix load
-    const scripts = [] as any[];
-    const loaded = [] as any[];
-    div.querySelectorAll('script[src]').forEach(v => {
-      const sv = document.createElement('script');
-      sv.setAttribute('src', v.getAttribute('src')!);
-      scripts.push(sv);
-      loaded.push(new Promise(res => sv.onload = res))
-      v.remove();
-    });
-
-    if (scripts.length > 0) {
-      document.head.append(...scripts);
-      await Promise.all(loaded);
-    }
+    await srcLoader(div, 'script[src]:not([defer])');
+    await srcLoader(div, 'script[defer]');
 
     const useLoading = tmp.content.querySelector('[use-loading]');
     if (useLoading) {
@@ -175,9 +179,13 @@ function fetchTemplate(node: HTMLAny) {
     if (!url || fetchs[url]) {
       return;
     }
+    fetchs[url] = true;
+
     fetch(url, {
+      mode: 'cors',
       headers: {
-        'Content-Encoding': 'gzip'
+        'Content-Encoding': 'gzip',
+        // "Access-Control-Allow-Origin": "*",
       },
       cache: 'no-cache',
     }).then(v => v.text()).then(code => {
@@ -195,10 +203,11 @@ function fetchTemplate(node: HTMLAny) {
 
       comTemplate(ele);
 
-      fetchs[url] = true;
       requestAnimationFrame(function () {
         bindTemplate(node);
       });
+    }).catch(err => {
+      fetchs[url] = false;
     })
   })
 }
