@@ -1,18 +1,19 @@
 <template lib="editor">
   <script src="./codemirror.js"></script>
+  <link rel="stylesheet" href="./codemirror.css">
+  <link rel="stylesheet" href="./theme/dracula.css">
   <script defer src="./mode/javascript/javascript.js"></script>
   <script defer src="./mode/jsx/jsx.js"></script>
   <script defer src="./mode/xml/xml.js"></script>
-  <link rel="stylesheet" href="./codemirror.css">
-  <link rel="stylesheet" href="./theme/dracula.css">
   </script>
   </script>
   <h1>editor</h1>
   <script>
+    console.log($props);
     var myCodeMirror = CodeMirror(document.body, {
-      value: "function myScript(){return <div>hello</div>;}\n",
-      mode: "xml",
-      theme: "dracula",
+      value: $props.value || "<div>Hello Editor</div>",
+      mode: $props.mode || "xml",
+      theme: $props.theme || "dracula",
     });
   </script>
 </template>

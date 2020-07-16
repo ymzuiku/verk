@@ -48,7 +48,7 @@ function comTemplate(node: HTMLAny) {
 }
 
 function fixIfAndRoute(tmp: HTMLAny) {
-  // 处理 init if
+  // 处理 if
   const theIf = tmp.getAttribute('if');
   if (theIf) {
     let ifShow: any;
@@ -62,7 +62,7 @@ function fixIfAndRoute(tmp: HTMLAny) {
     }
   }
 
-  // 处理 init route
+  // 处理 route
   const route = tmp.getAttribute('route');
   if (route) {
     const hash = location.hash || '/'
@@ -88,9 +88,9 @@ export function updateTemplate(node: HTMLAny) {
 }
 
 
-export function initTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[init]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
-    const name = tmp.getAttribute('init');
+export function getTemplate(node: HTMLAny) {
+  (node.querySelectorAll('template[get]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
+    const name = tmp.getAttribute('get');
     if (!name) return;
 
 
@@ -168,7 +168,9 @@ export function initTemplate(node: HTMLAny) {
     const sc = comScripts[name];
     if (sc) {
       try {
-        ((window as any)[id]) = sc();
+        // window[pid] 为之前计算好的 $props
+        // 通过计算获取 $state, 赋值至 window[id]
+        ((window as any)[id]) = sc((window as any)[pid]);
       } catch (err) {
         onError(err, tmp as any, sc);
       }
@@ -224,6 +226,6 @@ export default function bindTemplate(node: HTMLAny) {
   fetchTemplate(node);
   comTemplate(node);
   requestAnimationFrame(function () {
-    initTemplate(node);
+    getTemplate(node);
   });
 }
