@@ -2,6 +2,8 @@ import { HTMLAny } from './interface'
 import { uuid } from './utils';
 import { onError } from './onError';
 
+
+
 const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
@@ -168,7 +170,7 @@ export function initTemplate(node: HTMLAny) {
 function fetchTemplate(node: HTMLAny) {
   (node.querySelectorAll('template[fetch]:not([fetch-loaded])') as any).forEach(function (tmp: HTMLTemplateElement) {
     tmp.setAttribute('fetch-loaded', '1')
-    const url = tmp.getAttribute('fetch')!
+    let url = tmp.getAttribute('fetch')!
     if (!url || fetchs[url]) {
       return;
     }
@@ -180,6 +182,14 @@ function fetchTemplate(node: HTMLAny) {
     }).then(v => v.text()).then(code => {
       if (!code) return;
       const ele = document.createElement('div');
+
+      // fix ./url
+      const dir = url.split('/');
+      dir.pop();
+      const dirURL = dir.join('/') + '/';
+      code = code.replace(new RegExp('src="./', 'g'), 'src="' + dirURL);
+      code = code.replace(new RegExp('href="./', 'g'), 'href="' + dirURL);
+
       ele.innerHTML = code;
 
       comTemplate(ele);

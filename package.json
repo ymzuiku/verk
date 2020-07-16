@@ -6,10 +6,11 @@
   "types": "umd/index.d.ts",
   "private": false,
   "scripts": {
-    "dev": "live-server ./example",
+    "dev": "live-server ./webside",
     "lib": "node rollup.config.js"
   },
   "devDependencies": {
+    "codemirror": "^5.55.0",
     "rollup": "^1.24.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript2": "^0.24.3",

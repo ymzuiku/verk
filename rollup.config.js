@@ -76,6 +76,6 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./umd/index.js", "./example/violent.js");
+    fs.copySync("./umd/index.js", "./webside/js/violent.js");
   }
 });

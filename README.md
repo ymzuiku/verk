@@ -20,6 +20,7 @@ Includ or download the violent.js:
 - [x] events
 - [x] bind
 - [x] css
+- [x] runtime flavorcss
 - [x] watch
 
 ### Template
@@ -43,3 +44,9 @@ Includ or download the violent.js:
 
 - [x] error in Element
 - [x] fetch no cache
+
+### Document
+
+- [ ] home page
+- [ ] document mobile
+- [ ] live edtor
