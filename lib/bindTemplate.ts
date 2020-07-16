@@ -181,16 +181,21 @@ function fetchTemplate(node: HTMLAny) {
     }
     fetchs[url] = true;
 
+
     fetch(url, {
       mode: 'cors',
-      headers: {
-        'Content-Encoding': 'gzip',
-        // "Access-Control-Allow-Origin": "*",
-      },
-      cache: 'no-cache',
-    }).then(v => v.text()).then(code => {
+      // headers: {
+      //   'Content-Encoding': 'gzip',
+      // },
+      cache: (tmp.getAttribute('cache') as any) || 'no-cache',
+    }).then(v => {
+      console.log(v);
+      return v.text();
+    }).then(code => {
+
       if (!code) return;
       const ele = document.createElement('div');
+
 
       // fix ./url
       const dir = url.split('/');
