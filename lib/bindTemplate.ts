@@ -28,8 +28,8 @@ async function srcLoader(div: HTMLElement, query: string) {
 
 
 function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[lib]') as any).forEach(async function (tmp: HTMLTemplateElement) {
-    const name = tmp.getAttribute('lib')!
+  (node.querySelectorAll('template[component]') as any).forEach(async function (tmp: HTMLTemplateElement) {
+    const name = tmp.getAttribute('component')!
 
     if (!name || coms[name]) {
       return;
@@ -88,9 +88,9 @@ export function updateTemplate(node: HTMLAny) {
 }
 
 
-export function getTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[get]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
-    const name = tmp.getAttribute('get');
+export function byTemplate(node: HTMLAny) {
+  (node.querySelectorAll('template[by]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
+    const name = tmp.getAttribute('by');
     if (!name) return;
 
 
@@ -192,7 +192,6 @@ function fetchTemplate(node: HTMLAny) {
     }
     fetchs[url] = true;
 
-
     fetch(url, {
       mode: 'cors',
       cache: (tmp.getAttribute('cache') as any) || 'no-cache',
@@ -226,6 +225,6 @@ export default function bindTemplate(node: HTMLAny) {
   fetchTemplate(node);
   comTemplate(node);
   requestAnimationFrame(function () {
-    getTemplate(node);
+    byTemplate(node);
   });
 }

@@ -6,7 +6,7 @@ import bindBind from './bindBind';
 import bindCss from './bindCss';
 import bindWatch from './bindWatch';
 import bindShow from './bindShow';
-import { updateTemplate, getTemplate } from './bindTemplate';
+import { updateTemplate, byTemplate } from './bindTemplate';
 import { Reducer } from './utils';
 
 export function queryUpdate(query: string | null) {
@@ -23,7 +23,7 @@ export const update = Reducer(function (node) {
   updateAsync(node)
 });
 
-export const middlewareByUpdate: Function[] = [updateTemplate, getTemplate, bindIf, bindFor, bindShow, bindCss, bindBind, bindText, bindWatch]
+export const middlewareByUpdate: Function[] = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindCss, bindBind, bindText, bindWatch]
 
 
 export function updateAsync(node: HTMLAny) {

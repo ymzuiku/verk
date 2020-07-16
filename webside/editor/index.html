@@ -1,4 +1,4 @@
-<template lib="editor">
+<template component="editor">
   <script src="./codemirror.js"></script>
   <link rel="stylesheet" href="./codemirror.css">
   <link rel="stylesheet" href="./theme/dracula.css">
@@ -9,7 +9,6 @@
   </script>
   <h1>editor</h1>
   <script>
-    console.log($props);
     var myCodeMirror = CodeMirror(document.body, {
       value: $props.value || "<div>Hello Editor</div>",
       mode: $props.mode || "xml",

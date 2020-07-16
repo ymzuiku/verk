@@ -1,12 +1,12 @@
 import { update, queryUpdate, middlewareByUpdate } from './update'
-import { bindInit, middlewareByInit } from './bindInit'
+import { bindReload, middlewareByInit } from './bindReload'
 import bindTemplate from './bindTemplate';
 import { initObserver } from './obs';
 import { initEffetcFlavorcss } from './runtimeFlavorcss';
 import './fixParams';
 
 const violent = {
-  init: bindInit,
+  reload: bindReload,
   update,
   queryUpdate,
   middlewareByUpdate,
@@ -19,7 +19,7 @@ window.addEventListener('load', function () {
   document.querySelectorAll('template').forEach(function (node) {
     bindTemplate(node);
   })
-  bindInit(document.body);
+  bindReload(document.body);
   setTimeout(() => {
     if (document.body.style.visibility === 'hidden') {
       document.body.style.visibility = 'visible';

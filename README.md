@@ -22,20 +22,19 @@ Includ or download the violent.js:
 - [x] css
 - [x] runtime flavorcss
 - [x] watch
-- [x] init
 
 ### Template
 
 - [x] template/component
 - [x] template/fetch
-- [x] template/make
-- [x] template/make state
-- [x] template/make props
-- [x] template/make slot
-- [x] template/make loading
-- [x] template/make renderState
-- [x] template/make if
-- [x] template/make route
+- [x] template/by
+- [x] template/by state
+- [x] template/by props
+- [x] template/by slot
+- [x] template/by loading
+- [x] template/by renderState
+- [x] template/by if
+- [x] template/by route
 
 ### Use Other script
 

@@ -5,8 +5,7 @@ import { Reducer } from './utils';
 
 export const middlewareByInit: Function[] = [bindTemplate, bindEvents]
 
-
-export const bindInit = Reducer(function (node) {
+export const bindReload = Reducer(function (node) {
   updateAsync(node)
   middlewareByInit.forEach(function (fn) {
     fn(node)
