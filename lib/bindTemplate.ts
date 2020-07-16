@@ -109,7 +109,7 @@ export function initTemplate(node: HTMLAny) {
     }
 
     const comp: string = coms[name];
-    if (!comp || !tmp.parentElement) {
+    if (!comp) {
       return;
     }
 
@@ -145,8 +145,17 @@ export function initTemplate(node: HTMLAny) {
       }
     });
 
-    await srcLoader(div, 'script[src]:not([defer])');
-    await srcLoader(div, 'script[defer]');
+    if (div.querySelector('[defer]')) {
+      await srcLoader(div, 'script[src]:not([defer])');
+      await srcLoader(div, 'script[defer=""]');
+      await srcLoader(div, 'script[defer="1"]');
+      await srcLoader(div, 'script[defer="2"]');
+      await srcLoader(div, 'script[defer="3"]');
+      await srcLoader(div, 'script[defer="4"]');
+      await srcLoader(div, 'script[defer="5"]');
+    } else {
+      await srcLoader(div, 'script[src]');
+    }
 
     const useLoading = tmp.content.querySelector('[use-loading]');
     if (useLoading) {
