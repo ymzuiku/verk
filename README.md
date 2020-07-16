@@ -30,6 +30,7 @@ Includ or download the violent.js:
 - [x] template/init state
 - [x] template/init props
 - [x] template/init slot
+- [x] template/init loading
 - [x] template/init renderState
 - [x] template/init if
 - [x] template/init route
