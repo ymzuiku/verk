@@ -8,6 +8,8 @@ Includ or download the violent.js:
 <script src="https://unpkg.com/violent@0.0.2/umd/index.js"></script>
 ```
 
+## Route map
+
 ### Base
 
 - [x] if
@@ -31,6 +33,10 @@ Includ or download the violent.js:
 - [x] template/init renderState
 - [x] template/init if
 - [x] template/init route
+
+### Use Other script
+
+- [x] load script at template/init
 
 ### Debug
 

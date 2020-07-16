@@ -8,7 +8,7 @@ const fetchs: { [key: string]: boolean } = {};
 
 
 function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[lib]') as any).forEach(function (tmp: HTMLTemplateElement) {
+  (node.querySelectorAll('template[lib]') as any).forEach(async function (tmp: HTMLTemplateElement) {
     const name = tmp.getAttribute('lib')!
 
     if (!name || coms[name]) {
@@ -17,13 +17,12 @@ function comTemplate(node: HTMLAny) {
 
     const frag = document.createElement('div');
     frag.innerHTML = tmp.innerHTML;
-    const sc = frag.querySelector('script');
+    const sc = frag.querySelector('script:not([src])');
     if (sc) {
       comScripts[name] = new Function('$props', sc.innerHTML);
       sc.remove();
       tmp.remove();
     }
-
     coms[name] = frag.innerHTML;
   })
 }
@@ -69,7 +68,7 @@ export function updateTemplate(node: HTMLAny) {
 
 
 export function initTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[init]:not([uuid])') as any).forEach(function (tmp: HTMLTemplateElement) {
+  (node.querySelectorAll('template[init]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
     const name = tmp.getAttribute('init');
     if (!name) return;
     const comp: string = coms[name];
@@ -111,6 +110,23 @@ export function initTemplate(node: HTMLAny) {
         }
       });
 
+
+      // fix load
+      const scripts = [] as any[];
+      const loaded = [] as any[];
+      div.querySelectorAll('script[src]').forEach(v => {
+        const sv = document.createElement('script');
+        sv.setAttribute('src', v.getAttribute('src')!);
+        scripts.push(sv);
+        loaded.push(new Promise(res => sv.onload = res))
+        v.remove();
+      });
+
+      if (scripts.length > 0) {
+        document.head.append(...scripts);
+        await Promise.all(loaded);
+      }
+    
       tmp.insertAdjacentHTML('afterend', div.innerHTML);
       const sc = comScripts[name];
       if (sc) {
@@ -136,7 +152,6 @@ function fetchTemplate(node: HTMLAny) {
     if (!url || fetchs[url]) {
       return;
     }
-
     fetch(url, {
       headers: {
         'Content-Encoding': 'gzip'
@@ -146,6 +161,7 @@ function fetchTemplate(node: HTMLAny) {
       if (!code) return;
       const ele = document.createElement('div');
       ele.innerHTML = code;
+
       comTemplate(ele);
 
       fetchs[url] = true;

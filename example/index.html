@@ -20,6 +20,8 @@
   <h2 show="data.ifHello">showHello</h2>
   <template if="data.show" init="user"></template>
   <template route="/aaa" init="dog"></template>
+  <template init="editor"></template>
+  <template init="editor"></template>
   <script>
     var data = {
       show: true,
@@ -36,9 +38,18 @@
 </body>
 
 <template fetch="/user.html"></template>
+<template fetch="/editor.html"></template>
 <template lib="dog">
   <div>the dog1</div>
   <div>the dog2</div>
 </template>
+<!-- <script>
+  var div = document.createElement('div');
+  var script = document.createElement('script');
+  script.src = '/testgo.js';
+  div.append(script);
+
+  document.querySelector('[lib="dog"]').insertAdjacentHTML('afterend', div.innerHTML);
+</script> -->
 
 </html>
