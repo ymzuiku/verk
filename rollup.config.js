@@ -8,6 +8,7 @@ const nodeResolve = require("rollup-plugin-node-resolve");
 const pwd = (...args) => resolve(process.cwd(), ...args);
 const fs = require("fs-extra");
 const argv = process.argv.splice(2);
+const tsconfig = require('./tsconfig.json');
 
 function clearDir(dir) {
   if (fs.existsSync(dir)) {
@@ -41,15 +42,11 @@ const watchOptions = [
       format: "umd",
       name: "$bindcss",
       sourcemap: false,
-      // globals: {
-      //   keyframesSpring: 'keyframes-spring',
-      // },
     },
     plugins: [
       nodeResolve(),
       rollupTypescript({
         useTsconfigDeclarationDir: false,
-        declaration: false,
       }),
       uglify({
         sourcemap: false,
@@ -63,9 +60,6 @@ const watchOptions = [
       format: "umd",
       name: "$bindcss",
       sourcemap: false,
-      // globals: {
-      //   keyframesSpring: 'keyframes-spring',
-      // },
     },
     plugins: [
       nodeResolve(),
@@ -81,15 +75,12 @@ const watchOptions = [
       format: "umd",
       name: "$violent",
       sourcemap: false,
-      globals: {
-        keyframesSpring: 'keyframes-spring',
-      },
     },
     plugins: [
       nodeResolve(),
       rollupTypescript({
         useTsconfigDeclarationDir: false,
-        declaration: false,
+        // tsconfigOverride: {...tsconfig, compilerOptions: { ...tsconfig.compilerOptions, declaration: false }},
       }),
       uglify({
         sourcemap: false,
@@ -103,9 +94,6 @@ const watchOptions = [
       format: "umd",
       name: "$violent",
       sourcemap: false,
-      globals: {
-        keyframesSpring: 'keyframes-spring',
-      },
     },
     plugins: [
       nodeResolve(),
