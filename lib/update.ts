@@ -6,7 +6,7 @@ import bindModel from './bindModel';
 import bindWatch from './bindWatch';
 import bindShow from './bindShow';
 import { updateTemplate, byTemplate } from './bindTemplate';
-import { Reducer } from './utils';
+import { ReducerList } from './utils';
 import bindEvent from './bindEvent';
 import bindTemplate from './bindTemplate'
 import bindAttr from './bindAttr';
@@ -39,16 +39,13 @@ export function setViolent(node: HTMLElement) {
 
 
 export function queryUpdate(query: string | null) {
-  if (query && query !== '*') {
-    document.body.querySelectorAll(query).forEach(function (v) {
-      updateAttrs(v);
-    })
-  } else {
-    updateAttrs(document.body);
-  }
+  query = query && query !== '*' ? query : '[violent]';
+  document.querySelectorAll(query).forEach(function (v) {
+    updateAttrs(v);
+  })
 }
 
-export const updateAttrs = Reducer(function (node) {
+export const updateAttrs = ReducerList(function (node) {
   updateAsync(node);
 });
 
@@ -62,7 +59,7 @@ export function updateAsync(node: HTMLAny) {
 
 export const middlewareByInit: Function[] = [bindTemplate, bindEvent];
 
-export const updateAll = Reducer(function (node) {
+export const updateAll = ReducerList(function (node) {
   updateAsync(node);
   middlewareByInit.forEach(function (fn) {
     fn(node)

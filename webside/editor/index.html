@@ -1,5 +1,4 @@
 <template component="editor">
-  <div text>"haha" +($state.dog && $state.dog.name)</div>
   <slot ref="editor" css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
@@ -11,19 +10,58 @@
     };
 
     const state = {
-      dog: {
-        name: 'dipu',
-      },
       $mount: function () {
         require(["vs/editor/editor.main"], function () {
-          state.editor = monaco.editor.create($ref('editor'), {
-            value: $props.value || [
+          const editor = monaco.editor.create($ref('editor'), {
+            value: [
               'function x() {',
               '\tconsole.log("Hello world!");',
               '}'
             ].join('\n'),
-            language: $props.language || 'javascript',
+            language: 'javascript',
+            automaticLayout: true,
+            fontSize: 13,
+            scrollbar: {
+              // vertical: "hidden",
+              verticalScrollbarSize: 7,
+              verticalHasArrows: false,
+              horizontalSliderSize: 0,
+              horizontalHasArrows: false,
+              horizontal: "hidden",
+            },
+            lineNumbersMinChars: 2,
+            lineNumbers: "off",
+            lineDecorationsWidth: 0,
+            codeLens: false,
+            cursorStyle: "line-thin",
+            cursorBlinking: "blink",
+            theme: "poet",
+            find: {
+              addExtraSpaceOnTop: true,
+            },
+            renderLineHighlight: "all",
+            renderIndentGuides: false,
+            minimap: {
+              enabled: false,
+              showSlider: "always",
+              scale: 2,
+              maxColumn: 20,
+            },
+            // wrappingIndent: "indent",
+            wordWrap: "on",
+            ...$props.options
           });
+
+
+          if ($props.onChange) {
+            const editorModel = editor.getModel();
+            const reducer = $violent.Reducer(function () {
+              $props.onChange(editor.getValue())
+            }, 1000)
+            editorModel.onDidChangeContent(reducer);
+          }
+
+          state.editor = editor;
         });
       },
     };

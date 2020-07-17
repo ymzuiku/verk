@@ -18,25 +18,61 @@ export function uuid(name = 'u') {
 
 
 
-export function Reducer(fn: (v: any) => any) {
-
-  const updateNodeMap = new Set();
-  let time: any;
+export function Reducer(fn: (v?: any) => any, interval?: number) {
+  let time:any;
+  let runner: any;
+  let cancel: any;
+  if (interval) {
+    runner = setTimeout;
+    cancel = clearTimeout;
+  } else {
+    runner = requestAnimationFrame;
+    cancel = cancelAnimationFrame;
+  }
 
   return function reducer(node: any, cb?: Function) {
-    if (!updateNodeMap.has(node)) {
-      updateNodeMap.add(node)
-    }
     if (time) {
-      cancelAnimationFrame(time)
+      cancel(time)
     }
-    time = requestAnimationFrame(function () {
-      updateNodeMap.forEach(fn)
-      updateNodeMap.clear()
+    time = runner(function () {
       time = null;
+      fn(node);
       if (cb) {
         cb();
       }
-    });
+    }, interval);
+  }
+}
+
+
+export function ReducerList(fn: (v: any) => any, interval?:number) {
+  const nodes = new Set();
+
+  let time:any;
+  let runner: any;
+  let cancel: any;
+  if (interval) {
+    runner = setTimeout;
+    cancel = clearTimeout;
+  } else {
+    runner = requestAnimationFrame;
+    cancel = cancelAnimationFrame;
+  }
+
+  return function reducer(node: any, cb?: Function) {
+    if (!nodes.has(node)) {
+      nodes.add(node)
+    }
+    if (time) {
+      cancel(time)
+    }
+    time = runner(function () {
+      time = null;
+      nodes.forEach(fn)
+      nodes.clear()
+      if (cb) {
+        cb();
+      }
+    }, interval);
   }
 }

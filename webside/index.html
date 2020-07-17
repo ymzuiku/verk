@@ -7,10 +7,10 @@
   <title>Document</title>
   <link rel="icon" href="data:image/ico;base64,aWNv">
   <script src="./violent/index.js"></script>
-  <script src="./violent/bindcss.js"></script>
+  <script flavorcss-effect src="./violent/bindcss.js"></script>
 </head>
 
-<body style="visibility: hidden;" flavorcss-effect>
+<body violent style="visibility: hidden;">
   <div v-style="data.show?'background:#f00':'background:#fff'" css="fs-4xl">dog</div>
   <div v-onclick="function(){data.show = !data.show; console.log(data)}">change show</div>
   <div show="data.show">hello</div>
@@ -21,7 +21,7 @@
       <h2 text>data.show</h2>
     </div>
   </div>
-  <template by="editor">
+  <template by="editor" props="{onChange:console.log}">
     <div loading>loading...</div>
     <div css="w-3/12 h-6xl" slot="editor"></div>
   </template>
@@ -46,7 +46,8 @@
   </script>
 </body>
 
-<!-- <template fetch="https://unpkg.com/violent@0.0.3/webside/editor/index.html"></template> -->
-<template fetch="/editor/index.html"></template>
+<section violent>
+  <template fetch="/editor/index.html"></template>
+</section>
 
 </html>

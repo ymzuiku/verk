@@ -1,4 +1,4 @@
-const glist = ['$target', '$self', '$value', '$event', '$props', '$renderState'];
+const glist = ['$target', '$el', '$value', '$event', '$props', '$renderState'];
 
 let _ = '';
 

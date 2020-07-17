@@ -4,6 +4,19 @@
   (global = global || self, global.$violent = factory());
 }(this, function () { 'use strict';
 
+  var glist = ['$target', '$el', '$value', '$event', '$props', '$renderState'];
+  var _ = '';
+  for (var i = 0; i < 8; i++) {
+      glist.push('$' + _ + 'v');
+      glist.push('$' + _ + 'i');
+      _ += '_';
+  }
+  glist.forEach(function (k) {
+      if (typeof window[k] === 'undefined') {
+          window[k] = '';
+      }
+  });
+
   function checkSingle(node, bind, key, selector) {
       if (node.hasAttribute(key)) {
           bind(node);
@@ -20,24 +33,59 @@
       return name + Date.now().toString().slice(5, 13) + (n + '');
   }
   window.$uuid = uuid;
-  function Reducer(fn) {
-      var updateNodeMap = new Set();
+  function Reducer(fn, interval) {
       var time;
+      var runner;
+      var cancel;
+      if (interval) {
+          runner = setTimeout;
+          cancel = clearTimeout;
+      }
+      else {
+          runner = requestAnimationFrame;
+          cancel = cancelAnimationFrame;
+      }
       return function reducer(node, cb) {
-          if (!updateNodeMap.has(node)) {
-              updateNodeMap.add(node);
-          }
           if (time) {
-              cancelAnimationFrame(time);
+              cancel(time);
           }
-          time = requestAnimationFrame(function () {
-              updateNodeMap.forEach(fn);
-              updateNodeMap.clear();
+          time = runner(function () {
               time = null;
+              fn(node);
               if (cb) {
                   cb();
               }
-          });
+          }, interval);
+      };
+  }
+  function ReducerList(fn, interval) {
+      var nodes = new Set();
+      var time;
+      var runner;
+      var cancel;
+      if (interval) {
+          runner = setTimeout;
+          cancel = clearTimeout;
+      }
+      else {
+          runner = requestAnimationFrame;
+          cancel = cancelAnimationFrame;
+      }
+      return function reducer(node, cb) {
+          if (!nodes.has(node)) {
+              nodes.add(node);
+          }
+          if (time) {
+              cancel(time);
+          }
+          time = runner(function () {
+              time = null;
+              nodes.forEach(fn);
+              nodes.clear();
+              if (cb) {
+                  cb();
+              }
+          }, interval);
       };
   }
 
@@ -606,16 +654,12 @@
       });
   }
   function queryUpdate(query) {
-      if (query && query !== '*') {
-          document.body.querySelectorAll(query).forEach(function (v) {
-              updateAttrs(v);
-          });
-      }
-      else {
-          updateAttrs(document.body);
-      }
+      query = query && query !== '*' ? query : '[violent]';
+      document.querySelectorAll(query).forEach(function (v) {
+          updateAttrs(v);
+      });
   }
-  var updateAttrs = Reducer(function (node) {
+  var updateAttrs = ReducerList(function (node) {
       updateAsync(node);
   });
   var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindAttr, bindWatch];
@@ -625,43 +669,30 @@
       });
   }
   var middlewareByInit = [bindTemplate, bindEvent];
-  var updateAll = Reducer(function (node) {
+  var updateAll = ReducerList(function (node) {
       updateAsync(node);
       middlewareByInit.forEach(function (fn) {
           fn(node);
       });
   });
 
-  var glist = ['$target', '$self', '$value', '$event', '$props', '$renderState'];
-  var _ = '';
-  for (var i = 0; i < 8; i++) {
-      glist.push('$' + _ + 'v');
-      glist.push('$' + _ + 'i');
-      _ += '_';
-  }
-  glist.forEach(function (k) {
-      if (typeof window[k] === 'undefined') {
-          window[k] = '';
-      }
-  });
-
   var $violent = {
       update: updateAll,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,
+      Reducer: Reducer,
+      ReducerList: ReducerList,
   };
   window.addEventListener('load', function () {
-      setViolent(document.body);
-      // initObserver();
-      document.querySelectorAll('template').forEach(function (node) {
-          bindTemplate(node);
+      document.querySelectorAll('[violent]').forEach(function (el) {
+          setViolent(el);
+          updateAll(el);
+          setTimeout(function () {
+              if (el.style.visibility === 'hidden') {
+                  el.style.visibility = 'visible';
+              }
+          }, 200);
       });
-      updateAll(document.body);
-      setTimeout(function () {
-          if (document.body.style.visibility === 'hidden') {
-              document.body.style.visibility = 'visible';
-          }
-      }, 200);
   });
 
   return $violent;
