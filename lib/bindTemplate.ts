@@ -186,7 +186,6 @@ export function byTemplate(node: HTMLAny) {
     const sc = comScripts[name];
     let res: any;
     if (sc) {
-      console.log('-------', tmp.parentElement);
       try {
         // window[pid] 为之前计算好的 $props
         // 通过计算获取 $state, 赋值至 window[id]

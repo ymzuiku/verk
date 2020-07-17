@@ -544,7 +544,6 @@
                           }
                           sc = comScripts[name];
                           if (sc) {
-                              console.log('-------', tmp.parentElement);
                               try {
                                   // window[pid] 为之前计算好的 $props
                                   // 通过计算获取 $state, 赋值至 window[id]
