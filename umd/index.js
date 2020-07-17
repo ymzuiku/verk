@@ -22,20 +22,19 @@
   window.$uuid = uuid;
   function Reducer(fn) {
       var updateNodeMap = new Set();
-      return function bindInit(node) {
+      var raf;
+      return function reducer(node) {
           if (!updateNodeMap.has(node)) {
               updateNodeMap.add(node);
           }
-          updateNodeMap.forEach(fn);
-          updateNodeMap.clear();
-          // if (raf) {
-          //   cancelAnimationFrame(raf)
-          // }
-          // raf = requestAnimationFrame(function () {
-          //   updateNodeMap.forEach(fn)
-          //   updateNodeMap.clear()
-          //   raf = null;
-          // })
+          if (raf) {
+              cancelAnimationFrame(raf);
+          }
+          raf = requestAnimationFrame(function () {
+              updateNodeMap.forEach(fn);
+              updateNodeMap.clear();
+              raf = null;
+          });
       };
   }
 
@@ -79,22 +78,23 @@
       checkSingle(node, bind, 'if', 'template[if]:not([init])');
   }
 
-  function bindEvents(node) {
+  var von = /^v-on/;
+  var vof = /^v-/;
+  function bindEvent(node) {
       function bind(el) {
-          if (!el || !el.attributes) {
-              return;
-          }
-          var l = el.attributes.length;
-          var query = el.getAttribute('query');
-          var _loop_1 = function (i) {
-              var attr = el.attributes.item(i);
-              if (attr && /on/.test(attr.name)) {
-                  var fnKey = attr.name;
-                  (el)[fnKey] = function (event) {
+          var arr = el.getAttribute('violent').split(' ');
+          var attrV = '';
+          arr.forEach(function (attr) {
+              var key = attr.replace('v-', '');
+              if (von.test(attr)) {
+                  if (el[key])
+                      return;
+                  var fn_1 = new Function('$self', '$event', '$value', 'return ' + el.getAttribute(attr));
+                  (el)[key] = function (event) {
                       var res;
                       var value = event && event.target && event.target.value;
                       try {
-                          res = new Function('$self', '$event', '$value', 'return ' + attr.value)(el, event, value);
+                          res = fn_1(el, event, value);
                       }
                       catch (err) {
                           onError(err, el);
@@ -102,18 +102,21 @@
                       if (typeof res === 'function') {
                           res(event);
                       }
-                      queryUpdate(query);
+                      queryUpdate(el.getAttribute('query'));
                   };
               }
-          };
-          for (var i = 0; i < l; i++) {
-              _loop_1(i);
+              else if (vof.test(attr)) {
+                  attrV += attr + ' ';
+              }
+          });
+          if (attrV) {
+              el.setAttribute('bind-attr', attrV.trim());
           }
       }
-      if (node.getAttribute('query')) {
+      if (node.getAttribute('violent')) {
           bind(node);
       }
-      node.querySelectorAll('[query]').forEach(bind);
+      node.querySelectorAll('[violent]').forEach(bind);
   }
 
   function bindFor(node) {
@@ -145,7 +148,7 @@
           });
           el.innerHTML = html;
           el.setAttribute('for-length', forData.length);
-          bindEvents(el);
+          bindEvent(el);
       }
       var arr = [];
       var list = node.querySelectorAll('[for]');
@@ -179,7 +182,7 @@
   }
 
   var bindList = ['oninput', 'onchange'];
-  function bindBind(node) {
+  function bindModel(node) {
       function bind(el) {
           var value = el.getAttribute('bind');
           var query = el.getAttribute('query');
@@ -553,17 +556,37 @@
       });
   }
 
-  var vof = /^v-/;
+  function bindBind(node) {
+      function bind(el) {
+          var attrs = el.getAttribute('bind-attr');
+          attrs.split(' ').forEach(function (attr) {
+              var v = '';
+              try {
+                  v = new Function('return ' + el.getAttribute(attr))();
+              }
+              catch (err) {
+                  onError(err, el);
+              }
+              el.setAttribute(attr.replace('v-', ''), v);
+          });
+      }
+      checkSingle(node, bind, 'bind-attr', '[bind-attr]');
+  }
+
+  var vof$1 = /^v-/;
   function setViolent(node) {
       node.querySelectorAll('*').forEach(function (e) {
+          if (e.getAttribute('violent')) {
+              return;
+          }
           var txt = '';
           Array.from(e.attributes).forEach(function (v) {
-              if (vof.test(v.name)) {
+              if (vof$1.test(v.name)) {
                   txt += v.name + ' ';
               }
           });
           if (txt) {
-              e.setAttribute('violent-v', txt);
+              e.setAttribute('violent', txt.trim());
           }
       });
   }
@@ -580,13 +603,14 @@
   var update = Reducer(function (node) {
       updateAsync(node);
   });
-  var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindBind, bindText, bindWatch];
+  var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindBind, bindWatch];
   function updateAsync(node) {
+      console.log(node);
       middlewareByUpdate.forEach(function (fn) {
           fn(node);
       });
   }
-  var middlewareByInit = [bindTemplate, bindEvents];
+  var middlewareByInit = [bindTemplate, bindEvent];
   var bindReload = Reducer(function (node) {
       updateAsync(node);
       middlewareByInit.forEach(function (fn) {
@@ -602,12 +626,13 @@
   var observer = new MutationObserver(function (mutations) {
       for (var i = 0; i < mutations.length; i++) {
           if (mutations[i].addedNodes.length > 0) {
-              mutations[i].addedNodes.forEach(function (node) {
-                  if (node.nodeType !== 1)
-                      return;
-                  setViolent(node);
-                  bindReload(node);
-              });
+              setViolent(mutations[i].target);
+              bindReload(mutations[i].target);
+              // mutations[i].addedNodes.forEach(node => {
+              //   if (node.nodeType !== 1) return;
+              //   setViolent(node as any);
+              //   bindReload(node as any)
+              // })
           }
       }
   });
@@ -636,6 +661,7 @@
       middlewareByInit: middlewareByInit,
   };
   window.addEventListener('load', function () {
+      setViolent(document.body);
       initObserver();
       document.querySelectorAll('template').forEach(function (node) {
           bindTemplate(node);

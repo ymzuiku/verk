@@ -21,21 +21,18 @@ export function Reducer(fn: (v: any) => any) {
   const updateNodeMap = new Set();
   let raf: any;
 
-  return function bindInit(node: any) {
+  return function reducer(node: any) {
 
     if (!updateNodeMap.has(node)) {
       updateNodeMap.add(node)
     }
-    updateNodeMap.forEach(fn)
-    updateNodeMap.clear()
-    raf = null;
-    // if (raf) {
-    //   cancelAnimationFrame(raf)
-    // }
-    // raf = requestAnimationFrame(function () {
-    //   updateNodeMap.forEach(fn)
-    //   updateNodeMap.clear()
-    //   raf = null;
-    // })
+    if (raf) {
+      cancelAnimationFrame(raf)
+    }
+    raf = requestAnimationFrame(function () {
+      updateNodeMap.forEach(fn)
+      updateNodeMap.clear()
+      raf = null;
+    });
   }
 }

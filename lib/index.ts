@@ -1,4 +1,4 @@
-import { update, queryUpdate, middlewareByUpdate, bindReload, middlewareByInit } from './update'
+import { update, queryUpdate, middlewareByUpdate, bindReload, middlewareByInit, setViolent } from './update'
 import bindTemplate from './bindTemplate';
 import { initObserver } from './obs';
 import './fixParams';
@@ -12,6 +12,7 @@ const violent = {
 };
 
 window.addEventListener('load', function () {
+  setViolent(document.body);
   initObserver();
   document.querySelectorAll('template').forEach(function (node) {
     bindTemplate(node);

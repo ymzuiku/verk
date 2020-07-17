@@ -17,8 +17,8 @@ Includ or download the violent.js:
 - [x] for
 - [x] for in for
 - [x] text
-- [x] events
 - [x] bind
+- [x] model
 - [x] css
 - [x] runtime flavorcss
 - [x] watch

@@ -8,11 +8,13 @@ const observerOptions = {
 const observer = new MutationObserver((mutations) => {
   for (let i = 0; i < mutations.length; i++) {
     if (mutations[i].addedNodes.length > 0) {
-      mutations[i].addedNodes.forEach(node => {
-        if (node.nodeType !== 1) return;
-        setViolent(node as any);
-        bindReload(node as any)
-      })
+      setViolent(mutations[i].target as any);
+      bindReload(mutations[i].target);
+      // mutations[i].addedNodes.forEach(node => {
+      //   if (node.nodeType !== 1) return;
+      //   setViolent(node as any);
+      //   bindReload(node as any)
+      // })
     }
   }
 })

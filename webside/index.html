@@ -11,11 +11,11 @@
 </head>
 
 <body style="visibility: hidden;" flavorcss-effect>
-  <div v-css="fs-4xl">dog</div>
-  <div v-query="*" v-onclick="data.show = !data.show">1</div>
-  <div v-show="data.show">hello</div>
-  <div v-css="bg-blue-200 w-3xl h-3xl">
-    <div v-show="data.show">
+  <div v-style="data.show?'background:#f00':'background:#fff'" css="fs-4xl">dog</div>
+  <div v-onclick="function(){data.show = !data.show; console.log(data)}">change show</div>
+  <div show="data.show">hello</div>
+  <div css="bg-blue-200 w-3xl h-3xl">
+    <div show="data.show">
       <h1>hello</h1>
       <h2>world</h2>
       <h2 text>data.show</h2>
@@ -30,15 +30,15 @@
     }
     setTimeout(function () {
       const h = `
-      <div aaav-b="ccc" a=1 v-css="bg-red-200 w-3xl h-3xl">
-  <div a=2 v-for="[1,2,3,4]" v-if="true" v-css="bg-yellow-400" show="data.show">
+<div v-style="data.show?'background:#f00':'background:#fff'" css="bg-red-200 w-3xl h-3xl">
+  <div a=2 v-onclick="console.log('11')" if="true" css="bg-yellow-400" show="data.show">
     <h1 a=3>hello</h1>
     <h2 a=3>world</h2>
-    <h2 v-text>data.show</h2>
+    <h2 text>data.show</h2>
   </div>
-  </div>
+</div>
       `;
-      const el = document.createElement('el');
+      const el = document.createElement('div');
       el.innerHTML = h;
       document.body.append(el);
     }, 500)

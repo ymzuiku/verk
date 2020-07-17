@@ -1,5 +1,5 @@
 import { HTMLAny } from './interface'
-import bindEvents from './bindEvents';
+import bindEvent from './bindEvent';
 import { onError } from './onError';
 
 export default function bindFor(node: HTMLAny) {
@@ -35,7 +35,7 @@ export default function bindFor(node: HTMLAny) {
 
     el.innerHTML = html;
     el.setAttribute('for-length', forData.length);
-    bindEvents(el)
+    bindEvent(el)
   };
 
   const arr = [] as any;

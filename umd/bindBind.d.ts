@@ -1,2 +1,1 @@
-import { HTMLAny } from './interface';
-export default function bindBind(node: HTMLAny): void;
+export default function bindBind(node: Element): void;
