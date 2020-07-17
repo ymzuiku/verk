@@ -22,18 +22,18 @@
   window.$uuid = uuid;
   function Reducer(fn) {
       var updateNodeMap = new Set();
-      var raf;
+      var time;
       return function reducer(node) {
           if (!updateNodeMap.has(node)) {
               updateNodeMap.add(node);
           }
-          if (raf) {
-              cancelAnimationFrame(raf);
+          if (time) {
+              cancelAnimationFrame(time);
           }
-          raf = requestAnimationFrame(function () {
+          time = requestAnimationFrame(function () {
               updateNodeMap.forEach(fn);
               updateNodeMap.clear();
-              raf = null;
+              time = null;
           });
       };
   }
@@ -443,6 +443,11 @@
                               var slot = el.getAttribute('name');
                               var next = tmp.content.querySelector('[slot="' + slot + '"]');
                               if (next) {
+                                  Array.from(el.attributes).forEach(function (attr) {
+                                      if (!next.getAttribute(attr.name)) {
+                                          next.setAttribute(attr.name, attr.value);
+                                      }
+                                  });
                                   div.replaceChild(next, el);
                               }
                           });
@@ -605,7 +610,6 @@
   });
   var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindAttr, bindWatch];
   function updateAsync(node) {
-      console.log(node);
       middlewareByUpdate.forEach(function (fn) {
           fn(node);
       });

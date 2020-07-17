@@ -141,6 +141,11 @@ export function byTemplate(node: HTMLAny) {
       const slot = el.getAttribute('name');
       const next = tmp.content.querySelector('[slot="' + slot + '"]')
       if (next) {
+        Array.from(el.attributes).forEach(attr => {
+          if (!next.getAttribute(attr.name)){
+            next.setAttribute(attr.name, attr.value);
+          }
+        })
         div.replaceChild(next, el);
       }
     });

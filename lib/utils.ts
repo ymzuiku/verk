@@ -16,23 +16,24 @@ export function uuid(name = 'u') {
 
 (window as any).$uuid = uuid;
 
+
+
 export function Reducer(fn: (v: any) => any) {
 
   const updateNodeMap = new Set();
-  let raf: any;
+  let time: any;
 
   return function reducer(node: any) {
-
     if (!updateNodeMap.has(node)) {
       updateNodeMap.add(node)
     }
-    if (raf) {
-      cancelAnimationFrame(raf)
+    if (time) {
+      cancelAnimationFrame(time)
     }
-    raf = requestAnimationFrame(function () {
+    time = requestAnimationFrame(function () {
       updateNodeMap.forEach(fn)
       updateNodeMap.clear()
-      raf = null;
+      time = null;
     });
   }
 }

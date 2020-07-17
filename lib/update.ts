@@ -55,7 +55,6 @@ export const update = Reducer(function (node) {
 export const middlewareByUpdate: Function[] = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindAttr, bindWatch];
 
 export function updateAsync(node: HTMLAny) {
-  console.log(node);
   middlewareByUpdate.forEach(function (fn) {
     fn(node)
   });
