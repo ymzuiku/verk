@@ -8,7 +8,7 @@ export default function bindFor(node: HTMLAny) {
       el.__forcode = el.getAttribute('for')!;
       el.__html = el.innerHTML;
       try {
-        el.__forData = new Function('return ' + el.__forcode)();
+        el.__forData = new Function('$el', 'return ' + el.__forcode)(el);
       } catch (err) {
         onError(err, el);
       }

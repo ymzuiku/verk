@@ -7,9 +7,12 @@ export default function bindAttr(node: Element) {
   function bind(el: HTMLAny) {
     const attrs = el.getAttribute('bind-attr')!;
     attrs.split(' ').forEach(function (attr) {
-      let v = '';
+      let v: any;
       try {
-        v = new Function('return ' + el.getAttribute(attr))();
+        v = new Function('$el', 'return ' + el.getAttribute(attr))(el);
+        if (typeof v === 'function') {
+          v = v();
+        }
       } catch (err) {
         onError(err, el);
       }

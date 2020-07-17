@@ -101,7 +101,10 @@
       function bind(el) {
           var ifData;
           try {
-              ifData = new Function('return ' + el.getAttribute('if'))();
+              ifData = new Function('$el', 'return ' + el.getAttribute('if'))(el);
+              if (typeof ifData === 'function') {
+                  ifData = ifData();
+              }
           }
           catch (err) {
               onError(err, el);
@@ -169,7 +172,7 @@
               el.__forcode = el.getAttribute('for');
               el.__html = el.innerHTML;
               try {
-                  el.__forData = new Function('return ' + el.__forcode)();
+                  el.__forData = new Function('$el', 'return ' + el.__forcode)(el);
               }
               catch (err) {
                   onError(err, el);
@@ -213,7 +216,10 @@
           }
           var v;
           try {
-              v = new Function('return ' + el.getAttribute('text-save'))();
+              v = new Function('$el', 'return ' + el.getAttribute('text-save'))(el);
+              if (typeof v === 'function') {
+                  v = v();
+              }
           }
           catch (err) {
               onError(err, el);
@@ -270,7 +276,10 @@
   function bindWatch(node) {
       function bind(el) {
           try {
-              new Function('$el', el.getAttribute('watch'))(el);
+              var v = new Function('$el', el.getAttribute('watch'))(el);
+              if (typeof v === 'function') {
+                  v();
+              }
           }
           catch (err) {
               onError(err, el);
@@ -281,14 +290,17 @@
 
   function bindShow(node) {
       function bind(el) {
-          var ifData;
+          var v;
           try {
-              ifData = new Function('return ' + el.getAttribute('show'))();
+              v = new Function('$el', 'return ' + el.getAttribute('show'))(el);
+              if (typeof v === 'function') {
+                  v = v();
+              }
           }
           catch (err) {
               onError(err, el);
           }
-          if (ifData) {
+          if (v) {
               el.style.removeProperty('display');
           }
           else {
@@ -614,9 +626,12 @@
       function bind(el) {
           var attrs = el.getAttribute('bind-attr');
           attrs.split(' ').forEach(function (attr) {
-              var v = '';
+              var v;
               try {
-                  v = new Function('return ' + el.getAttribute(attr))();
+                  v = new Function('$el', 'return ' + el.getAttribute(attr))(el);
+                  if (typeof v === 'function') {
+                      v = v();
+                  }
               }
               catch (err) {
                   onError(err, el);

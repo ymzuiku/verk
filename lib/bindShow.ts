@@ -5,15 +5,18 @@ import { onError } from './onError';
 
 export default function bindShow(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    let ifData:any;
+    let v: any;
 
     try {
-      ifData = new Function('return ' + el.getAttribute('show'))()
-    } catch(err) {
+      v = new Function('$el', 'return ' + el.getAttribute('show'))(el);
+      if (typeof v === 'function') {
+        v = v();
+      }
+    } catch (err) {
       onError(err, el);
     }
 
-    if (ifData) {
+    if (v) {
       el.style.removeProperty('display')
     } else {
       el.style.display = 'none'

@@ -8,12 +8,15 @@ export default function bindIf(node: HTMLAny) {
     let ifData: any;
 
     try {
-      ifData = new Function('return ' + el.getAttribute('if'))()
+      ifData = new Function('$el', 'return ' + el.getAttribute('if'))(el)
+      if (typeof ifData === 'function') {
+        ifData = ifData();
+      }
     } catch (err) {
       onError(err, el);
     }
-    
-    let id = el.getAttribute('uuid')!
+
+    let id = el.getAttribute('uuid')!;
 
     if (ifData) {
       if (!id) {

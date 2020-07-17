@@ -10,7 +10,10 @@ export default function bindText(node: Element) {
     }
     let v: any;
     try {
-      v = new Function('return ' + el.getAttribute('text-save'))();
+      v = new Function('$el', 'return ' + el.getAttribute('text-save'))(el);
+      if (typeof v === 'function') {
+        v = v();
+      }
     } catch (err) {
       onError(err, el);
     }
