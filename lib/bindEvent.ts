@@ -3,12 +3,10 @@ import { queryUpdate } from './update'
 import { onError } from './onError';
 
 const von = /^v-on/;
-const vof = /^v-/;
 
 export default function bindEvent(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const arr = el.getAttribute('violent')!.split(' ');
-    let attrV = '';
+    const arr = el.getAttribute('bind-on')!.split(' ');
     arr.forEach(function (attr: string) {
       const key = attr.replace('v-', '');
       if (von.test(attr)) {
@@ -29,19 +27,14 @@ export default function bindEvent(node: HTMLAny) {
           }
           queryUpdate(el.getAttribute('query'))
         }
-      } else if (vof.test(attr)) {
-        attrV += attr + ' ';
       }
     });
-    if (attrV) {
-      el.setAttribute('bind-attr', attrV.trim());
-    }
   }
 
-  if (node.getAttribute('violent')) {
+  if (node.getAttribute('bind-on')) {
     bind(node as any);
   }
 
-  (node.querySelectorAll('[violent]') as any).forEach(bind);
+  (node.querySelectorAll('[bind-on]') as any).forEach(bind);
 }
 

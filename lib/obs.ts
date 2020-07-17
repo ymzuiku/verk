@@ -10,11 +10,6 @@ const observer = new MutationObserver((mutations) => {
     if (mutations[i].addedNodes.length > 0) {
       setViolent(mutations[i].target as any);
       bindReload(mutations[i].target);
-      // mutations[i].addedNodes.forEach(node => {
-      //   if (node.nodeType !== 1) return;
-      //   setViolent(node as any);
-      //   bindReload(node as any)
-      // })
     }
   }
 })

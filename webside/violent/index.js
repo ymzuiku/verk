@@ -79,11 +79,9 @@
   }
 
   var von = /^v-on/;
-  var vof = /^v-/;
   function bindEvent(node) {
       function bind(el) {
-          var arr = el.getAttribute('violent').split(' ');
-          var attrV = '';
+          var arr = el.getAttribute('bind-on').split(' ');
           arr.forEach(function (attr) {
               var key = attr.replace('v-', '');
               if (von.test(attr)) {
@@ -105,18 +103,12 @@
                       queryUpdate(el.getAttribute('query'));
                   };
               }
-              else if (vof.test(attr)) {
-                  attrV += attr + ' ';
-              }
           });
-          if (attrV) {
-              el.setAttribute('bind-attr', attrV.trim());
-          }
       }
-      if (node.getAttribute('violent')) {
+      if (node.getAttribute('bind-on')) {
           bind(node);
       }
-      node.querySelectorAll('[violent]').forEach(bind);
+      node.querySelectorAll('[bind-on]').forEach(bind);
   }
 
   function bindFor(node) {
@@ -556,7 +548,7 @@
       });
   }
 
-  function bindBind(node) {
+  function bindAttr(node) {
       function bind(el) {
           var attrs = el.getAttribute('bind-attr');
           attrs.split(' ').forEach(function (attr) {
@@ -573,20 +565,28 @@
       checkSingle(node, bind, 'bind-attr', '[bind-attr]');
   }
 
-  var vof$1 = /^v-/;
+  var vof = /^v-/;
+  var von$1 = /^v-on/;
   function setViolent(node) {
       node.querySelectorAll('*').forEach(function (e) {
-          if (e.getAttribute('violent')) {
+          if (e.getAttribute('bind-on') || e.getAttribute('bind-attr')) {
               return;
           }
-          var txt = '';
+          var attr = '';
+          var on = '';
           Array.from(e.attributes).forEach(function (v) {
-              if (vof$1.test(v.name)) {
-                  txt += v.name + ' ';
+              if (von$1.test(v.name)) {
+                  on += v.name + ' ';
+              }
+              else if (vof.test(v.name)) {
+                  attr += v.name + ' ';
               }
           });
-          if (txt) {
-              e.setAttribute('violent', txt.trim());
+          if (attr) {
+              e.setAttribute('bind-attr', attr.trim());
+          }
+          if (on) {
+              e.setAttribute('bind-on', on.trim());
           }
       });
   }
@@ -603,7 +603,7 @@
   var update = Reducer(function (node) {
       updateAsync(node);
   });
-  var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindBind, bindWatch];
+  var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindAttr, bindWatch];
   function updateAsync(node) {
       console.log(node);
       middlewareByUpdate.forEach(function (fn) {
@@ -628,11 +628,6 @@
           if (mutations[i].addedNodes.length > 0) {
               setViolent(mutations[i].target);
               bindReload(mutations[i].target);
-              // mutations[i].addedNodes.forEach(node => {
-              //   if (node.nodeType !== 1) return;
-              //   setViolent(node as any);
-              //   bindReload(node as any)
-              // })
           }
       }
   });

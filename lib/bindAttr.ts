@@ -3,7 +3,7 @@ import { HTMLAny } from './interface'
 import { checkSingle } from './utils';
 import { onError } from './onError';
 
-export default function bindBind(node: Element) {
+export default function bindAttr(node: Element) {
   function bind(el: HTMLAny) {
     const attrs = el.getAttribute('bind-attr')!;
     attrs.split(' ').forEach(function (attr) {
