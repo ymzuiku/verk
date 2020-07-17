@@ -49,18 +49,19 @@ const watchOptions = [
       nodeResolve(),
       rollupTypescript({
         useTsconfigDeclarationDir: false,
+        declaration: false,
       }),
-      // uglify({
-      //   sourcemap: false,
-      // }),
+      uglify({
+        sourcemap: false,
+      }),
     ],
   },
   {
-    input: "./lib/index.ts",
+    input: "./lib/addon/bindCss.ts",
     output: {
-      file: "./umd/index.js",
+      file: "./dev/bindcss.js",
       format: "umd",
-      name: "$violent",
+      name: "$bindcss",
       sourcemap: false,
       // globals: {
       //   keyframesSpring: 'keyframes-spring',
@@ -71,9 +72,46 @@ const watchOptions = [
       rollupTypescript({
         useTsconfigDeclarationDir: false,
       }),
-      // uglify({
-      //   sourcemap: false,
-      // }),
+    ],
+  },
+  {
+    input: "./lib/index.ts",
+    output: {
+      file: "./umd/index.js",
+      format: "umd",
+      name: "$violent",
+      sourcemap: false,
+      globals: {
+        keyframesSpring: 'keyframes-spring',
+      },
+    },
+    plugins: [
+      nodeResolve(),
+      rollupTypescript({
+        useTsconfigDeclarationDir: false,
+        declaration: false,
+      }),
+      uglify({
+        sourcemap: false,
+      }),
+    ],
+  },
+  {
+    input: "./lib/index.ts",
+    output: {
+      file: "./dev/index.js",
+      format: "umd",
+      name: "$violent",
+      sourcemap: false,
+      globals: {
+        keyframesSpring: 'keyframes-spring',
+      },
+    },
+    plugins: [
+      nodeResolve(),
+      rollupTypescript({
+        useTsconfigDeclarationDir: false,
+      }),
     ],
   },
 ];

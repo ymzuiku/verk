@@ -23,6 +23,6 @@
     "jsxFactory": "h",
     "jsx": "preserve"
   },
-  "exclude": ["node_modules", "umd"],
+  "exclude": ["node_modules", "umd", "dev"],
   "include": ["lib", "addon/bindCss.ts"]
 }
