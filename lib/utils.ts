@@ -26,13 +26,16 @@ export function Reducer(fn: (v: any) => any) {
     if (!updateNodeMap.has(node)) {
       updateNodeMap.add(node)
     }
-    if (raf) {
-      cancelAnimationFrame(raf)
-    }
-    raf = requestAnimationFrame(function () {
-      updateNodeMap.forEach(fn)
-      updateNodeMap.clear()
-      raf = null;
-    })
+    updateNodeMap.forEach(fn)
+    updateNodeMap.clear()
+    raf = null;
+    // if (raf) {
+    //   cancelAnimationFrame(raf)
+    // }
+    // raf = requestAnimationFrame(function () {
+    //   updateNodeMap.forEach(fn)
+    //   updateNodeMap.clear()
+    //   raf = null;
+    // })
   }
 }

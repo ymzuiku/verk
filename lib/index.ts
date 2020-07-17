@@ -1,5 +1,4 @@
-import { update, queryUpdate, middlewareByUpdate } from './update'
-import { bindReload, middlewareByInit } from './bindReload'
+import { update, queryUpdate, middlewareByUpdate, bindReload, middlewareByInit } from './update'
 import bindTemplate from './bindTemplate';
 import { initObserver } from './obs';
 import './fixParams';

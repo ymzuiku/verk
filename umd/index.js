@@ -22,19 +22,20 @@
   window.$uuid = uuid;
   function Reducer(fn) {
       var updateNodeMap = new Set();
-      var raf;
       return function bindInit(node) {
           if (!updateNodeMap.has(node)) {
               updateNodeMap.add(node);
           }
-          if (raf) {
-              cancelAnimationFrame(raf);
-          }
-          raf = requestAnimationFrame(function () {
-              updateNodeMap.forEach(fn);
-              updateNodeMap.clear();
-              raf = null;
-          });
+          updateNodeMap.forEach(fn);
+          updateNodeMap.clear();
+          // if (raf) {
+          //   cancelAnimationFrame(raf)
+          // }
+          // raf = requestAnimationFrame(function () {
+          //   updateNodeMap.forEach(fn)
+          //   updateNodeMap.clear()
+          //   raf = null;
+          // })
       };
   }
 
@@ -552,6 +553,20 @@
       });
   }
 
+  var vof = /^v-/;
+  function setViolent(node) {
+      node.querySelectorAll('*').forEach(function (e) {
+          var txt = '';
+          Array.from(e.attributes).forEach(function (v) {
+              if (vof.test(v.name)) {
+                  txt += v.name + ' ';
+              }
+          });
+          if (txt) {
+              e.setAttribute('violent-v', txt);
+          }
+      });
+  }
   function queryUpdate(query) {
       if (query && query !== '*') {
           document.body.querySelectorAll(query).forEach(function (v) {
@@ -571,7 +586,6 @@
           fn(node);
       });
   }
-
   var middlewareByInit = [bindTemplate, bindEvents];
   var bindReload = Reducer(function (node) {
       updateAsync(node);
@@ -591,6 +605,7 @@
               mutations[i].addedNodes.forEach(function (node) {
                   if (node.nodeType !== 1)
                       return;
+                  setViolent(node);
                   bindReload(node);
               });
           }

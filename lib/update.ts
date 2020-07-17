@@ -7,6 +7,24 @@ import bindWatch from './bindWatch';
 import bindShow from './bindShow';
 import { updateTemplate, byTemplate } from './bindTemplate';
 import { Reducer } from './utils';
+import bindEvents from './bindEvents';
+import bindTemplate from './bindTemplate'
+
+const vof = /^v-/
+
+export function setViolent(node: HTMLAny) {
+  node.querySelectorAll('*').forEach(e => {
+    let txt = '';
+    Array.from(e.attributes).forEach(v => {
+      if (vof.test(v.name)) {
+        txt += v.name + ' '
+      }
+    });
+    if (txt) {
+      e.setAttribute('violent-v', txt);
+    }
+  });
+}
 
 export function queryUpdate(query: string | null) {
   if (query && query !== '*') {
@@ -30,5 +48,15 @@ export function updateAsync(node: HTMLAny) {
     fn(node)
   })
 }
+
+
+export const middlewareByInit: Function[] = [bindTemplate, bindEvents]
+
+export const bindReload = Reducer(function (node) {
+  updateAsync(node)
+  middlewareByInit.forEach(function (fn) {
+    fn(node)
+  })
+});
 
 

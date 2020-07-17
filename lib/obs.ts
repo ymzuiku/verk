@@ -1,4 +1,4 @@
-import { bindReload } from './bindReload'
+import { bindReload, setViolent } from './update'
 const observerOptions = {
   childList: true,
   attributes: false,
@@ -10,6 +10,7 @@ const observer = new MutationObserver((mutations) => {
     if (mutations[i].addedNodes.length > 0) {
       mutations[i].addedNodes.forEach(node => {
         if (node.nodeType !== 1) return;
+        setViolent(node as any);
         bindReload(node as any)
       })
     }

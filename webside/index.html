@@ -11,21 +11,41 @@
 </head>
 
 <body style="visibility: hidden;" flavorcss-effect>
-  <div css="fs-4xl" >dog</div>
-  <div query="*" onclick="data.show = !data.show">1</div>
-  <div show="data.show">hello</div>
+  <div v-css="fs-4xl">dog</div>
+  <div v-query="*" v-onclick="data.show = !data.show">1</div>
+  <div v-show="data.show">hello</div>
+  <div v-css="bg-blue-200 w-3xl h-3xl">
+    <div v-show="data.show">
+      <h1>hello</h1>
+      <h2>world</h2>
+      <h2 text>data.show</h2>
+    </div>
+  </div>
   <template by="editor">
     <div loading>loading...</div>
   </template>
   <script>
-    console.log(violent);
     var data = {
       show: true,
     }
+    setTimeout(function () {
+      const h = `
+      <div aaav-b="ccc" a=1 v-css="bg-red-200 w-3xl h-3xl">
+  <div a=2 v-for="[1,2,3,4]" v-if="true" v-css="bg-yellow-400" show="data.show">
+    <h1 a=3>hello</h1>
+    <h2 a=3>world</h2>
+    <h2 v-text>data.show</h2>
+  </div>
+  </div>
+      `;
+      const el = document.createElement('el');
+      el.innerHTML = h;
+      document.body.append(el);
+    }, 500)
   </script>
 </body>
 
 <!-- <template fetch="https://unpkg.com/violent@0.0.3/webside/editor/index.html"></template> -->
-<template fetch="/editor/index.html"></template>
+<!-- <template fetch="/editor/index.html"></template> -->
 
 </html>
