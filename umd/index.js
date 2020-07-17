@@ -646,9 +646,7 @@
   });
 
   var $violent = {
-      reload: updateAll,
-      update: updateAttrs,
-      queryUpdate: queryUpdate,
+      update: updateAll,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,
   };

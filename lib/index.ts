@@ -1,12 +1,10 @@
-import { updateAttrs, queryUpdate, middlewareByUpdate, updateAll, middlewareByInit, setViolent } from './update'
+import { middlewareByUpdate, updateAll, middlewareByInit, setViolent } from './update'
 import bindTemplate from './bindTemplate';
 // import { initObserver } from './obs';
 import './fixParams';
 
 const $violent = {
-  reload: updateAll,
-  update: updateAttrs,
-  queryUpdate,
+  update: updateAll,
   middlewareByUpdate,
   middlewareByInit,
 };
