@@ -7,9 +7,12 @@ const observerOptions = {
 
 const observer = new MutationObserver((mutations) => {
   for (let i = 0; i < mutations.length; i++) {
-    if (mutations[i].addedNodes.length > 0) {
-      setViolent(mutations[i].target as any);
-      bindReload(mutations[i].target);
+    const node = mutations[i].target as HTMLElement;
+    setViolent(node);
+    if (!node.getAttribute('ignore-observer')) {
+      bindReload(node);
+    } else {
+      console.log('0000', node);
     }
   }
 })

@@ -23,7 +23,7 @@ export function Reducer(fn: (v: any) => any) {
   const updateNodeMap = new Set();
   let time: any;
 
-  return function reducer(node: any) {
+  return function reducer(node: any, cb?: Function) {
     if (!updateNodeMap.has(node)) {
       updateNodeMap.add(node)
     }
@@ -34,6 +34,9 @@ export function Reducer(fn: (v: any) => any) {
       updateNodeMap.forEach(fn)
       updateNodeMap.clear()
       time = null;
+      if (cb) {
+        cb();
+      }
     });
   }
 }

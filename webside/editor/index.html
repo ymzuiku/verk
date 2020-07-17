@@ -1,28 +1,33 @@
 <template component="editor">
-  <div>aaaaaaaaaaa</div>
+  <div text>"haha" +($state.dog && $state.dog.name)</div>
   <slot ref="editor" css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
-    var state = {
-      editor: {},
-    };
     require.config({ paths: { 'vs': $dir + '/vs' } });
     window.MonacoEnvironment = {
       getWorkerUrl: function (workerId, label) {
         return $dir + '/monaco-editor-worker-loader-proxy.js';
       }
     };
-    require(["vs/editor/editor.main"], function () {
-      state.editor = monaco.editor.create($ref('editor'), {
-        value: $props.value || [
-          'function x() {',
-          '\tconsole.log("Hello world!");',
-          '}'
-        ].join('\n'),
-        language: $props.language || 'javascript',
-      });
-    });
-    return state;
+
+    return {
+      dog: {
+        name: 'dipu',
+      },
+      $mount: function ($state) {
+        require(["vs/editor/editor.main"], function () {
+          $state.editor = monaco.editor.create($ref('editor'), {
+            value: $props.value || [
+              'function x() {',
+              '\tconsole.log("Hello world!");',
+              '}'
+            ].join('\n'),
+            language: $props.language || 'javascript',
+          });
+        });
+      },
+    };
   </script>
+
 
 </template>

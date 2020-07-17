@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.violent = factory());
+  (global = global || self, global.$violent = factory());
 }(this, function () { 'use strict';
 
   function checkSingle(node, bind, key, selector) {
@@ -23,7 +23,7 @@
   function Reducer(fn) {
       var updateNodeMap = new Set();
       var time;
-      return function reducer(node) {
+      return function reducer(node, cb) {
           if (!updateNodeMap.has(node)) {
               updateNodeMap.add(node);
           }
@@ -34,6 +34,9 @@
               updateNodeMap.forEach(fn);
               updateNodeMap.clear();
               time = null;
+              if (cb) {
+                  cb();
+              }
           });
       };
   }
@@ -81,12 +84,12 @@
   var von = /^v-on/;
   function bindEvent(node) {
       function bind(el) {
+          if (el.__events)
+              return;
           var arr = el.getAttribute('bind-on').split(' ');
           arr.forEach(function (attr) {
               var key = attr.replace('v-', '');
               if (von.test(attr)) {
-                  if (el[key])
-                      return;
                   var fn_1 = new Function('$self', '$event', '$value', 'return ' + el.getAttribute(attr));
                   (el)[key] = function (event) {
                       var res;
@@ -104,6 +107,7 @@
                   };
               }
           });
+          el.__events = true;
       }
       if (node.getAttribute('bind-on')) {
           bind(node);
@@ -193,7 +197,10 @@
                   queryUpdate(query);
               };
           }
-          bindList.forEach(bindOn);
+          if (el.__models) {
+              bindList.forEach(bindOn);
+              el.__models;
+          }
           var v;
           try {
               v = (new Function('return ' + value)()) || '';
@@ -215,7 +222,7 @@
   function bindWatch(node) {
       function bind(el) {
           try {
-              new Function('$self', el.getAttribute('watch'))(el);
+              new Function('$el', el.getAttribute('watch'))(el);
           }
           catch (err) {
               onError(err, el);
@@ -340,7 +347,7 @@
                   frag.innerHTML = tmp.innerHTML;
                   sc = frag.querySelector('script:not([src])');
                   if (sc) {
-                      comScripts[name] = new Function('$id', '$props', '$ref', '$refs', sc.innerHTML);
+                      comScripts[name] = new Function('$parent', '$id', '$props', '$ref', '$refs', sc.innerHTML);
                       sc.remove();
                       tmp.remove();
                   }
@@ -397,7 +404,7 @@
               function $refs(k) {
                   return document.body.querySelectorAll('[' + refs[k] + ']');
               }
-              var name, loading, lid, nextEl, comp, props, baseId, id, pid, div, html, refs, useLoading, sc;
+              var name, loading, lid, nextEl, comp, props, baseId, id, pid, div, html, refs, useLoading, sc, res;
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -438,6 +445,7 @@
                           div.innerHTML = html;
                           div.querySelectorAll('*').forEach(function (el, i) {
                               el.setAttribute(id, (i + 1));
+                              // el.setAttribute('ignore-observer', '1');
                           });
                           div.querySelectorAll('slot').forEach(function (el) {
                               var slot = el.getAttribute('name');
@@ -458,7 +466,7 @@
                               el.removeAttribute('ref');
                               el.setAttribute(refs[ref], "1");
                           });
-                          if (!div.querySelector('[defer]')) return [3 /*break*/, 8];
+                          if (!div.querySelector('[defer]')) return [3 /*break*/, 6];
                           return [4 /*yield*/, srcLoader(div, 'script[src]:not([defer])')];
                       case 1:
                           _a.sent();
@@ -474,38 +482,40 @@
                           return [4 /*yield*/, srcLoader(div, 'script[defer="3"]')];
                       case 5:
                           _a.sent();
-                          return [4 /*yield*/, srcLoader(div, 'script[defer="4"]')];
-                      case 6:
-                          _a.sent();
-                          return [4 /*yield*/, srcLoader(div, 'script[defer="5"]')];
+                          return [3 /*break*/, 8];
+                      case 6: return [4 /*yield*/, srcLoader(div, 'script[src]')];
                       case 7:
                           _a.sent();
-                          return [3 /*break*/, 10];
-                      case 8: return [4 /*yield*/, srcLoader(div, 'script[src]')];
-                      case 9:
-                          _a.sent();
-                          _a.label = 10;
-                      case 10:
+                          _a.label = 8;
+                      case 8:
                           useLoading = tmp.content.querySelector('[use-loading]');
                           if (useLoading) {
                               document.body.querySelectorAll('[' + useLoading.getAttribute('use-loading') + ']').forEach(function (v) {
                                   v.remove();
                               });
                           }
-                          tmp.insertAdjacentHTML('afterend', div.innerHTML);
                           sc = comScripts[name];
                           if (sc) {
+                              console.log('-------', tmp.parentElement);
                               try {
                                   // window[pid] 为之前计算好的 $props
                                   // 通过计算获取 $state, 赋值至 window[id]
-                                  (window[id]) = sc(id, window[pid], $ref, $refs);
+                                  res = sc(tmp.parentElement, id, window[pid], $ref, $refs);
                               }
                               catch (err) {
                                   onError(err, tmp, sc);
                               }
                           }
-                          requestAnimationFrame(function () {
-                              bindTemplate(node);
+                          tmp.insertAdjacentHTML('afterend', div.innerHTML);
+                          Promise.resolve(res).then(function (v) {
+                              (window[id]) = v;
+                              requestAnimationFrame(function () {
+                                  updateAll(tmp.parentElement, function () {
+                                      if (v.$mount) {
+                                          v.$mount(window[id]);
+                                      }
+                                  });
+                              });
                           });
                           return [2 /*return*/];
                   }
@@ -598,14 +608,14 @@
   function queryUpdate(query) {
       if (query && query !== '*') {
           document.body.querySelectorAll(query).forEach(function (v) {
-              update(v);
+              updateAttrs(v);
           });
       }
       else {
-          update(document.body);
+          updateAttrs(document.body);
       }
   }
-  var update = Reducer(function (node) {
+  var updateAttrs = Reducer(function (node) {
       updateAsync(node);
   });
   var middlewareByUpdate = [updateTemplate, byTemplate, bindIf, bindFor, bindShow, bindModel, bindText, bindAttr, bindWatch];
@@ -615,29 +625,12 @@
       });
   }
   var middlewareByInit = [bindTemplate, bindEvent];
-  var bindReload = Reducer(function (node) {
+  var updateAll = Reducer(function (node) {
       updateAsync(node);
       middlewareByInit.forEach(function (fn) {
           fn(node);
       });
   });
-
-  var observerOptions = {
-      childList: true,
-      attributes: false,
-      subtree: true,
-  };
-  var observer = new MutationObserver(function (mutations) {
-      for (var i = 0; i < mutations.length; i++) {
-          if (mutations[i].addedNodes.length > 0) {
-              setViolent(mutations[i].target);
-              bindReload(mutations[i].target);
-          }
-      }
-  });
-  function initObserver() {
-      observer.observe(document.body, observerOptions);
-  }
 
   var glist = ['$target', '$self', '$value', '$event', '$props', '$renderState'];
   var _ = '';
@@ -652,20 +645,20 @@
       }
   });
 
-  var violent = {
-      reload: bindReload,
-      update: update,
+  var $violent = {
+      reload: updateAll,
+      update: updateAttrs,
       queryUpdate: queryUpdate,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,
   };
   window.addEventListener('load', function () {
       setViolent(document.body);
-      initObserver();
+      // initObserver();
       document.querySelectorAll('template').forEach(function (node) {
           bindTemplate(node);
       });
-      bindReload(document.body);
+      updateAll(document.body);
       setTimeout(function () {
           if (document.body.style.visibility === 'hidden') {
               document.body.style.visibility = 'visible';
@@ -673,6 +666,6 @@
       }, 200);
   });
 
-  return violent;
+  return $violent;
 
 }));

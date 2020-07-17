@@ -6,11 +6,11 @@ const von = /^v-on/;
 
 export default function bindEvent(node: HTMLAny) {
   function bind(el: HTMLAny) {
+    if (el.__events) return;
     const arr = el.getAttribute('bind-on')!.split(' ');
     arr.forEach(function (attr: string) {
       const key = attr.replace('v-', '');
       if (von.test(attr)) {
-        if (el[key]) return;
         const fn = new Function('$self', '$event', '$value', 'return ' + el.getAttribute(attr));
         (el)[key] = function (event: any) {
           let res;
@@ -29,6 +29,7 @@ export default function bindEvent(node: HTMLAny) {
         }
       }
     });
+    el.__events = true;
   }
 
   if (node.getAttribute('bind-on')) {

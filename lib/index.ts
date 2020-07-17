@@ -1,11 +1,11 @@
-import { update, queryUpdate, middlewareByUpdate, bindReload, middlewareByInit, setViolent } from './update'
+import { updateAttrs, queryUpdate, middlewareByUpdate, updateAll, middlewareByInit, setViolent } from './update'
 import bindTemplate from './bindTemplate';
-import { initObserver } from './obs';
+// import { initObserver } from './obs';
 import './fixParams';
 
-const violent = {
-  reload: bindReload,
-  update,
+const $violent = {
+  reload: updateAll,
+  update: updateAttrs,
   queryUpdate,
   middlewareByUpdate,
   middlewareByInit,
@@ -13,11 +13,11 @@ const violent = {
 
 window.addEventListener('load', function () {
   setViolent(document.body);
-  initObserver();
+  // initObserver();
   document.querySelectorAll('template').forEach(function (node) {
     bindTemplate(node);
   })
-  bindReload(document.body);
+  updateAll(document.body);
   setTimeout(() => {
     if (document.body.style.visibility === 'hidden') {
       document.body.style.visibility = 'visible';
@@ -25,4 +25,4 @@ window.addEventListener('load', function () {
   }, 200);
 });
 
-export default violent;
+export default $violent;

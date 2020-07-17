@@ -20,11 +20,13 @@ export default function bindModel(node: HTMLAny) {
         } catch (err) {
           onError(err, el);
         }
-
         queryUpdate(query);
       }
     }
-    bindList.forEach(bindOn);
+    if (el.__models) {
+      bindList.forEach(bindOn);
+      el.__models;
+    }
 
     let v: any;
     try {

@@ -39,7 +39,7 @@ const watchOptions = [
     output: {
       file: "./umd/bindcss.js",
       format: "umd",
-      name: "violent",
+      name: "$bindcss",
       sourcemap: false,
       // globals: {
       //   keyframesSpring: 'keyframes-spring',
@@ -60,7 +60,7 @@ const watchOptions = [
     output: {
       file: "./umd/index.js",
       format: "umd",
-      name: "violent",
+      name: "$violent",
       sourcemap: false,
       // globals: {
       //   keyframesSpring: 'keyframes-spring',

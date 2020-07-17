@@ -1,6 +1,7 @@
 import { HTMLAny } from './interface'
 import { uuid } from './utils';
 import { onError } from './onError';
+import { updateAll } from './update';
 
 const regSrc = new RegExp('src="./', 'g')
 const regHref = new RegExp('href="./', 'g')
@@ -39,7 +40,7 @@ function comTemplate(node: HTMLAny) {
     frag.innerHTML = tmp.innerHTML;
     const sc = frag.querySelector('script:not([src])');
     if (sc) {
-      comScripts[name] = new Function('$id', '$props', '$ref', '$refs', sc.innerHTML);
+      comScripts[name] = new Function('$parent', '$id', '$props', '$ref', '$refs', sc.innerHTML);
       sc.remove();
       tmp.remove();
     }
@@ -93,7 +94,6 @@ export function byTemplate(node: HTMLAny) {
     const name = tmp.getAttribute('by');
     if (!name) return;
 
-
     if (!fixIfAndRoute(tmp)) {
       return;
     }
@@ -127,7 +127,6 @@ export function byTemplate(node: HTMLAny) {
       onError(err, tmp as any, props);
     }
 
-
     const div = document.createElement('div');
     let html = comp.replace(/\$state/g, id);
     html = html.replace(/\$id/g, "'" + id + "'");
@@ -136,13 +135,14 @@ export function byTemplate(node: HTMLAny) {
 
     div.querySelectorAll('*').forEach((el, i) => {
       el.setAttribute(id, (i + 1) as any);
+      // el.setAttribute('ignore-observer', '1');
     });
     div.querySelectorAll('slot').forEach(el => {
       const slot = el.getAttribute('name');
       const next = tmp.content.querySelector('[slot="' + slot + '"]')
       if (next) {
         Array.from(el.attributes).forEach(attr => {
-          if (!next.getAttribute(attr.name)){
+          if (!next.getAttribute(attr.name)) {
             next.setAttribute(attr.name, attr.value);
           }
         })
@@ -172,8 +172,6 @@ export function byTemplate(node: HTMLAny) {
       await srcLoader(div, 'script[defer="1"]');
       await srcLoader(div, 'script[defer="2"]');
       await srcLoader(div, 'script[defer="3"]');
-      await srcLoader(div, 'script[defer="4"]');
-      await srcLoader(div, 'script[defer="5"]');
     } else {
       await srcLoader(div, 'script[src]');
     }
@@ -185,20 +183,32 @@ export function byTemplate(node: HTMLAny) {
       })
     }
 
-    tmp.insertAdjacentHTML('afterend', div.innerHTML);
     const sc = comScripts[name];
+    let res: any;
     if (sc) {
+      console.log('-------', tmp.parentElement);
       try {
         // window[pid] 为之前计算好的 $props
         // 通过计算获取 $state, 赋值至 window[id]
-        ((window as any)[id]) = sc(id, (window as any)[pid], $ref, $refs);
+        res = sc(tmp.parentElement, id, (window as any)[pid], $ref, $refs);
       } catch (err) {
         onError(err, tmp as any, sc);
       }
     }
-    requestAnimationFrame(function () {
-      bindTemplate(node);
-    });
+
+    tmp.insertAdjacentHTML('afterend', div.innerHTML);
+    Promise.resolve(res).then(function (v) {
+      ((window as any)[id]) = v;
+      requestAnimationFrame(function () {
+        updateAll(tmp.parentElement, function () {
+          if (v.$mount) {
+            v.$mount((window as any)[id]);
+          }
+        });
+      });
+
+
+    })
   });
 }
 

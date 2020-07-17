@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.violent = factory());
+  (global = global || self, global.$bindcss = factory());
 }(this, function () { 'use strict';
 
   var sc = [
@@ -646,8 +646,8 @@
       }
       checkSingle(node, bind, 'css', '[css]');
   }
-  if (typeof window.violent !== 'undefined') {
-      window.violent.middlewareByUpdate.push(bindCss);
+  if (typeof window.$violent !== 'undefined') {
+      window.$violent.middlewareByUpdate.push(bindCss);
   }
 
   return bindCss;

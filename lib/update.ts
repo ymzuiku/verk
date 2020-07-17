@@ -41,14 +41,14 @@ export function setViolent(node: HTMLElement) {
 export function queryUpdate(query: string | null) {
   if (query && query !== '*') {
     document.body.querySelectorAll(query).forEach(function (v) {
-      update(v);
+      updateAttrs(v);
     })
   } else {
-    update(document.body);
+    updateAttrs(document.body);
   }
 }
 
-export const update = Reducer(function (node) {
+export const updateAttrs = Reducer(function (node) {
   updateAsync(node);
 });
 
@@ -62,7 +62,7 @@ export function updateAsync(node: HTMLAny) {
 
 export const middlewareByInit: Function[] = [bindTemplate, bindEvent];
 
-export const bindReload = Reducer(function (node) {
+export const updateAll = Reducer(function (node) {
   updateAsync(node);
   middlewareByInit.forEach(function (fn) {
     fn(node)
