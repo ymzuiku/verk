@@ -551,13 +551,13 @@
   function byTemplate(node) {
       node.querySelectorAll("template[v-by]:not([uuid])").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
-              function $ref(k, isAll) {
+              function $ref(k) {
                   return document.body.querySelector("[" + refs[k] + "]");
               }
               function $refs(k) {
                   return document.body.querySelectorAll("[" + refs[k] + "]");
               }
-              var name, loading, lid, nextEl, comp, props, baseId, id, pid, div, html, refs, useLoading, sc, res;
+              var name, loading, lid, nextEl, comp, props, baseId, id, pid, div, html, refs, sc, res, useLoading;
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -579,17 +579,22 @@
                           if (!comp) {
                               return [2 /*return*/];
                           }
-                          props = tmp.getAttribute("v-props") || "{}";
+                          props = tmp.getAttribute("v-props");
                           baseId = uuid();
                           id = name + "_" + baseId;
                           pid = id + "_props";
                           tmp.setAttribute("uuid", id);
                           tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
-                          try {
-                              window[pid] = new Function("return " + props)();
+                          if (props) {
+                              try {
+                                  window[pid] = new Function("return " + props)();
+                              }
+                              catch (err) {
+                                  onError(err, tmp, props);
+                              }
                           }
-                          catch (err) {
-                              onError(err, tmp, props);
+                          else {
+                              window[pid] = {};
                           }
                           div = document.createElement("div");
                           html = comp.replace(/\$state/g, id);
@@ -609,6 +614,19 @@
                                       }
                                   });
                                   div.replaceChild(next.cloneNode(true), el);
+                              }
+                              var scEl = tmp.content.querySelector("script");
+                              if (scEl) {
+                                  var v = void 0;
+                                  try {
+                                      v = new Function("$parent", "$id", scEl.innerText)(tmp.parentElement, id);
+                                  }
+                                  catch (err) {
+                                      onError(err, scEl);
+                                  }
+                                  if (v) {
+                                      window[pid] = v;
+                                  }
                               }
                           });
                           refs = {};
@@ -641,14 +659,6 @@
                           _a.sent();
                           _a.label = 8;
                       case 8:
-                          useLoading = tmp.content.querySelector("[use-loading]");
-                          if (useLoading) {
-                              document.body
-                                  .querySelectorAll("[" + useLoading.getAttribute("use-loading") + "]")
-                                  .forEach(function (v) {
-                                  v.remove();
-                              });
-                          }
                           sc = comScripts[name];
                           if (sc) {
                               try {
@@ -660,13 +670,24 @@
                                   onError(err, tmp, sc);
                               }
                           }
+                          useLoading = tmp.content.querySelector("[use-loading]");
+                          if (useLoading) {
+                              document.body
+                                  .querySelectorAll("[" + useLoading.getAttribute("use-loading") + "]")
+                                  .forEach(function (v) {
+                                  v.remove();
+                              });
+                          }
                           tmp.insertAdjacentHTML("afterend", div.innerHTML);
                           Promise.resolve(res).then(function (v) {
                               window[id] = v;
                               requestAnimationFrame(function () {
                                   updateAll(tmp.parentElement, function () {
                                       if (window[id] && window[id].$mount) {
-                                          window[id].$mount();
+                                          window[id].$mount(window[id]);
+                                      }
+                                      if (window[pid] && window[pid].$mount) {
+                                          window[pid].$mount(window[id]);
                                       }
                                   });
                               });

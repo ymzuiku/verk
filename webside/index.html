@@ -88,7 +88,11 @@
     <div v-loading>loading...</div>
     <div v-css="w-3/12 h-6xl" slot="editor"></div>
     <script>
-      // console.log('-------------')
+      return {
+        $mount:(state)=>{
+          console.log('aaaaa', state);
+        }
+      }
     </script>
   </template>
   <script>

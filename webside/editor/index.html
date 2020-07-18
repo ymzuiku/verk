@@ -49,7 +49,7 @@
             const editorModel = editor.getModel();
             const reducer = $verk.Reducer(function () {
               $props.onChange(editor.getValue());
-            }, $props.time || 300);
+            }, $props.time || 60);
             editorModel.onDidChangeContent(reducer);
           }
           state.editor = editor;
@@ -58,14 +58,14 @@
           onInit();
           return;
         }
+        
         require.config({ paths: { vs: $dir + "/vs" } });
         window.MonacoEnvironment = {
           getWorkerUrl: function (workerId, label) {
             return $dir + "/monaco-editor-worker-loader-proxy.js";
           },
         };
-
-        const m = require(["vs/editor/editor.main"], function (monaco) {
+        require(["vs/editor/editor.main"], function (monaco) {
           window.monaco = monaco;
           onInit();
         });

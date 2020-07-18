@@ -110,6 +110,7 @@ export function byTemplate(node: HTMLAny) {
         return;
       }
 
+      // 渲染 loading
       let loading = tmp.content.querySelector("[v-loading]:not([use-loading])");
       if (loading) {
         const lid = uuid();
@@ -126,17 +127,21 @@ export function byTemplate(node: HTMLAny) {
       }
 
       // inject props
-      const props = tmp.getAttribute("v-props") || "{}";
+      const props = tmp.getAttribute("v-props");
       const baseId = uuid();
       const id = name + "_" + baseId;
       const pid = id + "_props";
       tmp.setAttribute("uuid", id);
       tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
 
-      try {
-        (window as any)[pid] = new Function("return " + props)();
-      } catch (err) {
-        onError(err, tmp as any, props);
+      if (props) {
+        try {
+          (window as any)[pid] = new Function("return " + props)();
+        } catch (err) {
+          onError(err, tmp as any, props);
+        }
+      } else {
+        (window as any)[pid] = {};
       }
 
       const div = document.createElement("div");
@@ -159,6 +164,21 @@ export function byTemplate(node: HTMLAny) {
           });
           div.replaceChild(next.cloneNode(true), el);
         }
+        const scEl = tmp.content.querySelector("script");
+        if (scEl) {
+          let v: any;
+          try {
+            v = new Function("$parent", "$id", scEl.innerText)(
+              tmp.parentElement,
+              id
+            );
+          } catch (err) {
+            onError(err, scEl);
+          }
+          if (v) {
+            (window as any)[pid] = v;
+          }
+        }
       });
 
       const refs = {} as any;
@@ -171,7 +191,7 @@ export function byTemplate(node: HTMLAny) {
 
       setVerk(div);
 
-      function $ref(k: string, isAll?: any) {
+      function $ref(k: string) {
         return document.body.querySelector("[" + refs[k] + "]");
       }
 
@@ -189,15 +209,6 @@ export function byTemplate(node: HTMLAny) {
         await srcLoader(div, "script[src]");
       }
 
-      const useLoading = tmp.content.querySelector("[use-loading]");
-      if (useLoading) {
-        document.body
-          .querySelectorAll("[" + useLoading.getAttribute("use-loading")! + "]")
-          .forEach((v) => {
-            v.remove();
-          });
-      }
-
       const sc = comScripts[name];
       let res: any;
       if (sc) {
@@ -209,6 +220,16 @@ export function byTemplate(node: HTMLAny) {
           onError(err, tmp as any, sc);
         }
       }
+
+      // 移除loading
+      const useLoading = tmp.content.querySelector("[use-loading]");
+      if (useLoading) {
+        document.body
+          .querySelectorAll("[" + useLoading.getAttribute("use-loading")! + "]")
+          .forEach((v) => {
+            v.remove();
+          });
+      }
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
         (window as any)[id] = v;
@@ -216,7 +237,10 @@ export function byTemplate(node: HTMLAny) {
         requestAnimationFrame(function () {
           updateAll(tmp.parentElement, function () {
             if ((window as any)[id] && (window as any)[id].$mount) {
-              (window as any)[id].$mount();
+              (window as any)[id].$mount((window as any)[id]);
+            }
+            if ((window as any)[pid] && (window as any)[pid].$mount) {
+              (window as any)[pid].$mount((window as any)[id]);
             }
           });
         });
