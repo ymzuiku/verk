@@ -107,7 +107,7 @@
           var ifData;
           el.style.display = "none";
           try {
-              ifData = new Function("$el", "return " + el.getAttribute("v-if"))(el);
+              ifData = new Function("$el", "return " + el.getAttribute("if"))(el);
               if (typeof ifData === "function") {
                   ifData = ifData();
               }
@@ -148,17 +148,17 @@
               el.removeAttribute("uuid");
           }
       }
-      checkSingle(node, bind, "v-if", "[v-if]:not([v-init])");
+      checkSingle(node, bind, "if", "[if]:not([init])");
   }
 
   var von = /^v-on/;
   function bindEvent(node) {
       function bind(el) {
-          if (el.__events)
+          if (el.__bindedEvents)
               return;
           var arr = el.getAttribute("verk-on").split(" ");
           arr.forEach(function (attr) {
-              var key = attr.replace("v-", "");
+              var key = attr.replace("-", "");
               if (von.test(attr)) {
                   var fn_1 = new Function("$el", "$event", "return " + el.getAttribute(attr));
                   el[key] = function (e) {
@@ -178,11 +178,11 @@
                       if (typeof res === "function") {
                           res(e);
                       }
-                      queryUpdate(el.getAttribute("v-query"));
+                      queryUpdate(el.getAttribute("query"));
                   };
               }
           });
-          el.__events = true;
+          el.__bindedEvents = true;
       }
       if (node.getAttribute("verk-on")) {
           bind(node);
@@ -192,11 +192,11 @@
 
   function bindFor(node) {
       function bind(el) {
-          if (!el.__forcode) {
-              el.__forcode = el.getAttribute("v-for");
+          if (!el.__bindedList) {
+              el.__bindedList = el.getAttribute("list");
               el.__html = el.innerHTML;
               try {
-                  el.__forData = new Function("$el", "return " + el.__forcode)(el);
+                  el.__forData = new Function("$el", "return " + el.__bindedList)(el);
               }
               catch (err) {
                   onError(err, el);
@@ -206,29 +206,29 @@
           if (!forData) {
               return;
           }
-          if (el.getAttribute("for-length") == forData.length) {
+          if (el.getAttribute("list-length") == forData.length) {
               return;
           }
           var baseHTML = el.__html;
           var html = "";
           forData.forEach(function ($v, $i) {
-              var str = baseHTML.replace(/\$v/g, el.__forcode + "[" + $i + "]");
+              var str = baseHTML.replace(/\$v/g, el.__bindedList + "[" + $i + "]");
               str = str.replace(/\$i/g, $i);
               str = str.replace(/\$_/g, "$");
               html += str;
           });
           el.innerHTML = html;
-          el.setAttribute("for-length", forData.length);
+          el.setAttribute("list-length", forData.length);
           bindEvent(el);
       }
       var arr = [];
-      var list = node.querySelectorAll("[v-for]");
+      var list = node.querySelectorAll("[list]");
       var l = list.length;
       list.forEach(function (el, i) {
           arr[l - i - 1] = el;
       });
       arr.forEach(bind);
-      if (node.hasAttribute("v-for")) {
+      if (node.hasAttribute("list")) {
           bind(node);
       }
   }
@@ -236,7 +236,7 @@
   function bindText(node) {
       function bind(el) {
           if (!el.getAttribute("text-save")) {
-              el.setAttribute("text-save", el.getAttribute("v-text") || el.textContent);
+              el.setAttribute("text-save", el.getAttribute("text") || el.textContent);
           }
           var v;
           try {
@@ -252,7 +252,7 @@
               el.textContent = v;
           }
       }
-      checkSingle(node, bind, "v-text", "[v-text]");
+      checkSingle(node, bind, "text", "[text]");
   }
 
   function getKind(el) {
@@ -288,10 +288,10 @@
   }
   function bindModel(node) {
       function bind(el) {
-          var model = el.getAttribute("v-model");
-          var query = el.getAttribute("v-query");
+          var model = el.getAttribute("model");
+          var query = el.getAttribute("query");
           getKind(el);
-          if (!el.__models) {
+          if (!el.__bindedModel) {
               el[el.__modelName] = function fn(e) {
                   if (el.getAttribute("prevent-" + el.__modelName)) {
                       e.preventDefault();
@@ -302,7 +302,7 @@
                   var v = (e.target && e.target[el.__valueName]) || "";
                   var code;
                   if (el.__valueIsBool) {
-                      var valValue = el.getAttribute("v-value");
+                      var valValue = el.getAttribute("set-value");
                       var strValue = el.getAttribute("value");
                       if (valValue) {
                           code = model + "[" + valValue + "] = !" + model + "[" + valValue + "]; return " + model + "[" + valValue + "];";
@@ -329,12 +329,12 @@
                   }
                   queryUpdate(query);
               };
-              el.__models = true;
+              el.__bindedModel = true;
           }
           var v;
           var code;
           if (el.__valueIsBool) {
-              var valValue = el.getAttribute("v-value");
+              var valValue = el.getAttribute("set-value");
               var strValue = el.getAttribute("value");
               if (strValue) {
                   code = "return " + model + "['" + strValue + "']";
@@ -361,13 +361,13 @@
               });
           }
       }
-      checkSingle(node, bind, "v-model", "[v-model]");
+      checkSingle(node, bind, "model", "[model]");
   }
 
   function bindWatch(node) {
       function bind(el) {
           try {
-              var v = new Function("$el", el.getAttribute("v-watch"))(el);
+              var v = new Function("$el", el.getAttribute("watch"))(el);
               if (typeof v === "function") {
                   v();
               }
@@ -376,14 +376,14 @@
               onError(err, el);
           }
       }
-      checkSingle(node, bind, "v-watch", "[v-watch]");
+      checkSingle(node, bind, "watch", "[watch]");
   }
 
   function bindShow(node) {
       function bind(el) {
           var v;
           try {
-              v = new Function("$el", "return " + el.getAttribute("v-show"))(el);
+              v = new Function("$el", "return " + el.getAttribute("show"))(el);
               if (typeof v === "function") {
                   v = v();
               }
@@ -398,7 +398,7 @@
               el.style.display = "none";
           }
       }
-      checkSingle(node, bind, "v-show", "[v-show]");
+      checkSingle(node, bind, "show", "[show]");
   }
 
   /*! *****************************************************************************
@@ -455,7 +455,7 @@
 
   var regSrc = new RegExp('src="./', "g");
   var regHref = new RegExp('href="./', "g");
-  var regFetch = new RegExp('v-fetch="./', "g");
+  var regFetch = new RegExp('fetch="./', "g");
   var coms = {};
   var comScripts = {};
   var fetchs = {};
@@ -487,12 +487,12 @@
       });
   }
   function comTemplate(node) {
-      node.querySelectorAll("template[v-component]").forEach(function (tmp) {
+      node.querySelectorAll("template[component]").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
               var name, live, frag, sc;
               return __generator(this, function (_a) {
-                  name = tmp.getAttribute("v-component");
-                  live = tmp.hasAttribute("v-live-component");
+                  name = tmp.getAttribute("component");
+                  live = tmp.hasAttribute("live-component");
                   if (!live && (!name || coms[name])) {
                       return [2 /*return*/];
                   }
@@ -512,7 +512,7 @@
   }
   function fixIfAndRoute(tmp) {
       // 处理 if
-      var theIf = tmp.getAttribute("v-if");
+      var theIf = tmp.getAttribute("if");
       if (theIf) {
           var ifShow = void 0;
           try {
@@ -526,7 +526,7 @@
           }
       }
       // 处理 route
-      var route = tmp.getAttribute("v-route");
+      var route = tmp.getAttribute("route");
       if (route) {
           var hash = location.hash || "/";
           if (hash.indexOf(route) !== 1) {
@@ -551,7 +551,7 @@
       });
   }
   function initTemplate(node) {
-      node.querySelectorAll("template[v-init]:not([uuid])").forEach(function (tmp) {
+      node.querySelectorAll("template[init]:not([uuid])").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
               function $ref(k) {
                   return document.body.querySelector("[" + refs[k] + "]");
@@ -563,13 +563,13 @@
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
-                          name = tmp.getAttribute("v-init");
+                          name = tmp.getAttribute("init");
                           if (!name)
                               return [2 /*return*/];
                           if (!fixIfAndRoute(tmp)) {
                               return [2 /*return*/];
                           }
-                          loading = tmp.content.querySelector("[v-loading]:not([use-loading])");
+                          loading = tmp.content.querySelector("[loading]:not([use-loading])");
                           if (loading) {
                               lid = uuid();
                               loading.setAttribute("use-loading", lid);
@@ -581,7 +581,7 @@
                           if (!comp) {
                               return [2 /*return*/];
                           }
-                          props = tmp.getAttribute("v-props");
+                          props = tmp.getAttribute("props");
                           baseId = uuid();
                           id = name + "_" + baseId;
                           pid = id + "_props";
@@ -632,10 +632,10 @@
                               }
                           });
                           refs = {};
-                          div.querySelectorAll("[v-ref]").forEach(function (el) {
-                              var ref = el.getAttribute("v-ref");
+                          div.querySelectorAll("[ref]").forEach(function (el) {
+                              var ref = el.getAttribute("ref");
                               refs[ref] = id + "_ref_" + ref;
-                              el.removeAttribute("v-ref");
+                              el.removeAttribute("ref");
                               el.setAttribute(refs[ref], "1");
                           });
                           setVerk(div);
@@ -701,9 +701,9 @@
       });
   }
   function fetchTemplate(node, onlyLoad) {
-      node.querySelectorAll("template[v-fetch]:not([fetch-loaded])").forEach(function (tmp) {
+      node.querySelectorAll("template[fetch]:not([fetch-loaded])").forEach(function (tmp) {
           tmp.setAttribute("fetch-loaded", "");
-          var url = tmp.getAttribute("v-fetch");
+          var url = tmp.getAttribute("fetch");
           if (!url || fetchs[url]) {
               return;
           }
@@ -723,7 +723,7 @@
               var dirURL = dir.join("/") + "/";
               code = code.replace(regSrc, 'src="' + dirURL);
               code = code.replace(regHref, 'href="' + dirURL);
-              code = code.replace(regFetch, 'v-fetch="' + dirURL);
+              code = code.replace(regFetch, 'fetch="' + dirURL);
               code = code.replace(/\$dir/, "'" + dirURL + "'");
               ele.innerHTML = code;
               comTemplate(ele);
@@ -762,14 +762,14 @@
               catch (err) {
                   onError(err, el);
               }
-              el.setAttribute(attr.replace("v-", ""), v);
+              el.setAttribute(attr.replace("set-", ""), v);
           });
       }
       checkSingle(node, bind, "verk-attr", "[verk-attr]");
   }
 
-  var vof = /^v-(?!if|for|model|show|init|fetch|component|watch|css)/;
-  var von$1 = /^v-on/;
+  var vof = /^set-/;
+  var von$1 = /^on-/;
   function setVerk(node) {
       node.querySelectorAll("*").forEach(function (el) {
           if (el.getAttribute("verk-on") || el.getAttribute("verk-attr")) {
@@ -794,7 +794,7 @@
       });
   }
   function queryUpdate(query) {
-      query = query && query !== "*" ? query : "[v-verk]";
+      query = query && query !== "*" ? query : "[verk]";
       document.querySelectorAll(query).forEach(function (v) {
           updateAttrs(v);
       });
@@ -830,7 +830,7 @@
           runer(node);
       }
       else {
-          document.querySelectorAll("[v-verk]").forEach(runer);
+          document.querySelectorAll("[verk]").forEach(runer);
       }
   });
 
@@ -842,7 +842,7 @@
       ReducerList: ReducerList,
   };
   window.addEventListener("load", function () {
-      document.querySelectorAll("[v-verk]").forEach(function (el) {
+      document.querySelectorAll("[verk]").forEach(function (el) {
           setVerk(el);
           updateAll(el);
           setTimeout(function () {

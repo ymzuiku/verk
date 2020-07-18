@@ -5,7 +5,7 @@ import { updateAll, setVerk } from "./update";
 
 const regSrc = new RegExp('src="./', "g");
 const regHref = new RegExp('href="./', "g");
-const regFetch = new RegExp('v-fetch="./', "g");
+const regFetch = new RegExp('fetch="./', "g");
 const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
@@ -29,10 +29,10 @@ async function srcLoader(div: HTMLElement, query: string) {
 }
 
 function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll("template[v-component]") as any).forEach(
+  (node.querySelectorAll("template[component]") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
-      const name = tmp.getAttribute("v-component")!;
-      const live = tmp.hasAttribute("v-live-component");
+      const name = tmp.getAttribute("component")!;
+      const live = tmp.hasAttribute("live-component");
 
       if (!live && (!name || coms[name])) {
         return;
@@ -60,7 +60,7 @@ function comTemplate(node: HTMLAny) {
 
 function fixIfAndRoute(tmp: HTMLAny) {
   // 处理 if
-  const theIf = tmp.getAttribute("v-if");
+  const theIf = tmp.getAttribute("if");
   if (theIf) {
     let ifShow: any;
     try {
@@ -74,7 +74,7 @@ function fixIfAndRoute(tmp: HTMLAny) {
   }
 
   // 处理 route
-  const route = tmp.getAttribute("v-route");
+  const route = tmp.getAttribute("route");
   if (route) {
     const hash = location.hash || "/";
     if (hash.indexOf(route) !== 1) {
@@ -103,9 +103,9 @@ export function updateTemplate(node: HTMLAny) {
 }
 
 export function initTemplate(node: HTMLAny) {
-  (node.querySelectorAll("template[v-init]:not([uuid])") as any).forEach(
+  (node.querySelectorAll("template[init]:not([uuid])") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
-      const name = tmp.getAttribute("v-init");
+      const name = tmp.getAttribute("init");
       if (!name) return;
 
       if (!fixIfAndRoute(tmp)) {
@@ -113,7 +113,7 @@ export function initTemplate(node: HTMLAny) {
       }
 
       // 渲染 loading
-      let loading = tmp.content.querySelector("[v-loading]:not([use-loading])");
+      let loading = tmp.content.querySelector("[loading]:not([use-loading])");
       if (loading) {
         const lid = uuid();
         loading.setAttribute("use-loading", lid);
@@ -129,7 +129,7 @@ export function initTemplate(node: HTMLAny) {
       }
 
       // inject props
-      const props = tmp.getAttribute("v-props");
+      const props = tmp.getAttribute("props");
       const baseId = uuid();
       const id = name + "_" + baseId;
       const pid = id + "_props";
@@ -184,10 +184,10 @@ export function initTemplate(node: HTMLAny) {
       });
 
       const refs = {} as any;
-      div.querySelectorAll("[v-ref]").forEach((el) => {
-        const ref = el.getAttribute("v-ref")!;
+      div.querySelectorAll("[ref]").forEach((el) => {
+        const ref = el.getAttribute("ref")!;
         refs[ref] = id + "_ref_" + ref;
-        el.removeAttribute("v-ref");
+        el.removeAttribute("ref");
         el.setAttribute(refs[ref], "1");
       });
 
@@ -253,10 +253,10 @@ export function initTemplate(node: HTMLAny) {
 
 function fetchTemplate(node: HTMLAny, onlyLoad?: boolean) {
   (node.querySelectorAll(
-    "template[v-fetch]:not([fetch-loaded])"
+    "template[fetch]:not([fetch-loaded])"
   ) as any).forEach(function (tmp: HTMLTemplateElement) {
     tmp.setAttribute("fetch-loaded", "");
-    let url = tmp.getAttribute("v-fetch")!;
+    let url = tmp.getAttribute("fetch")!;
     if (!url || fetchs[url]) {
       return;
     }
@@ -277,7 +277,7 @@ function fetchTemplate(node: HTMLAny, onlyLoad?: boolean) {
         const dirURL = dir.join("/") + "/";
         code = code.replace(regSrc, 'src="' + dirURL);
         code = code.replace(regHref, 'href="' + dirURL);
-        code = code.replace(regFetch, 'v-fetch="' + dirURL);
+        code = code.replace(regFetch, 'fetch="' + dirURL);
         code = code.replace(/\$dir/, "'" + dirURL + "'");
         ele.innerHTML = code;
 

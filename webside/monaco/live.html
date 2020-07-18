@@ -1,10 +1,10 @@
-<template v-fetch="./editor.html"></template>
-<template v-component="monaco_live">
-  <div v-css="row start-start h-12/12 w-12/12">
-    <template v-init="monaco" v-props="$state">
-      <div v-loading>loading...</div>
+<template fetch="./editor.html"></template>
+<template component="monaco_live">
+  <div css="row start-start h-12/12 w-12/12">
+    <template init="monaco_editor" props="$state">
+      <div loading>loading...</div>
     </template>
-    <div v-ref="runner" v-css="w-12/12 h-12/12"></div>
+    <div ref="runner" css="w-12/12 h-12/12"></div>
   </div>
   <script>
     const state = {
@@ -33,9 +33,9 @@
 
 
 <!-- 
-<template v-init="dog"></template>
-<template v-component="dog" v-live-component>
-  <div v-show="$state.hello">hello verk</div>
+<template init="dog"></template>
+<template component="dog" live-component>
+  <div show="$state.hello">hello verk</div>
   <script>
     return {
       hello: true,

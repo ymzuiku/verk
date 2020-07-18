@@ -1,12 +1,12 @@
 import './runtimeFlavorcss'
-import { HTMLAny } from '../interface'
-import { checkSingle } from '../utils';
+import { HTMLAny } from '../../lib-old/interface'
+import { checkSingle } from '../../lib-old/utils';
 import { buildCss } from './runtimeFlavorcss';
-import { onError } from '../onError';
+import { onError } from '../../lib-old/onError';
 
 export default function bindCss(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const str = el.getAttribute('css')!;
+    const str = el.getAttribute('v-css')!;
     if (!str) {
       return;
     }
@@ -35,7 +35,7 @@ export default function bindCss(node: HTMLAny) {
       el.className = code;
     }
   }
-  checkSingle(node, bind, 'css', '[css]')
+  checkSingle(node, bind, 'v-css', '[v-css]')
 }
 
 if (typeof (window as any).$verk !== 'undefined') {

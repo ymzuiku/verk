@@ -9,13 +9,15 @@
     <script flavorcss-effect src="/verk/bindcss.js"></script>
   </head>
 
-  <body v-verk style="visibility: hidden;" v-css="bg-gray-100">
-    <div v-css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md">
-      <template v-init="monaco_live"></template>
+  <body verk style="visibility: hidden;" css="bg-gray-100">
+    <div
+      css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md"
+    >
+      <template init="monaco_live"></template>
     </div>
   </body>
 
-  <section v-verk>
-    <template v-fetch="/monaco/live_editor.html"></template>
+  <section verk>
+    <template fetch="/monaco/live.html"></template>
   </section>
 </html>

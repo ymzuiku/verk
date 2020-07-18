@@ -616,7 +616,7 @@
 
   function bindCss(node) {
       function bind(el) {
-          var str = el.getAttribute('v-css');
+          var str = el.getAttribute('css');
           if (!str) {
               return;
           }
@@ -644,7 +644,7 @@
               el.className = code;
           }
       }
-      checkSingle(node, bind, 'v-css', '[v-css]');
+      checkSingle(node, bind, 'css', '[css]');
   }
   if (typeof window.$verk !== 'undefined') {
       window.$verk.middlewareByUpdate.push(bindCss);

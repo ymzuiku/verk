@@ -16,7 +16,7 @@ export default function bindAttr(node: Element) {
         onError(err, el);
       }
 
-      el.setAttribute(attr.replace("v-", ""), v);
+      el.setAttribute(attr.replace("set-", ""), v);
     });
   }
 

@@ -32,11 +32,11 @@ function getKind(el: HTMLAny) {
 
 export default function bindModel(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const model = el.getAttribute("v-model")!;
-    const query = el.getAttribute("v-query");
+    const model = el.getAttribute("model")!;
+    const query = el.getAttribute("query");
     getKind(el);
 
-    if (!el.__models) {
+    if (!el.__bindedModel) {
       el[el.__modelName] = function fn(e: any) {
         if (el.getAttribute("prevent-" + el.__modelName)) {
           e.preventDefault();
@@ -47,7 +47,7 @@ export default function bindModel(node: HTMLAny) {
         const v = (e.target && e.target[el.__valueName]) || "";
         let code: any;
         if (el.__valueIsBool) {
-          const valValue = el.getAttribute("v-value");
+          const valValue = el.getAttribute("set-value");
           const strValue = el.getAttribute("value");
           if (valValue) {
             code = `${model}[${valValue}] = !${model}[${valValue}]; return ${model}[${valValue}];`;
@@ -71,13 +71,13 @@ export default function bindModel(node: HTMLAny) {
         queryUpdate(query);
       };
 
-      el.__models = true;
+      el.__bindedModel = true;
     }
 
     let v: any;
     let code: any;
     if (el.__valueIsBool) {
-      const valValue = el.getAttribute("v-value");
+      const valValue = el.getAttribute("set-value");
       const strValue = el.getAttribute("value");
       if (strValue) {
         code = `return ${model}['${strValue}']`;
@@ -103,5 +103,5 @@ export default function bindModel(node: HTMLAny) {
     }
   }
 
-  checkSingle(node, bind, "v-model", "[v-model]");
+  checkSingle(node, bind, "model", "[model]");
 }

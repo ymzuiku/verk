@@ -6,10 +6,10 @@ const von = /^v-on/;
 
 export default function bindEvent(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    if (el.__events) return;
+    if (el.__bindedEvents) return;
     const arr = el.getAttribute("verk-on")!.split(" ");
     arr.forEach(function (attr: string) {
-      const key = attr.replace("v-", "");
+      const key = attr.replace("-", "");
       if (von.test(attr)) {
         const fn = new Function(
           "$el",
@@ -33,11 +33,11 @@ export default function bindEvent(node: HTMLAny) {
           if (typeof res === "function") {
             res(e);
           }
-          queryUpdate(el.getAttribute("v-query"));
+          queryUpdate(el.getAttribute("query"));
         };
       }
     });
-    el.__events = true;
+    el.__bindedEvents = true;
   }
 
   if (node.getAttribute("verk-on")) {

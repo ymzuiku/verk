@@ -7,7 +7,7 @@ export default function bindText(node: Element) {
     if (!el.getAttribute("text-save")) {
       el.setAttribute(
         "text-save",
-        el.getAttribute("v-text") || el.textContent!
+        el.getAttribute("text") || el.textContent!
       );
     }
     let v: any;
@@ -24,5 +24,5 @@ export default function bindText(node: Element) {
     }
   }
 
-  checkSingle(node, bind, "v-text", "[v-text]");
+  checkSingle(node, bind, "text", "[text]");
 }

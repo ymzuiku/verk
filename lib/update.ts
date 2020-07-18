@@ -11,8 +11,8 @@ import bindEvent from "./bindEvent";
 import bindTemplate from "./bindTemplate";
 import bindAttr from "./bindAttr";
 
-const vof = /^v-(?!if|for|model|show|init|fetch|component|watch|css)/;
-const von = /^v-on/;
+const vof = /^set-/;
+const von = /^on-/;
 
 export function setVerk(node: HTMLElement) {
   node.querySelectorAll("*").forEach(function (el) {
@@ -38,7 +38,7 @@ export function setVerk(node: HTMLElement) {
 }
 
 export function queryUpdate(query: string | null) {
-  query = query && query !== "*" ? query : "[v-verk]";
+  query = query && query !== "*" ? query : "[verk]";
   document.querySelectorAll(query).forEach(function (v) {
     updateAttrs(v);
   });
@@ -78,6 +78,6 @@ export const updateAll = ReducerList(function (node) {
   if (node) {
     runer(node);
   } else {
-    document.querySelectorAll("[v-verk]").forEach(runer);
+    document.querySelectorAll("[verk]").forEach(runer);
   }
 });

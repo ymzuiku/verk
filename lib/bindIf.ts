@@ -7,7 +7,7 @@ export default function bindIf(node: HTMLAny) {
     let ifData: any;
     el.style.display = "none";
     try {
-      ifData = new Function("$el", "return " + el.getAttribute("v-if"))(el);
+      ifData = new Function("$el", "return " + el.getAttribute("if"))(el);
       if (typeof ifData === "function") {
         ifData = ifData();
       }
@@ -47,5 +47,5 @@ export default function bindIf(node: HTMLAny) {
       el.removeAttribute("uuid");
     }
   }
-  checkSingle(node, bind, "v-if", "[v-if]:not([v-init])");
+  checkSingle(node, bind, "if", "[if]:not([init])");
 }
