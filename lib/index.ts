@@ -5,7 +5,8 @@ import {
   middlewareByInit,
   setVerk,
 } from "./update";
-import { ReducerList, Reducer } from "./utils";
+import { ReducerList, Reducer, uuid } from "./utils";
+import { removeComponent } from './bindTemplate';
 
 const $verk = {
   update: updateAll,
@@ -13,6 +14,8 @@ const $verk = {
   middlewareByInit,
   Reducer,
   ReducerList,
+  removeComponent,
+  uuid,
 };
 
 window.addEventListener("load", function () {

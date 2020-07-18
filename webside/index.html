@@ -13,11 +13,18 @@
     <div
       css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md"
     >
-      <template init="monaco_live"></template>
+      <template init="monaco_verk_editor" props="liveA"></template>
     </div>
+    <script>
+      var liveA = {
+        getValue: new Promise(function (res) {
+          res("1123");
+        }),
+      };
+    </script>
   </body>
 
   <section verk>
-    <template fetch="/monaco/live.html"></template>
+    <template fetch="/monaco/verk_editor.html"></template>
   </section>
 </html>

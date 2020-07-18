@@ -10,6 +10,11 @@ const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
 
+export function removeComponent(name: string) {
+  delete coms[name];
+  delete comScripts[name];
+}
+
 async function srcLoader(div: HTMLElement, query: string) {
   // fix load
   const scripts = [] as any[];
@@ -29,33 +34,32 @@ async function srcLoader(div: HTMLElement, query: string) {
 }
 
 function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll("template[component]") as any).forEach(
-    async function (tmp: HTMLTemplateElement) {
-      const name = tmp.getAttribute("component")!;
-      const live = tmp.hasAttribute("live-component");
+  (node.querySelectorAll("template[component]") as any).forEach(async function (
+    tmp: HTMLTemplateElement
+  ) {
+    const name = tmp.getAttribute("component")!;
 
-      if (!live && (!name || coms[name])) {
-        return;
-      }
-
-      const frag = document.createElement("div");
-      frag.innerHTML = tmp.innerHTML;
-      const sc = frag.querySelector("script:not([src])");
-      if (sc) {
-        comScripts[name] = new Function(
-          "$parent",
-          "$id",
-          "$props",
-          "$ref",
-          "$refs",
-          sc.innerHTML
-        );
-        sc.remove();
-        tmp.remove();
-      }
-      coms[name] = frag.innerHTML;
+    if (!name || coms[name]) {
+      return;
     }
-  );
+
+    const frag = document.createElement("div");
+    frag.innerHTML = tmp.innerHTML;
+    const sc = frag.querySelector("script:not([src])");
+    if (sc) {
+      comScripts[name] = new Function(
+        "$parent",
+        "$id",
+        "$props",
+        "$ref",
+        "$refs",
+        sc.innerHTML
+      );
+      sc.remove();
+      tmp.remove();
+    }
+    coms[name] = frag.innerHTML;
+  });
 }
 
 function fixIfAndRoute(tmp: HTMLAny) {
@@ -166,21 +170,23 @@ export function initTemplate(node: HTMLAny) {
           });
           div.replaceChild(next.cloneNode(true), el);
         }
-        const scEl = tmp.content.querySelector("script");
-        if (scEl) {
-          let v: any;
-          try {
-            v = new Function("$parent", "$id", scEl.innerText)(
-              tmp.parentElement,
-              id
-            );
-          } catch (err) {
-            onError(err, scEl);
-          }
-          if (v) {
-            (window as any)[pid] = v;
-          }
-        }
+
+        // init get props
+        // const scEl = tmp.content.querySelector("script");
+        // if (scEl) {
+        //   let v: any;
+        //   try {
+        //     v = new Function("$parent", "$id", scEl.innerText)(
+        //       tmp.parentElement,
+        //       id
+        //     );
+        //   } catch (err) {
+        //     onError(err, scEl);
+        //   }
+        //   if (v) {
+        //     (window as any)[pid] = v;
+        //   }
+        // }
       });
 
       const refs = {} as any;
@@ -235,14 +241,19 @@ export function initTemplate(node: HTMLAny) {
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
         (window as any)[id] = v;
-
+        if ((window as any)[pid] && (window as any)[pid].$willMount) {
+          (window as any)[pid].$willMount((window as any)[id]);
+        }
+        if ((window as any)[id] && (window as any)[id].$willMount) {
+          (window as any)[id].$willMount((window as any)[id]);
+        }
         requestAnimationFrame(function () {
           updateAll(tmp.parentElement, function () {
-            if ((window as any)[id] && (window as any)[id].$mount) {
-              (window as any)[id].$mount((window as any)[id]);
-            }
             if ((window as any)[pid] && (window as any)[pid].$mount) {
               (window as any)[pid].$mount((window as any)[id]);
+            }
+            if ((window as any)[id] && (window as any)[id].$mount) {
+              (window as any)[id].$mount((window as any)[id]);
             }
           });
         });
@@ -252,49 +263,49 @@ export function initTemplate(node: HTMLAny) {
 }
 
 function fetchTemplate(node: HTMLAny, onlyLoad?: boolean) {
-  (node.querySelectorAll(
-    "template[fetch]:not([fetch-loaded])"
-  ) as any).forEach(function (tmp: HTMLTemplateElement) {
-    tmp.setAttribute("fetch-loaded", "");
-    let url = tmp.getAttribute("fetch")!;
-    if (!url || fetchs[url]) {
-      return;
-    }
-    fetchs[url] = true;
+  (node.querySelectorAll("template[fetch]:not([fetch-loaded])") as any).forEach(
+    function (tmp: HTMLTemplateElement) {
+      tmp.setAttribute("fetch-loaded", "");
+      let url = tmp.getAttribute("fetch")!;
+      if (!url || fetchs[url]) {
+        return;
+      }
+      fetchs[url] = true;
 
-    fetch(url, {
-      mode: "cors",
-      cache: (tmp.getAttribute("cache") as any) || "no-cache",
-    })
-      .then((v) => v.text())
-      .then((code) => {
-        if (!code) return;
-        const ele = document.createElement("div");
-
-        // fix ./url
-        const dir = url.split("/");
-        dir.pop();
-        const dirURL = dir.join("/") + "/";
-        code = code.replace(regSrc, 'src="' + dirURL);
-        code = code.replace(regHref, 'href="' + dirURL);
-        code = code.replace(regFetch, 'fetch="' + dirURL);
-        code = code.replace(/\$dir/, "'" + dirURL + "'");
-        ele.innerHTML = code;
-
-        comTemplate(ele);
-        // 读取res里的 fetch
-        fetchTemplate(ele, true);
-
-        if (!onlyLoad) {
-          requestAnimationFrame(function () {
-            bindTemplate(node);
-          });
-        }
+      fetch(url, {
+        mode: "cors",
+        cache: (tmp.getAttribute("cache") as any) || "no-cache",
       })
-      .catch((err) => {
-        fetchs[url] = false;
-      });
-  });
+        .then((v) => v.text())
+        .then((code) => {
+          if (!code) return;
+          const ele = document.createElement("div");
+
+          // fix ./url
+          const dir = url.split("/");
+          dir.pop();
+          const dirURL = dir.join("/") + "/";
+          code = code.replace(regSrc, 'src="' + dirURL);
+          code = code.replace(regHref, 'href="' + dirURL);
+          code = code.replace(regFetch, 'fetch="' + dirURL);
+          code = code.replace(/\$dir/, "'" + dirURL + "'");
+          ele.innerHTML = code;
+
+          comTemplate(ele);
+          // 读取res里的 fetch
+          fetchTemplate(ele, true);
+
+          if (!onlyLoad) {
+            requestAnimationFrame(function () {
+              bindTemplate(node);
+            });
+          }
+        })
+        .catch((err) => {
+          fetchs[url] = false;
+        });
+    }
+  );
 }
 
 export default function bindTemplate(node: HTMLAny) {

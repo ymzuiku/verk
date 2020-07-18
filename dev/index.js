@@ -459,6 +459,10 @@
   var coms = {};
   var comScripts = {};
   var fetchs = {};
+  function removeComponent(name) {
+      delete coms[name];
+      delete comScripts[name];
+  }
   function srcLoader(div, query) {
       return __awaiter(this, void 0, void 0, function () {
           var scripts, loaded;
@@ -489,11 +493,10 @@
   function comTemplate(node) {
       node.querySelectorAll("template[component]").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
-              var name, live, frag, sc;
+              var name, frag, sc;
               return __generator(this, function (_a) {
                   name = tmp.getAttribute("component");
-                  live = tmp.hasAttribute("live-component");
-                  if (!live && (!name || coms[name])) {
+                  if (!name || coms[name]) {
                       return [2 /*return*/];
                   }
                   frag = document.createElement("div");
@@ -617,19 +620,22 @@
                                   });
                                   div.replaceChild(next.cloneNode(true), el);
                               }
-                              var scEl = tmp.content.querySelector("script");
-                              if (scEl) {
-                                  var v = void 0;
-                                  try {
-                                      v = new Function("$parent", "$id", scEl.innerText)(tmp.parentElement, id);
-                                  }
-                                  catch (err) {
-                                      onError(err, scEl);
-                                  }
-                                  if (v) {
-                                      window[pid] = v;
-                                  }
-                              }
+                              // init get props
+                              // const scEl = tmp.content.querySelector("script");
+                              // if (scEl) {
+                              //   let v: any;
+                              //   try {
+                              //     v = new Function("$parent", "$id", scEl.innerText)(
+                              //       tmp.parentElement,
+                              //       id
+                              //     );
+                              //   } catch (err) {
+                              //     onError(err, scEl);
+                              //   }
+                              //   if (v) {
+                              //     (window as any)[pid] = v;
+                              //   }
+                              // }
                           });
                           refs = {};
                           div.querySelectorAll("[ref]").forEach(function (el) {
@@ -683,13 +689,19 @@
                           tmp.insertAdjacentHTML("afterend", div.innerHTML);
                           Promise.resolve(res).then(function (v) {
                               window[id] = v;
+                              if (window[pid] && window[pid].$willMount) {
+                                  window[pid].$willMount(window[id]);
+                              }
+                              if (window[id] && window[id].$willMount) {
+                                  window[id].$willMount(window[id]);
+                              }
                               requestAnimationFrame(function () {
                                   updateAll(tmp.parentElement, function () {
-                                      if (window[id] && window[id].$mount) {
-                                          window[id].$mount(window[id]);
-                                      }
                                       if (window[pid] && window[pid].$mount) {
                                           window[pid].$mount(window[id]);
+                                      }
+                                      if (window[id] && window[id].$mount) {
+                                          window[id].$mount(window[id]);
                                       }
                                   });
                               });
@@ -840,6 +852,8 @@
       middlewareByInit: middlewareByInit,
       Reducer: Reducer,
       ReducerList: ReducerList,
+      removeComponent: removeComponent,
+      uuid: uuid,
   };
   window.addEventListener("load", function () {
       document.querySelectorAll("[verk]").forEach(function (el) {

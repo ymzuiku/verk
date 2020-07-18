@@ -1,0 +1,49 @@
+<template fetch="./editor.html"></template>
+<template component="monaco_verk_editor">
+  <div css="row start-start h-12/12 w-12/12">
+    <template init="monaco_editor" props="$state.editorProps">
+      <div loading>loading...</div>
+    </template>
+    <div ref="runner" css="w-12/12 h-12/12"></div>
+  </div>
+  <script>
+    const editorProps = {
+      time: 10,
+      setValue: function (cb) {
+        cb();
+      },
+      onChange: function (code) {
+        const el = $ref("runner");
+        el.innerHTML = code;
+        try {
+          $parent.querySelectorAll("[component]").forEach(function (v) {
+            const name = v.getAttribute("component");
+            $verk.removeComponent(name);
+          });
+          $verk.update(el);
+        } catch (err) {}
+      },
+      options: {
+        value: "<div>hello</div>",
+        language: "html",
+        ...$props.options,
+      },
+      $mount: function (state) {
+        if ($props.getValue) {
+          Promise.resolve($props.getValue).then(function (v) {
+            editorProps.onChange(v);
+            state.editor.setValue(v);
+          });
+        } else {
+          const v = editorProps.options.value;
+          editorProps.onChange(v);
+          state.editor.setValue(v);
+        }
+      },
+    };
+    const state = {
+      editorProps,
+    };
+    return state;
+  </script>
+</template>
