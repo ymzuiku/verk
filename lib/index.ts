@@ -11,7 +11,7 @@ const $verk = {
 };
 
 window.addEventListener('load', function () {
-  (document.querySelectorAll('[verk]') as any).forEach(function (el: HTMLElement) {
+  (document.querySelectorAll('[v-verk]') as any).forEach(function (el: HTMLElement) {
     setVerk(el);
     updateAll(el);
     setTimeout(() => {

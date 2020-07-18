@@ -32,8 +32,8 @@ function getKind(el: HTMLAny) {
 
 export default function bindModel(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const model = el.getAttribute('model')!;
-    const query = el.getAttribute('query');
+    const model = el.getAttribute('v-model')!;
+    const query = el.getAttribute('v-query');
     getKind(el);
 
     if (!el.__models) {
@@ -103,5 +103,5 @@ export default function bindModel(node: HTMLAny) {
     };
   }
 
-  checkSingle(node, bind, 'model', '[model]')
+  checkSingle(node, bind, 'v-model', '[v-model]')
 }

@@ -6,7 +6,7 @@ import { onError } from './onError';
 export default function bindWatch(node: Element) {
   function bind(el: HTMLAny) {
     try {
-      const v = new Function('$el', el.getAttribute('watch')!)(el);
+      const v = new Function('$el', el.getAttribute('v-watch')!)(el);
       if (typeof v === 'function') {
         v();
       }
@@ -15,7 +15,7 @@ export default function bindWatch(node: Element) {
     }
   }
 
-  checkSingle(node, bind, 'watch', '[watch]')
+  checkSingle(node, bind, 'v-watch', '[v-watch]')
 }
 
 

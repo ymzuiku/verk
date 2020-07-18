@@ -5,7 +5,7 @@ import { onError } from './onError';
 export default function bindFor(node: HTMLAny) {
   function bind(el: HTMLAny) {
     if (!el.__forcode) {
-      el.__forcode = el.getAttribute('forin')!;
+      el.__forcode = el.getAttribute('v-for')!;
       el.__html = el.innerHTML;
       try {
         el.__forData = new Function('$el', 'return ' + el.__forcode)(el);
@@ -39,14 +39,14 @@ export default function bindFor(node: HTMLAny) {
   };
 
   const arr = [] as any;
-  const list = node.querySelectorAll('[forin]');
+  const list = node.querySelectorAll('[v-for]');
   const l = list.length;
   list.forEach((el, i) => {
     arr[l - i - 1] = el;
   })
   arr.forEach(bind);
 
-  if (node.hasAttribute('forin')) {
+  if (node.hasAttribute('v-for')) {
     bind(node)
   }
 }

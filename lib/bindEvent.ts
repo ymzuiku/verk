@@ -7,7 +7,7 @@ const von = /^v-on/;
 export default function bindEvent(node: HTMLAny) {
   function bind(el: HTMLAny) {
     if (el.__events) return;
-    const arr = el.getAttribute('bind-on')!.split(' ');
+    const arr = el.getAttribute('verk-on')!.split(' ');
     arr.forEach(function (attr: string) {
       const key = attr.replace('v-', '');
       if (von.test(attr)) {
@@ -29,17 +29,17 @@ export default function bindEvent(node: HTMLAny) {
           if (typeof res === 'function') {
             res(e)
           }
-          queryUpdate(el.getAttribute('query'))
+          queryUpdate(el.getAttribute('v-query'))
         }
       }
     });
     el.__events = true;
   }
 
-  if (node.getAttribute('bind-on')) {
+  if (node.getAttribute('verk-on')) {
     bind(node as any);
   }
 
-  (node.querySelectorAll('[bind-on]') as any).forEach(bind);
+  (node.querySelectorAll('[verk-on]') as any).forEach(bind);
 }
 

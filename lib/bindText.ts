@@ -6,7 +6,7 @@ import { onError } from './onError';
 export default function bindText(node: Element) {
   function bind(el: HTMLAny) {
     if (!el.getAttribute('text-save')) {
-      el.setAttribute('text-save', el.getAttribute('text') || el.textContent!);
+      el.setAttribute('text-save', el.getAttribute('v-text') || el.textContent!);
     }
     let v: any;
     try {
@@ -22,7 +22,7 @@ export default function bindText(node: Element) {
     }
   }
 
-  checkSingle(node, bind, 'text', '[text]')
+  checkSingle(node, bind, 'v-text', '[v-text]')
 }
 
 

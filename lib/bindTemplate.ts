@@ -29,8 +29,8 @@ async function srcLoader(div: HTMLElement, query: string) {
 
 
 function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[component]') as any).forEach(async function (tmp: HTMLTemplateElement) {
-    const name = tmp.getAttribute('component')!
+  (node.querySelectorAll('template[v-component]') as any).forEach(async function (tmp: HTMLTemplateElement) {
+    const name = tmp.getAttribute('v-component')!
 
     if (!name || coms[name]) {
       return;
@@ -50,7 +50,7 @@ function comTemplate(node: HTMLAny) {
 
 function fixIfAndRoute(tmp: HTMLAny) {
   // 处理 if
-  const theIf = tmp.getAttribute('if');
+  const theIf = tmp.getAttribute('v-if');
   if (theIf) {
     let ifShow: any;
     try {
@@ -64,7 +64,7 @@ function fixIfAndRoute(tmp: HTMLAny) {
   }
 
   // 处理 route
-  const route = tmp.getAttribute('route');
+  const route = tmp.getAttribute('v-route');
   if (route) {
     const hash = location.hash || '/'
     if (hash.indexOf(route) !== 1) {
@@ -90,15 +90,15 @@ export function updateTemplate(node: HTMLAny) {
 
 
 export function byTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[by]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
-    const name = tmp.getAttribute('by');
+  (node.querySelectorAll('template[v-by]:not([uuid])') as any).forEach(async function (tmp: HTMLTemplateElement) {
+    const name = tmp.getAttribute('v-by');
     if (!name) return;
 
     if (!fixIfAndRoute(tmp)) {
       return;
     }
 
-    let loading = tmp.content.querySelector('[loading]:not([use-loading])');
+    let loading = tmp.content.querySelector('[v-loading]:not([use-loading])');
     if (loading) {
       const lid = uuid();
       loading.setAttribute('use-loading', lid);
@@ -114,7 +114,7 @@ export function byTemplate(node: HTMLAny) {
     }
 
     // inject props
-    const props = tmp.getAttribute('props') || '{}';
+    const props = tmp.getAttribute('v-props') || '{}';
     const baseId = uuid();
     const id = name + '_' + baseId;
     const pid = name + '_props_' + baseId;
@@ -151,10 +151,10 @@ export function byTemplate(node: HTMLAny) {
     });
 
     const refs = {} as any;
-    div.querySelectorAll('[ref]').forEach(el => {
-      const ref = el.getAttribute('ref')!;
+    div.querySelectorAll('[v-ref]').forEach(el => {
+      const ref = el.getAttribute('v-ref')!;
       refs[ref] = 'ref_' + ref + '_' + id;
-      el.removeAttribute('ref');
+      el.removeAttribute('v-ref');
       el.setAttribute(refs[ref], "1");
     });
 
@@ -216,9 +216,9 @@ export function byTemplate(node: HTMLAny) {
 
 
 function fetchTemplate(node: HTMLAny) {
-  (node.querySelectorAll('template[fetch]:not([fetch-loaded])') as any).forEach(function (tmp: HTMLTemplateElement) {
+  (node.querySelectorAll('template[v-fetch]:not([fetch-loaded])') as any).forEach(function (tmp: HTMLTemplateElement) {
     tmp.setAttribute('fetch-loaded', '1')
-    let url = tmp.getAttribute('fetch')!
+    let url = tmp.getAttribute('v-fetch')!
     if (!url || fetchs[url]) {
       return;
     }

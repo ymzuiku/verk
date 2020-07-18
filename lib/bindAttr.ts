@@ -5,7 +5,7 @@ import { onError } from './onError';
 
 export default function bindAttr(node: Element) {
   function bind(el: HTMLAny) {
-    const attrs = el.getAttribute('bind-attr')!;
+    const attrs = el.getAttribute('verk-attr')!;
     attrs.split(' ').forEach(function (attr) {
       let v: any;
       try {
@@ -21,7 +21,7 @@ export default function bindAttr(node: Element) {
     });
   }
 
-  checkSingle(node, bind, 'bind-attr', '[bind-attr]')
+  checkSingle(node, bind, 'verk-attr', '[verk-attr]')
 }
 
 

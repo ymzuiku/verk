@@ -6,39 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="icon" href="data:image/ico;base64,aWNv">
-  <script src="./violent/index.js"></script>
-  <script flavorcss-effect src="./violent/bindcss.js"></script>
+  <script src="/verk/index.js"></script>
+  <script flavorcss-effect src="/verk/bindcss.js"></script>
 </head>
 
-<body violent style="visibility: hidden;">
-  <input type="checkbox" model="data.show" /><span>hello</span>
-  <input type="date" model="data.show">aaaaaaaa</input> <span>hello</span>
-  <select model="data.name">
+<body v-verk style="visibility: hidden;">
+  <input type="checkbox" v-model="data.show" /><span>hello</span>
+  <input type="date" v-model="data.show">aaaaaaaa</input> <span>hello</span>
+  <select v-model="data.name">
     <option disabled value="">请选择</option>
     <option>dog</option>
     <option>cat</option>
     <option>fish</option>
   </select>
-  <select for="['dog', 'cat', 'fffffish']" multiple model="data.name">
-    <option text>$v</option>
+  <select v-for="['dog', 'cat', 'fffffish']" multiple v-model="data.name">
+    <option v-text>$v</option>
   </select>
 
 
   <div>
-    <input model="data.msg" placeholder="edit me">
+    <input v-model="data.msg" placeholder="edit me">
     <p text>"Message is: " +data.msg</p>
   </div>
 
   <div>
-    <input type="checkbox" id="checkbox" model="checked">
+    <input type="checkbox" id="checkbox" v-model="checked">
     <label for="checkbox" text>checked</label>
   </div>
 
   <div>
     <span>Multiline message is:</span>
-    <p style="white-space: pre-line;" text>data.msg</p>
+    <p style="white-space: pre-line;" v-text>data.msg</p>
     <br>
-    <textarea model="data.msg" placeholder="add multiple lines"></textarea>
+    <textarea v-model="data.msg" placeholder="add multiple lines"></textarea>
   </div>
 
   <div>
@@ -54,58 +54,44 @@
 
   <div>
     <div id="example-4">
-      <input type="radio" value="One" model="picked">
+      <input type="radio" value="One" v-model="picked">
       <label>One</label>
       <br>
-      <input type="radio" value="Two" model="picked">
-      <label >Two</label>
+      <input type="radio" value="Two" v-model="picked">
+      <label>Two</label>
       <br>
-      <span text>"radio: "+JSON.stringify(picked)</span>
+      <span v-text>"radio: "+JSON.stringify(picked)</span>
     </div>
   </div>
 
   <div v-style="data.show?'background:#f00':'background:#fff'" css="fs-4xl">dog</div>
   <div v-onclick="function(){data.show = !data.show;}">change show</div>
-  <div show="data.show">hello</div>
-  <div css="bg-blue-200 w-3xl h-3xl">
-    <div show="data.show">
+  <div v-show="data.show">hello</div>
+  <div v-css="bg-blue-200 w-3xl h-3xl">
+    <div v-show="data.show">
       <h1>hello</h1>
       <h2>world</h2>
       <h2 text>data.show</h2>
     </div>
   </div>
-  <template by="editor" props="{onChange:console.log}">
-    <div loading>loading...</div>
-    <div css="w-3/12 h-6xl" slot="editor"></div>
+  <template v-by="editor" v-props="{onChange:console.log}">
+    <div v-loading>loading...</div>
+    <div v-css="w-3/12 h-6xl" slot="editor"></div>
   </template>
   <script>
     var picked = {};
     var checked = true;
-    var checkedNames = {Jack:true};
+    var checkedNames = { Jack: true };
     var data = {
       show: true,
       name: 'fish',
       msg: '',
     }
-    setTimeout(function () {
-      const h = `
-<div v-style="data.show?'background:#f00':'background:#fff'" css="bg-red-200 w-3xl h-3xl">
-  <div a=2 v-onclick="console.log('11')" if="true" css="bg-yellow-400" show="data.show">
-    <h1 a=3>hello</h1>
-    <h2 a=3>world</h2>
-    <h2 text>data.show</h2>
-  </div>
-</div>
-      `;
-      const el = document.createElement('div');
-      el.innerHTML = h;
-      document.body.append(el);
-    }, 500)
   </script>
 </body>
 
-<section violent>
-  <template fetch="/editor/index.html"></template>
+<section v-verk>
+  <template v-fetch="/editor/index.html"></template>
 </section>
 
 </html>

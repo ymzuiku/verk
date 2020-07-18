@@ -1,5 +1,5 @@
-<template component="editor">
-  <slot ref="editor" css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
+<template v-component="editor">
+  <slot v-ref="editor" v-css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
     require.config({ paths: { 'vs': $dir + '/vs' } });
@@ -55,7 +55,7 @@
 
           if ($props.onChange) {
             const editorModel = editor.getModel();
-            const reducer = $violent.Reducer(function () {
+            const reducer = $verk.Reducer(function () {
               $props.onChange(editor.getValue())
             }, 1000)
             editorModel.onDidChangeContent(reducer);

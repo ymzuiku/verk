@@ -8,7 +8,7 @@ export default function bindShow(node: HTMLAny) {
     let v: any;
 
     try {
-      v = new Function('$el', 'return ' + el.getAttribute('show'))(el);
+      v = new Function('$el', 'return ' + el.getAttribute('v-show'))(el);
       if (typeof v === 'function') {
         v = v();
       }
@@ -22,5 +22,5 @@ export default function bindShow(node: HTMLAny) {
       el.style.display = 'none'
     }
   }
-  checkSingle(node, bind, 'show', '[show]')
+  checkSingle(node, bind, 'v-show', '[v-show]')
 }

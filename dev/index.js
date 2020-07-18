@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.$violent = factory());
+  (global = global || self, global.$verk = factory());
 }(this, function () { 'use strict';
 
   var glist = ['$target', '$el', '$value', '$event', '$props', '$renderState'];
@@ -100,8 +100,9 @@
   function bindIf(node) {
       function bind(el) {
           var ifData;
+          el.style.display = 'none';
           try {
-              ifData = new Function('$el', 'return ' + el.getAttribute('if'))(el);
+              ifData = new Function('$el', 'return ' + el.getAttribute('v-if'))(el);
               if (typeof ifData === 'function') {
                   ifData = ifData();
               }
@@ -129,7 +130,7 @@
               el.removeAttribute('uuid');
           }
       }
-      checkSingle(node, bind, 'if', 'template[if]:not([by])');
+      checkSingle(node, bind, 'v-if', '[v-if]:not([v-by])');
   }
 
   var von = /^v-on/;
@@ -137,7 +138,7 @@
       function bind(el) {
           if (el.__events)
               return;
-          var arr = el.getAttribute('bind-on').split(' ');
+          var arr = el.getAttribute('verk-on').split(' ');
           arr.forEach(function (attr) {
               var key = attr.replace('v-', '');
               if (von.test(attr)) {
@@ -159,22 +160,22 @@
                       if (typeof res === 'function') {
                           res(e);
                       }
-                      queryUpdate(el.getAttribute('query'));
+                      queryUpdate(el.getAttribute('v-query'));
                   };
               }
           });
           el.__events = true;
       }
-      if (node.getAttribute('bind-on')) {
+      if (node.getAttribute('verk-on')) {
           bind(node);
       }
-      node.querySelectorAll('[bind-on]').forEach(bind);
+      node.querySelectorAll('[verk-on]').forEach(bind);
   }
 
   function bindFor(node) {
       function bind(el) {
           if (!el.__forcode) {
-              el.__forcode = el.getAttribute('forin');
+              el.__forcode = el.getAttribute('v-for');
               el.__html = el.innerHTML;
               try {
                   el.__forData = new Function('$el', 'return ' + el.__forcode)(el);
@@ -203,13 +204,13 @@
           bindEvent(el);
       }
       var arr = [];
-      var list = node.querySelectorAll('[forin]');
+      var list = node.querySelectorAll('[v-for]');
       var l = list.length;
       list.forEach(function (el, i) {
           arr[l - i - 1] = el;
       });
       arr.forEach(bind);
-      if (node.hasAttribute('forin')) {
+      if (node.hasAttribute('v-for')) {
           bind(node);
       }
   }
@@ -217,7 +218,7 @@
   function bindText(node) {
       function bind(el) {
           if (!el.getAttribute('text-save')) {
-              el.setAttribute('text-save', el.getAttribute('text') || el.textContent);
+              el.setAttribute('text-save', el.getAttribute('v-text') || el.textContent);
           }
           var v;
           try {
@@ -233,7 +234,7 @@
               el.textContent = v;
           }
       }
-      checkSingle(node, bind, 'text', '[text]');
+      checkSingle(node, bind, 'v-text', '[v-text]');
   }
 
   function getKind(el) {
@@ -269,8 +270,8 @@
   }
   function bindModel(node) {
       function bind(el) {
-          var model = el.getAttribute('model');
-          var query = el.getAttribute('query');
+          var model = el.getAttribute('v-model');
+          var query = el.getAttribute('v-query');
           getKind(el);
           if (!el.__models) {
               el[el.__modelName] = function fn(e) {
@@ -342,13 +343,13 @@
               });
           }
       }
-      checkSingle(node, bind, 'model', '[model]');
+      checkSingle(node, bind, 'v-model', '[v-model]');
   }
 
   function bindWatch(node) {
       function bind(el) {
           try {
-              var v = new Function('$el', el.getAttribute('watch'))(el);
+              var v = new Function('$el', el.getAttribute('v-watch'))(el);
               if (typeof v === 'function') {
                   v();
               }
@@ -357,14 +358,14 @@
               onError(err, el);
           }
       }
-      checkSingle(node, bind, 'watch', '[watch]');
+      checkSingle(node, bind, 'v-watch', '[v-watch]');
   }
 
   function bindShow(node) {
       function bind(el) {
           var v;
           try {
-              v = new Function('$el', 'return ' + el.getAttribute('show'))(el);
+              v = new Function('$el', 'return ' + el.getAttribute('v-show'))(el);
               if (typeof v === 'function') {
                   v = v();
               }
@@ -379,7 +380,7 @@
               el.style.display = 'none';
           }
       }
-      checkSingle(node, bind, 'show', '[show]');
+      checkSingle(node, bind, 'v-show', '[v-show]');
   }
 
   /*! *****************************************************************************
@@ -467,11 +468,11 @@
       });
   }
   function comTemplate(node) {
-      node.querySelectorAll('template[component]').forEach(function (tmp) {
+      node.querySelectorAll('template[v-component]').forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
               var name, frag, sc;
               return __generator(this, function (_a) {
-                  name = tmp.getAttribute('component');
+                  name = tmp.getAttribute('v-component');
                   if (!name || coms[name]) {
                       return [2 /*return*/];
                   }
@@ -491,7 +492,7 @@
   }
   function fixIfAndRoute(tmp) {
       // 处理 if
-      var theIf = tmp.getAttribute('if');
+      var theIf = tmp.getAttribute('v-if');
       if (theIf) {
           var ifShow = void 0;
           try {
@@ -505,7 +506,7 @@
           }
       }
       // 处理 route
-      var route = tmp.getAttribute('route');
+      var route = tmp.getAttribute('v-route');
       if (route) {
           var hash = location.hash || '/';
           if (hash.indexOf(route) !== 1) {
@@ -528,7 +529,7 @@
       });
   }
   function byTemplate(node) {
-      node.querySelectorAll('template[by]:not([uuid])').forEach(function (tmp) {
+      node.querySelectorAll('template[v-by]:not([uuid])').forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
               function $ref(k, isAll) {
                   return document.body.querySelector('[' + refs[k] + ']');
@@ -540,13 +541,13 @@
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
-                          name = tmp.getAttribute('by');
+                          name = tmp.getAttribute('v-by');
                           if (!name)
                               return [2 /*return*/];
                           if (!fixIfAndRoute(tmp)) {
                               return [2 /*return*/];
                           }
-                          loading = tmp.content.querySelector('[loading]:not([use-loading])');
+                          loading = tmp.content.querySelector('[v-loading]:not([use-loading])');
                           if (loading) {
                               lid = uuid();
                               loading.setAttribute('use-loading', lid);
@@ -558,7 +559,7 @@
                           if (!comp) {
                               return [2 /*return*/];
                           }
-                          props = tmp.getAttribute('props') || '{}';
+                          props = tmp.getAttribute('v-props') || '{}';
                           baseId = uuid();
                           id = name + '_' + baseId;
                           pid = name + '_props_' + baseId;
@@ -592,10 +593,10 @@
                               }
                           });
                           refs = {};
-                          div.querySelectorAll('[ref]').forEach(function (el) {
-                              var ref = el.getAttribute('ref');
+                          div.querySelectorAll('[v-ref]').forEach(function (el) {
+                              var ref = el.getAttribute('v-ref');
                               refs[ref] = 'ref_' + ref + '_' + id;
-                              el.removeAttribute('ref');
+                              el.removeAttribute('v-ref');
                               el.setAttribute(refs[ref], "1");
                           });
                           setVerk(div);
@@ -656,9 +657,9 @@
       });
   }
   function fetchTemplate(node) {
-      node.querySelectorAll('template[fetch]:not([fetch-loaded])').forEach(function (tmp) {
+      node.querySelectorAll('template[v-fetch]:not([fetch-loaded])').forEach(function (tmp) {
           tmp.setAttribute('fetch-loaded', '1');
-          var url = tmp.getAttribute('fetch');
+          var url = tmp.getAttribute('v-fetch');
           if (!url || fetchs[url]) {
               return;
           }
@@ -697,7 +698,7 @@
 
   function bindAttr(node) {
       function bind(el) {
-          var attrs = el.getAttribute('bind-attr');
+          var attrs = el.getAttribute('verk-attr');
           attrs.split(' ').forEach(function (attr) {
               var v;
               try {
@@ -712,14 +713,14 @@
               el.setAttribute(attr.replace('v-', ''), v);
           });
       }
-      checkSingle(node, bind, 'bind-attr', '[bind-attr]');
+      checkSingle(node, bind, 'verk-attr', '[verk-attr]');
   }
 
-  var vof = /^v-/;
+  var vof = /^v-(?!if|for|model|show|by|fetch|component|css|watch)/;
   var von$1 = /^v-on/;
   function setVerk(node) {
       node.querySelectorAll('*').forEach(function (el) {
-          if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
+          if (el.getAttribute('verk-on') || el.getAttribute('verk-attr')) {
               return;
           }
           var attr = '';
@@ -733,15 +734,15 @@
               }
           });
           if (attr) {
-              el.setAttribute('bind-attr', attr.trim());
+              el.setAttribute('verk-attr', attr.trim());
           }
           if (on) {
-              el.setAttribute('bind-on', on.trim());
+              el.setAttribute('verk-on', on.trim());
           }
       });
   }
   function queryUpdate(query) {
-      query = query && query !== '*' ? query : '[verk]';
+      query = query && query !== '*' ? query : '[v-verk]';
       document.querySelectorAll(query).forEach(function (v) {
           updateAttrs(v);
       });
@@ -757,10 +758,18 @@
   }
   var middlewareByInit = [bindTemplate, bindEvent];
   var updateAll = ReducerList(function (node) {
-      updateAsync(node);
-      middlewareByInit.forEach(function (fn) {
-          fn(node);
-      });
+      function runer(el) {
+          updateAsync(el);
+          middlewareByInit.forEach(function (fn) {
+              fn(el);
+          });
+      }
+      if (node) {
+          runer(node);
+      }
+      else {
+          document.querySelectorAll('[v-verk]').forEach(runer);
+      }
   });
 
   var $verk = {
@@ -771,7 +780,7 @@
       ReducerList: ReducerList,
   };
   window.addEventListener('load', function () {
-      document.querySelectorAll('[verk]').forEach(function (el) {
+      document.querySelectorAll('[v-verk]').forEach(function (el) {
           setVerk(el);
           updateAll(el);
           setTimeout(function () {

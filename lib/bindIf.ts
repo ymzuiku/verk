@@ -6,9 +6,9 @@ import { onError } from './onError';
 export default function bindIf(node: HTMLAny) {
   function bind(el: HTMLAny) {
     let ifData: any;
-
+    el.style.display = 'none';
     try {
-      ifData = new Function('$el', 'return ' + el.getAttribute('if'))(el)
+      ifData = new Function('$el', 'return ' + el.getAttribute('v-if'))(el)
       if (typeof ifData === 'function') {
         ifData = ifData();
       }
@@ -36,5 +36,5 @@ export default function bindIf(node: HTMLAny) {
       el.removeAttribute('uuid');
     }
   }
-  checkSingle(node, bind, 'if', 'template[if]:not([by])')
+  checkSingle(node, bind, 'v-if', '[v-if]:not([v-by])')
 }

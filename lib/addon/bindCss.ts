@@ -6,7 +6,7 @@ import { onError } from '../onError';
 
 export default function bindCss(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const str = el.getAttribute('css')!;
+    const str = el.getAttribute('v-css')!;
     if (!str) {
       return;
     }
@@ -35,7 +35,7 @@ export default function bindCss(node: HTMLAny) {
       el.className = code;
     }
   }
-  checkSingle(node, bind, 'css', '[css]')
+  checkSingle(node, bind, 'v-css', '[v-css]')
 }
 
 if (typeof (window as any).$verk !== 'undefined') {

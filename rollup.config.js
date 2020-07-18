@@ -73,7 +73,7 @@ const watchOptions = [
     output: {
       file: "./umd/index.js",
       format: "umd",
-      name: "$violent",
+      name: "$verk",
       sourcemap: false,
     },
     plugins: [
@@ -92,7 +92,7 @@ const watchOptions = [
     output: {
       file: "./dev/index.js",
       format: "umd",
-      name: "$violent",
+      name: "$verk",
       sourcemap: false,
     },
     plugins: [
@@ -123,7 +123,7 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./umd/index.js", "./webside/violent/index.js");
-    fs.copySync("./umd/bindcss.js", "./webside/violent/bindcss.js");
+    fs.copySync("./umd/index.js", "./webside/verk/index.js");
+    fs.copySync("./umd/bindcss.js", "./webside/verk/bindcss.js");
   }
 });

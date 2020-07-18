@@ -11,12 +11,12 @@ import bindEvent from './bindEvent';
 import bindTemplate from './bindTemplate'
 import bindAttr from './bindAttr';
 
-const vof = /^v-/
+const vof = /^v-(?!if|for|model|show|by|fetch|component|css|watch)/
 const von = /^v-on/
 
 export function setVerk(node: HTMLElement) {
   node.querySelectorAll('*').forEach(function (el) {
-    if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
+    if (el.getAttribute('verk-on') || el.getAttribute('verk-attr')) {
       return;
     }
     let attr = '';
@@ -29,17 +29,17 @@ export function setVerk(node: HTMLElement) {
       }
     });
     if (attr) {
-      el.setAttribute('bind-attr', attr.trim());
+      el.setAttribute('verk-attr', attr.trim());
     }
     if (on) {
-      el.setAttribute('bind-on', on.trim());
+      el.setAttribute('verk-on', on.trim());
     }
   });
 }
 
 
 export function queryUpdate(query: string | null) {
-  query = query && query !== '*' ? query : '[verk]';
+  query = query && query !== '*' ? query : '[v-verk]';
   document.querySelectorAll(query).forEach(function (v) {
     updateAttrs(v);
   })
@@ -60,10 +60,17 @@ export function updateAsync(node: HTMLAny) {
 export const middlewareByInit: Function[] = [bindTemplate, bindEvent];
 
 export const updateAll = ReducerList(function (node) {
-  updateAsync(node);
-  middlewareByInit.forEach(function (fn) {
-    fn(node)
-  });
+  function runer(el: any) {
+    updateAsync(el);
+    middlewareByInit.forEach(function (fn) {
+      fn(el)
+    });
+  }
+  if (node) {
+    runer(node);
+  } else {
+    document.querySelectorAll('[v-verk]').forEach(runer);
+  }
 });
 
 
