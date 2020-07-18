@@ -237,6 +237,9 @@
   }
 
   function getKind(el) {
+      if (el.__modelName) {
+          return;
+      }
       var tag = el.tagName.toLowerCase();
       var kind = el.type;
       if (tag === 'select') {
@@ -310,41 +313,28 @@
               el.__models = true;
           }
           var v;
+          var code;
           if (el.__valueIsBool) {
               var valValue = el.getAttribute('v-value');
               var strValue = el.getAttribute('value');
               if (strValue) {
-                  try {
-                      v = new Function("return " + model + "['" + strValue + "']")();
-                  }
-                  catch (err) {
-                      onError(err, el);
-                  }
+                  code = "return " + model + "['" + strValue + "']";
               }
               else if (valValue) {
-                  try {
-                      v = new Function("return " + model + "[" + valValue + "]")();
-                  }
-                  catch (err) {
-                      onError(err, el);
-                  }
+                  code = "return " + model + "[" + valValue + "]";
               }
               else {
-                  try {
-                      v = (new Function('return ' + model)()) || '';
-                  }
-                  catch (err) {
-                      console.error(el, 'return ' + model);
-                  }
+                  code = 'return ' + model;
               }
           }
           else {
-              try {
-                  v = (new Function('return ' + model)()) || '';
-              }
-              catch (err) {
-                  console.error(el, 'return ' + model);
-              }
+              code = 'return ' + model;
+          }
+          try {
+              v = (new Function(code)()) || '';
+          }
+          catch (err) {
+              onError(err, el);
           }
           if (el[el.__valueName] !== v) {
               requestAnimationFrame(function () {

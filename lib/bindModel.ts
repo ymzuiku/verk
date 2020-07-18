@@ -4,6 +4,9 @@ import { queryUpdate } from './update'
 import { onError } from './onError';
 
 function getKind(el: HTMLAny) {
+  if (el.__modelName) {
+    return;
+  }
   const tag = el.tagName.toLowerCase();
   const kind = el.type;
   if (tag === 'select') {
@@ -72,34 +75,25 @@ export default function bindModel(node: HTMLAny) {
     }
 
     let v: any;
+    let code: any;
     if (el.__valueIsBool) {
       const valValue = el.getAttribute('v-value');
       const strValue = el.getAttribute('value');
       if (strValue) {
-        try {
-          v = new Function(`return ${model}['${strValue}']`)()
-        } catch (err) {
-          onError(err, el);
-        }
+        code = `return ${model}['${strValue}']`;
       } else if (valValue) {
-        try {
-          v = new Function(`return ${model}[${valValue}]`)()
-        } catch (err) {
-          onError(err, el);
-        }
+        code = `return ${model}[${valValue}]`;
       } else {
-        try {
-          v = (new Function('return ' + model)()) || '';
-        } catch (err) {
-          console.error(el, 'return ' + model)
-        }
+        code = 'return ' + model;
       }
     } else {
-      try {
-        v = (new Function('return ' + model)()) || '';
-      } catch (err) {
-        console.error(el, 'return ' + model)
-      }
+      code = 'return ' + model;
+    }
+
+    try {
+      v = (new Function(code)()) || '';
+    } catch (err) {
+      onError(err, el);
     }
 
     if (el[el.__valueName] !== v) {
@@ -107,8 +101,6 @@ export default function bindModel(node: HTMLAny) {
         el[el.__valueName] = v;
       })
     };
-
-
   }
 
   checkSingle(node, bind, 'model', '[model]')
