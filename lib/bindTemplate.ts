@@ -5,6 +5,7 @@ import { updateAll, setVerk } from "./update";
 
 const regSrc = new RegExp('src="./', "g");
 const regHref = new RegExp('href="./', "g");
+const regFetch = new RegExp('v-fetch="./', "g");
 const coms: { [key: string]: string } = {};
 const comScripts: { [key: string]: Function } = {};
 const fetchs: { [key: string]: boolean } = {};
@@ -249,7 +250,7 @@ export function byTemplate(node: HTMLAny) {
   );
 }
 
-function fetchTemplate(node: HTMLAny) {
+function fetchTemplate(node: HTMLAny, onlyLoad?: boolean) {
   (node.querySelectorAll(
     "template[v-fetch]:not([fetch-loaded])"
   ) as any).forEach(function (tmp: HTMLTemplateElement) {
@@ -275,15 +276,19 @@ function fetchTemplate(node: HTMLAny) {
         const dirURL = dir.join("/") + "/";
         code = code.replace(regSrc, 'src="' + dirURL);
         code = code.replace(regHref, 'href="' + dirURL);
+        code = code.replace(regFetch, 'v-fetch="' + dirURL);
         code = code.replace(/\$dir/, "'" + dirURL + "'");
-
         ele.innerHTML = code;
 
         comTemplate(ele);
+        // 读取res里的 fetch
+        fetchTemplate(ele, true);
 
-        requestAnimationFrame(function () {
-          bindTemplate(node);
-        });
+        if (!onlyLoad) {
+          requestAnimationFrame(function () {
+            bindTemplate(node);
+          });
+        }
       })
       .catch((err) => {
         fetchs[url] = false;

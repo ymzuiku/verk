@@ -1,4 +1,10 @@
+<template v-fetch="./runner.html"></template>
+<template v-component="dog">
+  <div>the-dog</div>
+</template>
 <template v-component="editor">
+  <template v-by="editor-runner"></template>
+  <template v-by="dog"></template>
   <slot v-ref="editor" v-css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
@@ -58,7 +64,7 @@
           onInit();
           return;
         }
-        
+
         require.config({ paths: { vs: $dir + "/vs" } });
         window.MonacoEnvironment = {
           getWorkerUrl: function (workerId, label) {

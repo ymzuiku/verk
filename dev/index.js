@@ -455,6 +455,7 @@
 
   var regSrc = new RegExp('src="./', "g");
   var regHref = new RegExp('href="./', "g");
+  var regFetch = new RegExp('v-fetch="./', "g");
   var coms = {};
   var comScripts = {};
   var fetchs = {};
@@ -698,7 +699,7 @@
           });
       });
   }
-  function fetchTemplate(node) {
+  function fetchTemplate(node, onlyLoad) {
       node.querySelectorAll("template[v-fetch]:not([fetch-loaded])").forEach(function (tmp) {
           tmp.setAttribute("fetch-loaded", "");
           var url = tmp.getAttribute("v-fetch");
@@ -721,12 +722,17 @@
               var dirURL = dir.join("/") + "/";
               code = code.replace(regSrc, 'src="' + dirURL);
               code = code.replace(regHref, 'href="' + dirURL);
+              code = code.replace(regFetch, 'v-fetch="' + dirURL);
               code = code.replace(/\$dir/, "'" + dirURL + "'");
               ele.innerHTML = code;
               comTemplate(ele);
-              requestAnimationFrame(function () {
-                  bindTemplate(node);
-              });
+              // 读取res里的 fetch
+              fetchTemplate(ele, true);
+              if (!onlyLoad) {
+                  requestAnimationFrame(function () {
+                      bindTemplate(node);
+                  });
+              }
           })
               .catch(function (err) {
               fetchs[url] = false;
