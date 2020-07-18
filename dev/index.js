@@ -60,6 +60,7 @@
   }
   function ReducerList(fn, interval) {
       var nodes = new Set();
+      var cbs = new Set();
       var time;
       var runner;
       var cancel;
@@ -75,6 +76,9 @@
           if (!nodes.has(node)) {
               nodes.add(node);
           }
+          if (cb && !cbs.has(cb)) {
+              cbs.add(cb);
+          }
           if (time) {
               cancel(time);
           }
@@ -82,9 +86,10 @@
               time = null;
               nodes.forEach(fn);
               nodes.clear();
-              if (cb) {
-                  cb();
-              }
+              cbs.forEach(function (_c) {
+                  _c();
+              });
+              cbs.clear();
           }, interval);
       };
   }
@@ -603,7 +608,7 @@
                                           next.setAttribute(attr.name, attr.value);
                                       }
                                   });
-                                  div.replaceChild(next, el);
+                                  div.replaceChild(next.cloneNode(true), el);
                               }
                           });
                           refs = {};
@@ -660,8 +665,8 @@
                               window[id] = v;
                               requestAnimationFrame(function () {
                                   updateAll(tmp.parentElement, function () {
-                                      if (v.$mount) {
-                                          v.$mount(window[id]);
+                                      if (window[id] && window[id].$mount) {
+                                          window[id].$mount();
                                       }
                                   });
                               });

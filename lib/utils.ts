@@ -49,6 +49,7 @@ export function Reducer(fn: (v?: any) => any, interval?: number) {
 
 export function ReducerList(fn: (v: any) => any, interval?: number) {
   const nodes = new Set();
+  const cbs = new Set();
 
   let time: any;
   let runner: any;
@@ -65,6 +66,9 @@ export function ReducerList(fn: (v: any) => any, interval?: number) {
     if (!nodes.has(node)) {
       nodes.add(node);
     }
+    if (cb && !cbs.has(cb)) {
+      cbs.add(cb);
+    }
     if (time) {
       cancel(time);
     }
@@ -72,9 +76,10 @@ export function ReducerList(fn: (v: any) => any, interval?: number) {
       time = null;
       nodes.forEach(fn);
       nodes.clear();
-      if (cb) {
-        cb();
-      }
+      cbs.forEach(function (_c: any) {
+        _c();
+      });
+      cbs.clear();
     }, interval);
   };
 }

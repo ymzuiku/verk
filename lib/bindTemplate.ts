@@ -157,7 +157,7 @@ export function byTemplate(node: HTMLAny) {
               next.setAttribute(attr.name, attr.value);
             }
           });
-          div.replaceChild(next, el);
+          div.replaceChild(next.cloneNode(true), el);
         }
       });
 
@@ -209,14 +209,14 @@ export function byTemplate(node: HTMLAny) {
           onError(err, tmp as any, sc);
         }
       }
-
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
         (window as any)[id] = v;
+
         requestAnimationFrame(function () {
           updateAll(tmp.parentElement, function () {
-            if (v.$mount) {
-              v.$mount((window as any)[id]);
+            if ((window as any)[id] && (window as any)[id].$mount) {
+              (window as any)[id].$mount();
             }
           });
         });
