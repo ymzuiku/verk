@@ -104,7 +104,7 @@ export function byTemplate(node: HTMLAny) {
       loading.setAttribute('use-loading', lid);
 
       const nextEl: HTMLElement = loading.cloneNode(true) as any;
-      nextEl.setAttribute(lid, '1');
+      nextEl.setAttribute(lid, '');
       tmp.insertAdjacentElement('afterend', nextEl);
     }
 
@@ -135,7 +135,6 @@ export function byTemplate(node: HTMLAny) {
 
     div.querySelectorAll('*').forEach((el, i) => {
       el.setAttribute(id, (i + 1) as any);
-      // el.setAttribute('ignore-observer', '1');
     });
     div.querySelectorAll('slot').forEach(el => {
       const slot = el.getAttribute('name');
@@ -217,7 +216,7 @@ export function byTemplate(node: HTMLAny) {
 
 function fetchTemplate(node: HTMLAny) {
   (node.querySelectorAll('template[v-fetch]:not([fetch-loaded])') as any).forEach(function (tmp: HTMLTemplateElement) {
-    tmp.setAttribute('fetch-loaded', '1')
+    tmp.setAttribute('fetch-loaded', '')
     let url = tmp.getAttribute('v-fetch')!
     if (!url || fetchs[url]) {
       return;

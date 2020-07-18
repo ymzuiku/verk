@@ -25,7 +25,7 @@ export default function bindIf(node: HTMLAny) {
         const tmp = document.createElement('div');
         tmp.innerHTML = el.innerHTML;
         tmp.querySelectorAll('*').forEach(v => {
-          v.setAttribute(id, '1');
+          v.setAttribute(id, '');
         });
         el.insertAdjacentHTML('afterend', tmp.innerHTML);
       }

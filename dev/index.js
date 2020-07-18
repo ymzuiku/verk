@@ -118,7 +118,7 @@
                   var tmp = document.createElement('div');
                   tmp.innerHTML = el.innerHTML;
                   tmp.querySelectorAll('*').forEach(function (v) {
-                      v.setAttribute(id, '1');
+                      v.setAttribute(id, '');
                   });
                   el.insertAdjacentHTML('afterend', tmp.innerHTML);
               }
@@ -552,7 +552,7 @@
                               lid = uuid();
                               loading.setAttribute('use-loading', lid);
                               nextEl = loading.cloneNode(true);
-                              nextEl.setAttribute(lid, '1');
+                              nextEl.setAttribute(lid, '');
                               tmp.insertAdjacentElement('afterend', nextEl);
                           }
                           comp = coms[name];
@@ -578,7 +578,6 @@
                           div.innerHTML = html;
                           div.querySelectorAll('*').forEach(function (el, i) {
                               el.setAttribute(id, (i + 1));
-                              // el.setAttribute('ignore-observer', '1');
                           });
                           div.querySelectorAll('slot').forEach(function (el) {
                               var slot = el.getAttribute('name');
@@ -658,7 +657,7 @@
   }
   function fetchTemplate(node) {
       node.querySelectorAll('template[v-fetch]:not([fetch-loaded])').forEach(function (tmp) {
-          tmp.setAttribute('fetch-loaded', '1');
+          tmp.setAttribute('fetch-loaded', '');
           var url = tmp.getAttribute('v-fetch');
           if (!url || fetchs[url]) {
               return;

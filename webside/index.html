@@ -40,6 +40,12 @@
     <br>
     <textarea v-model="data.msg" placeholder="add multiple lines"></textarea>
   </div>
+  <template v-if="data.show">
+    <div>hello------------------------------------</div>
+    <script>
+      console.log('hello v-if');
+    </script>
+  </template>
 
   <div>
     <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
