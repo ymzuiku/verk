@@ -538,6 +538,8 @@
               document.body.querySelectorAll("[" + id + "]").forEach(function (el) {
                   el.remove();
               });
+              delete window[id];
+              delete window[id + "_props"];
           }
       });
   }
@@ -575,7 +577,7 @@
                           props = tmp.getAttribute("v-props") || "{}";
                           baseId = uuid();
                           id = name + "_" + baseId;
-                          pid = name + "_props_" + baseId;
+                          pid = id + "_props";
                           tmp.setAttribute("uuid", id);
                           tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
                           try {
@@ -607,7 +609,7 @@
                           refs = {};
                           div.querySelectorAll("[v-ref]").forEach(function (el) {
                               var ref = el.getAttribute("v-ref");
-                              refs[ref] = "ref_" + ref + "_" + id;
+                              refs[ref] = id + "_ref_" + ref;
                               el.removeAttribute("v-ref");
                               el.setAttribute(refs[ref], "1");
                           });

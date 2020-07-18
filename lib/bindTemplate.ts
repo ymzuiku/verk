@@ -94,6 +94,8 @@ export function updateTemplate(node: HTMLAny) {
       document.body.querySelectorAll("[" + id + "]").forEach((el) => {
         el.remove();
       });
+      delete (window as any)[id];
+      delete (window as any)[id + "_props"];
     }
   });
 }
@@ -127,7 +129,7 @@ export function byTemplate(node: HTMLAny) {
       const props = tmp.getAttribute("v-props") || "{}";
       const baseId = uuid();
       const id = name + "_" + baseId;
-      const pid = name + "_props_" + baseId;
+      const pid = id + "_props";
       tmp.setAttribute("uuid", id);
       tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
 
@@ -162,7 +164,7 @@ export function byTemplate(node: HTMLAny) {
       const refs = {} as any;
       div.querySelectorAll("[v-ref]").forEach((el) => {
         const ref = el.getAttribute("v-ref")!;
-        refs[ref] = "ref_" + ref + "_" + id;
+        refs[ref] = id + "_ref_" + ref;
         el.removeAttribute("v-ref");
         el.setAttribute(refs[ref], "1");
       });
