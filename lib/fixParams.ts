@@ -1,16 +1,15 @@
-const glist = ['$target', '$el', '$value', '$event', '$props', '$renderState'];
+const glist = ["$target", "$el", "$value", "$event", "$props", "$renderState"];
 
-let _ = '';
+let _ = "";
 
 for (let i = 0; i < 8; i++) {
-  glist.push('$' + _ + 'v');
-  glist.push('$' + _ + 'i');
-  _ += '_';
+  glist.push("$" + _ + "v");
+  glist.push("$" + _ + "i");
+  _ += "_";
 }
 
-glist.forEach(k => {
-  if (typeof (window as any)[k] === 'undefined') {
-    (window as any)[k] = ''
+glist.forEach((k) => {
+  if (typeof (window as any)[k] === "undefined") {
+    (window as any)[k] = "";
   }
 });
-

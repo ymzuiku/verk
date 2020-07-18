@@ -1,13 +1,12 @@
-
-import { HTMLAny } from './interface'
-import { checkSingle } from './utils';
-import { onError } from './onError';
+import { HTMLAny } from "./interface";
+import { checkSingle } from "./utils";
+import { onError } from "./onError";
 
 export default function bindWatch(node: Element) {
   function bind(el: HTMLAny) {
     try {
-      const v = new Function('$el', el.getAttribute('v-watch')!)(el);
-      if (typeof v === 'function') {
+      const v = new Function("$el", el.getAttribute("v-watch")!)(el);
+      if (typeof v === "function") {
         v();
       }
     } catch (err) {
@@ -15,7 +14,5 @@ export default function bindWatch(node: Element) {
     }
   }
 
-  checkSingle(node, bind, 'v-watch', '[v-watch]')
+  checkSingle(node, bind, "v-watch", "[v-watch]");
 }
-
-

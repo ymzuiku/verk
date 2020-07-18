@@ -1,5 +1,5 @@
-import './fixParams';
-import { ReducerList, Reducer } from './utils';
+import "./fixParams";
+import { ReducerList, Reducer } from "./utils";
 declare const $verk: {
     update: (node: any, cb?: Function | undefined) => void;
     middlewareByUpdate: Function[];

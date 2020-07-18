@@ -1,4 +1,4 @@
-import { HTMLAny } from './interface';
+import { HTMLAny } from "./interface";
 export declare function setVerk(node: HTMLElement): void;
 export declare function queryUpdate(query: string | null): void;
 export declare const updateAttrs: (node: any, cb?: Function | undefined) => void;

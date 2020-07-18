@@ -597,12 +597,12 @@
   }
   var n = 0;
   function uuid(name) {
-      if (name === void 0) { name = 'u'; }
+      if (name === void 0) { name = "u"; }
       n += 1;
       if (n > 999) {
           n = 0;
       }
-      return name + Date.now().toString().slice(5, 13) + (n + '');
+      return name + Date.now().toString().slice(5, 13) + (n + "");
   }
   window.$uuid = uuid;
 
@@ -610,7 +610,7 @@
   function onError(err, el, code) {
       console.error(err, el);
       middlewareByError.forEach(function (v) {
-          v(err, el, code || '');
+          v(err, el, code || "");
       });
   }
 

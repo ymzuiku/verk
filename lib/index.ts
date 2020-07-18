@@ -1,6 +1,11 @@
-import './fixParams';
-import { middlewareByUpdate, updateAll, middlewareByInit, setVerk } from './update'
-import { ReducerList, Reducer } from './utils';
+import "./fixParams";
+import {
+  middlewareByUpdate,
+  updateAll,
+  middlewareByInit,
+  setVerk,
+} from "./update";
+import { ReducerList, Reducer } from "./utils";
 
 const $verk = {
   update: updateAll,
@@ -10,13 +15,15 @@ const $verk = {
   ReducerList,
 };
 
-window.addEventListener('load', function () {
-  (document.querySelectorAll('[v-verk]') as any).forEach(function (el: HTMLElement) {
+window.addEventListener("load", function () {
+  (document.querySelectorAll("[v-verk]") as any).forEach(function (
+    el: HTMLElement
+  ) {
     setVerk(el);
     updateAll(el);
     setTimeout(() => {
-      if (el.style.visibility === 'hidden') {
-        el.style.visibility = 'visible';
+      if (el.style.visibility === "hidden") {
+        el.style.visibility = "visible";
       }
     }, 200);
   });

@@ -1,25 +1,28 @@
-export function checkSingle(node: any, bind: any, key: string, selector: string) {
+export function checkSingle(
+  node: any,
+  bind: any,
+  key: string,
+  selector: string
+) {
   if (node.hasAttribute(key)) {
-    bind(node)
+    bind(node);
   }
-  (node.querySelectorAll(selector) as any).forEach(bind)
+  (node.querySelectorAll(selector) as any).forEach(bind);
 }
 
 let n = 0;
-export function uuid(name = 'u') {
+export function uuid(name = "u") {
   n += 1;
   if (n > 999) {
     n = 0;
   }
-  return name + Date.now().toString().slice(5, 13) + (n + '')
+  return name + Date.now().toString().slice(5, 13) + (n + "");
 }
 
 (window as any).$uuid = uuid;
 
-
-
 export function Reducer(fn: (v?: any) => any, interval?: number) {
-  let time:any;
+  let time: any;
   let runner: any;
   let cancel: any;
   if (interval) {
@@ -32,7 +35,7 @@ export function Reducer(fn: (v?: any) => any, interval?: number) {
 
   return function reducer(node: any, cb?: Function) {
     if (time) {
-      cancel(time)
+      cancel(time);
     }
     time = runner(function () {
       time = null;
@@ -41,14 +44,13 @@ export function Reducer(fn: (v?: any) => any, interval?: number) {
         cb();
       }
     }, interval);
-  }
+  };
 }
 
-
-export function ReducerList(fn: (v: any) => any, interval?:number) {
+export function ReducerList(fn: (v: any) => any, interval?: number) {
   const nodes = new Set();
 
-  let time:any;
+  let time: any;
   let runner: any;
   let cancel: any;
   if (interval) {
@@ -61,18 +63,18 @@ export function ReducerList(fn: (v: any) => any, interval?:number) {
 
   return function reducer(node: any, cb?: Function) {
     if (!nodes.has(node)) {
-      nodes.add(node)
+      nodes.add(node);
     }
     if (time) {
-      cancel(time)
+      cancel(time);
     }
     time = runner(function () {
       time = null;
-      nodes.forEach(fn)
-      nodes.clear()
+      nodes.forEach(fn);
+      nodes.clear();
       if (cb) {
         cb();
       }
     }, interval);
-  }
+  };
 }

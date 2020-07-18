@@ -1,2 +1,2 @@
-import { HTMLAny } from './interface';
+import { HTMLAny } from "./interface";
 export default function bindFor(node: HTMLAny): void;

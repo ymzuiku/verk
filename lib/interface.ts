@@ -1,3 +1,3 @@
 export interface HTMLAny extends HTMLElement {
-  [key: string]: any
+  [key: string]: any;
 }

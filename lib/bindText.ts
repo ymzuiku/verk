@@ -1,17 +1,19 @@
-
-import { HTMLAny } from './interface'
-import { checkSingle } from './utils';
-import { onError } from './onError';
+import { HTMLAny } from "./interface";
+import { checkSingle } from "./utils";
+import { onError } from "./onError";
 
 export default function bindText(node: Element) {
   function bind(el: HTMLAny) {
-    if (!el.getAttribute('text-save')) {
-      el.setAttribute('text-save', el.getAttribute('v-text') || el.textContent!);
+    if (!el.getAttribute("text-save")) {
+      el.setAttribute(
+        "text-save",
+        el.getAttribute("v-text") || el.textContent!
+      );
     }
     let v: any;
     try {
-      v = new Function('$el', 'return ' + el.getAttribute('text-save'))(el);
-      if (typeof v === 'function') {
+      v = new Function("$el", "return " + el.getAttribute("text-save"))(el);
+      if (typeof v === "function") {
         v = v();
       }
     } catch (err) {
@@ -22,7 +24,5 @@ export default function bindText(node: Element) {
     }
   }
 
-  checkSingle(node, bind, 'v-text', '[v-text]')
+  checkSingle(node, bind, "v-text", "[v-text]");
 }
-
-
