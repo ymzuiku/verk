@@ -11,19 +11,23 @@ export default function bindEvent(node: HTMLAny) {
     arr.forEach(function (attr: string) {
       const key = attr.replace('v-', '');
       if (von.test(attr)) {
-        const fn = new Function('$self', '$event', '$value', 'return ' + el.getAttribute(attr));
-        (el)[key] = function (event: any) {
+        const fn = new Function('$el', '$event', 'return ' + el.getAttribute(attr));
+        (el)[key] = function (e: any) {
+          if (el.getAttribute('prevent-' + key)) {
+            e.preventDefault();
+          }
+          if (el.getAttribute('stop-' + key)) {
+            e.stopPropagation();
+          }
           let res;
-          const value = event && event.target && event.target.value;
-
           try {
-            res = fn(el, event, value)
+            res = fn(el, e);
           } catch (err) {
             onError(err, el);
           }
 
           if (typeof res === 'function') {
-            res(event)
+            res(e)
           }
           queryUpdate(el.getAttribute('query'))
         }

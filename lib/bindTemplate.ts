@@ -1,7 +1,7 @@
 import { HTMLAny } from './interface'
 import { uuid } from './utils';
 import { onError } from './onError';
-import { updateAll } from './update';
+import { updateAll, setViolent } from './update';
 
 const regSrc = new RegExp('src="./', 'g')
 const regHref = new RegExp('href="./', 'g')
@@ -157,6 +157,8 @@ export function byTemplate(node: HTMLAny) {
       el.removeAttribute('ref');
       el.setAttribute(refs[ref], "1");
     });
+
+    setViolent(div);
 
     function $ref(k: string, isAll?: any) {
       return document.body.querySelector('[' + refs[k] + ']');

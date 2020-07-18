@@ -15,13 +15,13 @@ const vof = /^v-/
 const von = /^v-on/
 
 export function setViolent(node: HTMLElement) {
-  node.querySelectorAll('*').forEach(function (e) {
-    if (e.getAttribute('bind-on') || e.getAttribute('bind-attr')) {
+  node.querySelectorAll('*').forEach(function (el) {
+    if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
       return;
     }
     let attr = '';
     let on = '';
-    Array.from(e.attributes).forEach(function (v) {
+    Array.from(el.attributes).forEach(function (v) {
       if (von.test(v.name)) {
         on += v.name + ' ';
       } else if (vof.test(v.name)) {
@@ -29,10 +29,10 @@ export function setViolent(node: HTMLElement) {
       }
     });
     if (attr) {
-      e.setAttribute('bind-attr', attr.trim());
+      el.setAttribute('bind-attr', attr.trim());
     }
     if (on) {
-      e.setAttribute('bind-on', on.trim());
+      el.setAttribute('bind-on', on.trim());
     }
   });
 }

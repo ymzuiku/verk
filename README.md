@@ -14,8 +14,8 @@ Includ or download the violent.js:
 
 - [x] if
 - [x] show
-- [x] for
-- [x] for in for
+- [x] forin
+- [x] for in forin
 - [x] text
 - [x] bind
 - [x] model

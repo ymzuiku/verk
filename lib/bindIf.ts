@@ -36,5 +36,5 @@ export default function bindIf(node: HTMLAny) {
       el.removeAttribute('uuid');
     }
   }
-  checkSingle(node, bind, 'if', 'template[if]:not([init])')
+  checkSingle(node, bind, 'if', 'template[if]:not([by])')
 }

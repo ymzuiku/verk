@@ -129,7 +129,7 @@
               el.removeAttribute('uuid');
           }
       }
-      checkSingle(node, bind, 'if', 'template[if]:not([init])');
+      checkSingle(node, bind, 'if', 'template[if]:not([by])');
   }
 
   var von = /^v-on/;
@@ -141,18 +141,23 @@
           arr.forEach(function (attr) {
               var key = attr.replace('v-', '');
               if (von.test(attr)) {
-                  var fn_1 = new Function('$self', '$event', '$value', 'return ' + el.getAttribute(attr));
-                  (el)[key] = function (event) {
+                  var fn_1 = new Function('$el', '$event', 'return ' + el.getAttribute(attr));
+                  (el)[key] = function (e) {
+                      if (el.getAttribute('prevent-' + key)) {
+                          e.preventDefault();
+                      }
+                      if (el.getAttribute('stop-' + key)) {
+                          e.stopPropagation();
+                      }
                       var res;
-                      var value = event && event.target && event.target.value;
                       try {
-                          res = fn_1(el, event, value);
+                          res = fn_1(el, e);
                       }
                       catch (err) {
                           onError(err, el);
                       }
                       if (typeof res === 'function') {
-                          res(event);
+                          res(e);
                       }
                       queryUpdate(el.getAttribute('query'));
                   };
@@ -169,7 +174,7 @@
   function bindFor(node) {
       function bind(el) {
           if (!el.__forcode) {
-              el.__forcode = el.getAttribute('for');
+              el.__forcode = el.getAttribute('forin');
               el.__html = el.innerHTML;
               try {
                   el.__forData = new Function('$el', 'return ' + el.__forcode)(el);
@@ -198,13 +203,13 @@
           bindEvent(el);
       }
       var arr = [];
-      var list = node.querySelectorAll('[for]');
+      var list = node.querySelectorAll('[forin]');
       var l = list.length;
       list.forEach(function (el, i) {
           arr[l - i - 1] = el;
       });
       arr.forEach(bind);
-      if (node.hasAttribute('for')) {
+      if (node.hasAttribute('forin')) {
           bind(node);
       }
   }
@@ -231,46 +236,123 @@
       checkSingle(node, bind, 'text', '[text]');
   }
 
-  var bindList = ['oninput', 'onchange'];
+  function getKind(el) {
+      var tag = el.tagName.toLowerCase();
+      var kind = el.type;
+      if (tag === 'select') {
+          el.__modelName = 'onchange';
+      }
+      else if (tag === 'input' || tag === 'textarea') {
+          el.__modelName = 'oninput';
+      }
+      else {
+          el.__modelName = 'onclick';
+      }
+      if (tag === 'select') {
+          el.__valueName = 'value';
+      }
+      else if (kind === 'checkbox') {
+          el.__valueName = 'checked';
+          el.__valueIsBool = true;
+      }
+      else if (kind === 'radio') {
+          el.__modelName = 'onclick';
+          el.__valueName = 'checked';
+          el.__valueIsBool = true;
+      }
+      else {
+          el.__valueName = 'value';
+      }
+  }
   function bindModel(node) {
       function bind(el) {
-          var value = el.getAttribute('bind');
+          var model = el.getAttribute('model');
           var query = el.getAttribute('query');
-          function bindOn(key) {
-              if (el[key]) {
-                  return;
-              }
-              el[key] = function fn(e) {
-                  var v = e.target && e.target.value || '';
+          getKind(el);
+          if (!el.__models) {
+              el[el.__modelName] = function fn(e) {
+                  if (el.getAttribute('prevent-' + el.__modelName)) {
+                      e.preventDefault();
+                  }
+                  if (el.getAttribute('stop-' + el.__modelName)) {
+                      e.stopPropagation();
+                  }
+                  var v = e.target && e.target[el.__valueName] || '';
+                  var code;
+                  if (el.__valueIsBool) {
+                      var valValue = el.getAttribute('v-value');
+                      var strValue = el.getAttribute('value');
+                      if (valValue) {
+                          code = model + "[" + valValue + "] = !" + model + "[" + valValue + "]; return " + model + "[" + valValue + "];";
+                      }
+                      else if (strValue) {
+                          code = model + "['" + strValue + "'] = !" + model + "['" + strValue + "']; return " + model + "['" + strValue + "'];";
+                      }
+                      else {
+                          code = model + "=" + !!v + "; return " + model + ";";
+                      }
+                  }
+                  else {
+                      code = model + "=`" + v + "`; return " + model + ";";
+                  }
+                  var fnv;
                   try {
-                      new Function(value + "='" + v + "'")();
+                      fnv = new Function('$el', code)(el);
                   }
                   catch (err) {
                       onError(err, el);
                   }
+                  if (el[el.__valueName] !== fnv) {
+                      el[el.__valueName] = fnv;
+                  }
                   queryUpdate(query);
               };
-          }
-          if (el.__models) {
-              bindList.forEach(bindOn);
-              el.__models;
+              el.__models = true;
           }
           var v;
-          try {
-              v = (new Function('return ' + value)()) || '';
+          if (el.__valueIsBool) {
+              var valValue = el.getAttribute('v-value');
+              var strValue = el.getAttribute('value');
+              if (strValue) {
+                  try {
+                      v = new Function("return " + model + "['" + strValue + "']")();
+                  }
+                  catch (err) {
+                      onError(err, el);
+                  }
+              }
+              else if (valValue) {
+                  try {
+                      v = new Function("return " + model + "[" + valValue + "]")();
+                  }
+                  catch (err) {
+                      onError(err, el);
+                  }
+              }
+              else {
+                  try {
+                      v = (new Function('return ' + model)()) || '';
+                  }
+                  catch (err) {
+                      console.error(el, 'return ' + model);
+                  }
+              }
           }
-          catch (err) {
-              console.error(el, 'return ' + value);
+          else {
+              try {
+                  v = (new Function('return ' + model)()) || '';
+              }
+              catch (err) {
+                  console.error(el, 'return ' + model);
+              }
           }
-          if (el.value !== v) {
+          if (el[el.__valueName] !== v) {
               requestAnimationFrame(function () {
-                  requestAnimationFrame(function () {
-                      el.value = v;
-                  });
+                  el[el.__valueName] = v;
               });
           }
       }
-      checkSingle(node, bind, 'bind', '[bind]');
+      checkSingle(node, bind, 'model', '[model]');
   }
 
   function bindWatch(node) {
@@ -526,6 +608,7 @@
                               el.removeAttribute('ref');
                               el.setAttribute(refs[ref], "1");
                           });
+                          setViolent(div);
                           if (!div.querySelector('[defer]')) return [3 /*break*/, 6];
                           return [4 /*yield*/, srcLoader(div, 'script[src]:not([defer])')];
                       case 1:
@@ -645,13 +728,13 @@
   var vof = /^v-/;
   var von$1 = /^v-on/;
   function setViolent(node) {
-      node.querySelectorAll('*').forEach(function (e) {
-          if (e.getAttribute('bind-on') || e.getAttribute('bind-attr')) {
+      node.querySelectorAll('*').forEach(function (el) {
+          if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
               return;
           }
           var attr = '';
           var on = '';
-          Array.from(e.attributes).forEach(function (v) {
+          Array.from(el.attributes).forEach(function (v) {
               if (von$1.test(v.name)) {
                   on += v.name + ' ';
               }
@@ -660,10 +743,10 @@
               }
           });
           if (attr) {
-              e.setAttribute('bind-attr', attr.trim());
+              el.setAttribute('bind-attr', attr.trim());
           }
           if (on) {
-              e.setAttribute('bind-on', on.trim());
+              el.setAttribute('bind-on', on.trim());
           }
       });
   }

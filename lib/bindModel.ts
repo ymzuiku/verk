@@ -3,46 +3,113 @@ import { checkSingle } from './utils';
 import { queryUpdate } from './update'
 import { onError } from './onError';
 
-const bindList = ['oninput', 'onchange'];
+function getKind(el: HTMLAny) {
+  const tag = el.tagName.toLowerCase();
+  const kind = el.type;
+  if (tag === 'select') {
+    el.__modelName = 'onchange';
+  } else if (tag === 'input' || tag === 'textarea') {
+    el.__modelName = 'oninput';
+  } else {
+    el.__modelName = 'onclick';
+  }
+  if (tag === 'select') {
+    el.__valueName = 'value';
+  } else if (kind === 'checkbox') {
+    el.__valueName = 'checked';
+    el.__valueIsBool = true;
+  } else if (kind === 'radio') {
+    el.__modelName = 'onclick';
+    el.__valueName = 'checked';
+    el.__valueIsBool = true;
+  } else {
+    el.__valueName = 'value';
+  }
+}
 
 export default function bindModel(node: HTMLAny) {
   function bind(el: HTMLAny) {
-    const value = el.getAttribute('bind')!;
+    const model = el.getAttribute('model')!;
     const query = el.getAttribute('query');
-    function bindOn(key: string) {
-      if (el[key]) {
-        return;
-      }
-      el[key] = function fn(e: any) {
-        const v = e.target && e.target.value || ''
+    getKind(el);
+
+    if (!el.__models) {
+      el[el.__modelName] = function fn(e: any) {
+        if (el.getAttribute('prevent-' + el.__modelName)) {
+          e.preventDefault();
+        }
+        if (el.getAttribute('stop-' + el.__modelName)) {
+          e.stopPropagation();
+        }
+        const v = e.target && e.target[el.__valueName] || '';
+        let code: any;
+        if (el.__valueIsBool) {
+          const valValue = el.getAttribute('v-value');
+          const strValue = el.getAttribute('value');
+          if (valValue) {
+            code = `${model}[${valValue}] = !${model}[${valValue}]; return ${model}[${valValue}];`;
+          } else if (strValue) {
+            code = `${model}['${strValue}'] = !${model}['${strValue}']; return ${model}['${strValue}'];`;
+          } else {
+            code = `${model}=${!!v}; return ${model};`;
+          }
+        } else {
+          code = `${model}=\`${v}\`; return ${model};`
+        }
+        let fnv: any;
         try {
-          new Function(value + "='" + v + "'")()
+          fnv = new Function('$el', code)(el)
         } catch (err) {
           onError(err, el);
         }
+        if (el[el.__valueName] !== fnv) {
+          el[el.__valueName] = fnv;
+        };
         queryUpdate(query);
       }
-    }
-    if (el.__models) {
-      bindList.forEach(bindOn);
-      el.__models;
+
+      el.__models = true;
     }
 
     let v: any;
-    try {
-      v = (new Function('return ' + value)()) || '';
-    } catch (err) {
-      console.error(el, 'return ' + value)
+    if (el.__valueIsBool) {
+      const valValue = el.getAttribute('v-value');
+      const strValue = el.getAttribute('value');
+      if (strValue) {
+        try {
+          v = new Function(`return ${model}['${strValue}']`)()
+        } catch (err) {
+          onError(err, el);
+        }
+      } else if (valValue) {
+        try {
+          v = new Function(`return ${model}[${valValue}]`)()
+        } catch (err) {
+          onError(err, el);
+        }
+      } else {
+        try {
+          v = (new Function('return ' + model)()) || '';
+        } catch (err) {
+          console.error(el, 'return ' + model)
+        }
+      }
+    } else {
+      try {
+        v = (new Function('return ' + model)()) || '';
+      } catch (err) {
+        console.error(el, 'return ' + model)
+      }
     }
 
-    if (el.value !== v) {
+    if (el[el.__valueName] !== v) {
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          el.value = v;
-        })
+        el[el.__valueName] = v;
       })
-    }
+    };
+
+
   }
 
-  checkSingle(node, bind, 'bind', '[bind]')
+  checkSingle(node, bind, 'model', '[model]')
 }

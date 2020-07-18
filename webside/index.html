@@ -11,8 +11,61 @@
 </head>
 
 <body violent style="visibility: hidden;">
+  <input type="checkbox" model="data.show" /><span>hello</span>
+  <input type="date" model="data.show">aaaaaaaa</input> <span>hello</span>
+  <select model="data.name">
+    <option disabled value="">请选择</option>
+    <option>dog</option>
+    <option>cat</option>
+    <option>fish</option>
+  </select>
+  <select for="['dog', 'cat', 'fffffish']" multiple model="data.name">
+    <option text>$v</option>
+  </select>
+
+
+  <div>
+    <input model="data.msg" placeholder="edit me">
+    <p text>"Message is: " +data.msg</p>
+  </div>
+
+  <div>
+    <input type="checkbox" id="checkbox" model="checked">
+    <label for="checkbox" text>checked</label>
+  </div>
+
+  <div>
+    <span>Multiline message is:</span>
+    <p style="white-space: pre-line;" text>data.msg</p>
+    <br>
+    <textarea model="data.msg" placeholder="add multiple lines"></textarea>
+  </div>
+
+  <div>
+    <input type="checkbox" id="jack" value="Jack" model="checkedNames">
+    <label for="jack">Jack</label>
+    <input type="checkbox" id="john" value="John" model="checkedNames">
+    <label for="john">John</label>
+    <input type="checkbox" id="mike" value="Mike" model="checkedNames">
+    <label for="mike">Mike</label>
+    <br>
+    <span text>"Checked names:" + JSON.stringify(checkedNames) </span>
+  </div>
+
+  <div>
+    <div id="example-4">
+      <input type="radio" value="One" model="picked">
+      <label>One</label>
+      <br>
+      <input type="radio" value="Two" model="picked">
+      <label >Two</label>
+      <br>
+      <span text>"radio: "+JSON.stringify(picked)</span>
+    </div>
+  </div>
+
   <div v-style="data.show?'background:#f00':'background:#fff'" css="fs-4xl">dog</div>
-  <div v-onclick="function(){data.show = !data.show; console.log(data)}">change show</div>
+  <div v-onclick="function(){data.show = !data.show;}">change show</div>
   <div show="data.show">hello</div>
   <div css="bg-blue-200 w-3xl h-3xl">
     <div show="data.show">
@@ -26,8 +79,13 @@
     <div css="w-3/12 h-6xl" slot="editor"></div>
   </template>
   <script>
+    var picked = {};
+    var checked = true;
+    var checkedNames = {Jack:true};
     var data = {
       show: true,
+      name: 'fish',
+      msg: '',
     }
     setTimeout(function () {
       const h = `
