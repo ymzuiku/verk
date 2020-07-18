@@ -23,13 +23,25 @@ export default function bindIf(node: HTMLAny) {
         el.setAttribute("uuid", id);
         const tmp = document.createElement("div");
         tmp.innerHTML = el.innerHTML;
+        const scList: string[] = [];
+        tmp.querySelectorAll("script").forEach(function (sc) {
+          scList.push(sc.innerHTML);
+          sc.remove();
+        });
         tmp.querySelectorAll("*").forEach((v) => {
           v.setAttribute(id, "");
         });
         el.insertAdjacentHTML("afterend", tmp.innerHTML);
+        scList.forEach(function (sc) {
+          try {
+            new Function(sc)();
+          } catch (err) {
+            onError(err, el);
+          }
+        });
       }
     } else if (id) {
-      document.body.querySelectorAll("[" + id + "]").forEach((v) => {
+      document.body.querySelectorAll("[" + id + "]").forEach(function (v) {
         v.remove();
       });
       el.removeAttribute("uuid");

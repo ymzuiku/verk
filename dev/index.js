@@ -117,10 +117,23 @@
                   el.setAttribute("uuid", id);
                   var tmp = document.createElement("div");
                   tmp.innerHTML = el.innerHTML;
+                  var scList_1 = [];
+                  tmp.querySelectorAll("script").forEach(function (sc) {
+                      scList_1.push(sc.innerHTML);
+                      sc.remove();
+                  });
                   tmp.querySelectorAll("*").forEach(function (v) {
                       v.setAttribute(id, "");
                   });
                   el.insertAdjacentHTML("afterend", tmp.innerHTML);
+                  scList_1.forEach(function (sc) {
+                      try {
+                          new Function(sc)();
+                      }
+                      catch (err) {
+                          onError(err, el);
+                      }
+                  });
               }
           }
           else if (id) {

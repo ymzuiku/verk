@@ -80,7 +80,7 @@
       <h2 text>data.show</h2>
     </div>
   </div>
-  <template v-by="editor" v-props="{onChange:console.log}">
+  <template v-if="data.show" v-by="editor" v-props="{onChange:console.log}">
     <div v-loading>loading...</div>
     <div v-css="w-3/12 h-6xl" slot="editor"></div>
   </template>
