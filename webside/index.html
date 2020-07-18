@@ -1,114 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="icon" href="data:image/ico;base64,aWNv" />
+    <script src="/verk/index.js"></script>
+    <script flavorcss-effect src="/verk/bindcss.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="icon" href="data:image/ico;base64,aWNv">
-  <script src="/verk/index.js"></script>
-  <script flavorcss-effect src="/verk/bindcss.js"></script>
-</head>
-
-<body v-verk style="visibility: hidden;">
-  <input type="checkbox" v-model="data.show" /><span>hello</span>
-  <input type="date" v-model="data.show">aaaaaaaa</input> <span>hello</span>
-  <select v-model="data.name">
-    <option disabled value="">请选择</option>
-    <option>dog</option>
-    <option>cat</option>
-    <option>fish</option>
-  </select>
-  <select v-for="['dog', 'cat', 'fffffish']" multiple v-model="data.name">
-    <option v-text>$v</option>
-  </select>
-
-
-  <div>
-    <input v-model="data.msg" placeholder="edit me">
-    <p text>"Message is: " +data.msg</p>
-  </div>
-
-  <div>
-    <input type="checkbox" id="checkbox" v-model="checked">
-    <label for="checkbox" text>checked</label>
-  </div>
-
-  <div>
-    <span>Multiline message is:</span>
-    <p style="white-space: pre-line;" v-text>data.msg</p>
-    <br>
-    <textarea v-model="data.msg" placeholder="add multiple lines"></textarea>
-  </div>
-  <template v-if="data.show">
-    <div>hello------------------------------------</div>
-    <script>
-      console.log('hello v-if');
-    </script>
-  </template>
-
-  <div>
-    <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
-    <label for="jack">Jack</label>
-    <input type="checkbox" id="john" value="John" v-model="checkedNames">
-    <label for="john">John</label>
-    <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
-    <label for="mike">Mike</label>
-    <br>
-    <span v-text>"Checked names:" + JSON.stringify(checkedNames)</span>
-  </div>
-
-  <div>
-    <div id="example-4">
-      <input type="radio" value="One" v-model="picked">
-      <label>One</label>
-      <br>
-      <input type="radio" value="Two" v-model="picked">
-      <label>Two</label>
-      <br>
-      <span v-text>"radio: "+JSON.stringify(picked)</span>
+  <body v-verk style="visibility: hidden;">
+    <div v-css="flex-1 h-6xl radius-lg shadow m-xl bg-gray-100 p-md">
+      <template
+        v-init="monaco_live"
+      >
+      </template>
     </div>
-  </div>
-
-  <div v-style="data.show?'background:#f00':'background:#fff'" css="fs-4xl">dog</div>
-  <div v-onclick="function(){data.show = !data.show;}">change show</div>
-  <div v-show="data.show">hello</div>
-  <div v-css="bg-blue-200 w-3xl h-3xl">
-    <div v-show="data.show">
-      <h1>hello</h1>
-      <h2>world</h2>
-      <h2 text>data.show</h2>
-    </div>
-  </div>
-  <template v-if="data.show" v-by="editor" v-props="{onChange:console.log}">
-    <div v-loading>loading...</div>
-    <div v-css="w-3/12 h-6xl" slot="editor"></div>
-  </template>
-  <!-- <template v-if="data.show" v-by="editor" v-props="{onChange:console.log}">
-    <div v-loading>loading...</div>
-    <div v-css="w-3/12 h-6xl" slot="editor"></div>
     <script>
-      return {
-        $mount:(state)=>{
-          console.log('aaaaa', state);
-        }
-      }
+      var picked = {};
+      var checked = true;
+      var checkedNames = { Jack: true };
+      var data = {
+        show: true,
+        name: "fish",
+        msg: "",
+      };
     </script>
-  </template> -->
-  <script>
-    var picked = {};
-    var checked = true;
-    var checkedNames = { Jack: true };
-    var data = {
-      show: true,
-      name: 'fish',
-      msg: '',
-    }
-  </script>
-</body>
+  </body>
 
-<section v-verk>
-  <template v-fetch="/editor/index.html"></template>
-</section>
-
+  <section v-verk>
+    <template v-fetch="/monaco/live_editor.html"></template>
+  </section>
 </html>

@@ -148,7 +148,7 @@
               el.removeAttribute("uuid");
           }
       }
-      checkSingle(node, bind, "v-if", "[v-if]:not([v-by])");
+      checkSingle(node, bind, "v-if", "[v-if]:not([v-init])");
   }
 
   var von = /^v-on/;
@@ -489,10 +489,11 @@
   function comTemplate(node) {
       node.querySelectorAll("template[v-component]").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
-              var name, frag, sc;
+              var name, live, frag, sc;
               return __generator(this, function (_a) {
                   name = tmp.getAttribute("v-component");
-                  if (!name || coms[name]) {
+                  live = tmp.getAttribute("v-live-component");
+                  if (!live && (!name || coms[name])) {
                       return [2 /*return*/];
                   }
                   frag = document.createElement("div");
@@ -549,8 +550,8 @@
           }
       });
   }
-  function byTemplate(node) {
-      node.querySelectorAll("template[v-by]:not([uuid])").forEach(function (tmp) {
+  function initTemplate(node) {
+      node.querySelectorAll("template[v-init]:not([uuid])").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
               function $ref(k) {
                   return document.body.querySelector("[" + refs[k] + "]");
@@ -562,7 +563,7 @@
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
-                          name = tmp.getAttribute("v-by");
+                          name = tmp.getAttribute("v-init");
                           if (!name)
                               return [2 /*return*/];
                           if (!fixIfAndRoute(tmp)) {
@@ -743,7 +744,7 @@
       fetchTemplate(node);
       comTemplate(node);
       requestAnimationFrame(function () {
-          byTemplate(node);
+          initTemplate(node);
       });
   }
 
@@ -803,7 +804,7 @@
   });
   var middlewareByUpdate = [
       updateTemplate,
-      byTemplate,
+      initTemplate,
       bindIf,
       bindFor,
       bindShow,

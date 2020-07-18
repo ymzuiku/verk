@@ -47,5 +47,5 @@ export default function bindIf(node: HTMLAny) {
       el.removeAttribute("uuid");
     }
   }
-  checkSingle(node, bind, "v-if", "[v-if]:not([v-by])");
+  checkSingle(node, bind, "v-if", "[v-if]:not([v-init])");
 }

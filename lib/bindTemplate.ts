@@ -32,8 +32,9 @@ function comTemplate(node: HTMLAny) {
   (node.querySelectorAll("template[v-component]") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
       const name = tmp.getAttribute("v-component")!;
+      const live = tmp.getAttribute("v-live-component");
 
-      if (!name || coms[name]) {
+      if (!live && (!name || coms[name])) {
         return;
       }
 
@@ -101,10 +102,10 @@ export function updateTemplate(node: HTMLAny) {
   });
 }
 
-export function byTemplate(node: HTMLAny) {
-  (node.querySelectorAll("template[v-by]:not([uuid])") as any).forEach(
+export function initTemplate(node: HTMLAny) {
+  (node.querySelectorAll("template[v-init]:not([uuid])") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
-      const name = tmp.getAttribute("v-by");
+      const name = tmp.getAttribute("v-init");
       if (!name) return;
 
       if (!fixIfAndRoute(tmp)) {
@@ -300,6 +301,6 @@ export default function bindTemplate(node: HTMLAny) {
   fetchTemplate(node);
   comTemplate(node);
   requestAnimationFrame(function () {
-    byTemplate(node);
+    initTemplate(node);
   });
 }

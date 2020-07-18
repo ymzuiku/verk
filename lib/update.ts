@@ -5,7 +5,7 @@ import bindText from "./bindText";
 import bindModel from "./bindModel";
 import bindWatch from "./bindWatch";
 import bindShow from "./bindShow";
-import { updateTemplate, byTemplate } from "./bindTemplate";
+import { updateTemplate, initTemplate } from "./bindTemplate";
 import { ReducerList } from "./utils";
 import bindEvent from "./bindEvent";
 import bindTemplate from "./bindTemplate";
@@ -50,7 +50,7 @@ export const updateAttrs = ReducerList(function (node) {
 
 export const middlewareByUpdate: Function[] = [
   updateTemplate,
-  byTemplate,
+  initTemplate,
   bindIf,
   bindFor,
   bindShow,

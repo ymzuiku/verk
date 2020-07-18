@@ -31,14 +31,14 @@ Includ or download the verk.js:
 - [x] template/v-component $dir
 - [x] template/v-component $parent
 
-- [x] template/v-by
-- [x] template/v-by v-slot
-- [x] template/v-by v-props
-- [x] template/v-by v-loading
-- [x] template/v-by v-if
-- [x] template/v-by v-route
-- [x] template/v-by v-ref
-- [x] template/v-by $renderState
+- [x] template/v-init
+- [x] template/v-init v-slot
+- [x] template/v-init v-props
+- [x] template/v-init v-loading
+- [x] template/v-init v-if
+- [x] template/v-init v-route
+- [x] template/v-init v-ref
+- [x] template/v-init $renderState
 
 - [x] template/v-fetch
 

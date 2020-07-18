@@ -1,11 +1,5 @@
-<template v-fetch="./runner.html"></template>
-<template v-component="dog">
-  <div>the-dog</div>
-</template>
-<template v-component="editor">
-  <template v-by="editor-runner"></template>
-  <template v-by="dog"></template>
-  <slot v-ref="editor" v-css="h-6xl w-12/12 bg-gray-100" name="editor"></slot>
+<template v-component="monaco">
+  <div v-ref="editor" v-css="w-12/12 h-12/12" name="root"></div>
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
     const state = {
@@ -19,30 +13,30 @@
             ].join("\n"),
             language: "javascript",
             automaticLayout: true,
-            fontSize: 13,
+            fontSize: 12,
             scrollbar: {
-              // vertical: "hidden",
+              vertical: "hidden",
               verticalScrollbarSize: 7,
               verticalHasArrows: false,
               horizontalSliderSize: 0,
               horizontalHasArrows: false,
               horizontal: "hidden",
             },
+            // lineNumbers: "off",
             lineNumbersMinChars: 2,
-            lineNumbers: "off",
             lineDecorationsWidth: 0,
             codeLens: false,
             cursorStyle: "line-thin",
             cursorBlinking: "blink",
-            theme: "poet",
+            // theme: "verk",
             find: {
               addExtraSpaceOnTop: true,
             },
             renderLineHighlight: "all",
             renderIndentGuides: false,
             minimap: {
-              enabled: false,
-              showSlider: "always",
+              // enabled: false,
+              // showSlider: "always",
               scale: 2,
               maxColumn: 20,
             },
