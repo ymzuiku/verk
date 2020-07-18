@@ -1,17 +1,5 @@
 <template v-fetch="./editor.html"></template>
 <template v-component="monaco_live">
-  <template code="v-show">
-    <template v-init="live_dog"></template>
-    <template v-component="live_dog">
-      <div v-show="$state.hello">hello verk</div>
-      <script>
-        return {
-          hello: true,
-        };
-      </script>
-    </template>
-  </template>
-
   <div v-css="row start-start h-12/12 w-12/12">
     <template v-init="monaco" v-props="$state">
       <div v-loading>loading...</div>
@@ -19,33 +7,40 @@
     <div v-ref="runner" v-css="w-12/12 h-12/12"></div>
   </div>
   <script>
-    // console.log(document.body.querySelector('[code="v-show"]'));
     const state = {
+      time: 500,
       onChange: function (code) {
         $ref("runner").innerHTML = code;
         $verk.update($ref("runner"));
       },
       options: {
-        value: "dog",
+        value: "<div>hello</div>",
         language: "html",
         ...$props.options,
       },
       $mount: function () {
         const el = $ref("runner");
-        // el.innerHTML = state.options.value;
-        // el.querySelectorAll("[v-component]").forEach(function (tmp) {
-        //   $verk.removeComponents(tmp.getattribute("v-component"));
-        // });
-        // try {
-        //   // $ref("runner")
-        //   //   .querySeletorAll("script")
-        //   //   .forEach(function (sc) {
-        //   //     eval(sc.innerHTML);
-        //   //   });
-        //   $verk.update($ref("runner"));
-        // } catch (err) {}
+        // state.options.value = $ref("value").innerHTML.trim();
+        el.innerHTML = state.options.value;
+        try {
+          $verk.update($ref("runner"));
+        } catch (err) {}
       },
     };
     return state;
   </script>
 </template>
+
+
+<!-- 
+<template v-init="dog"></template>
+<template v-component="dog" v-live-component>
+  <div v-show="$state.hello">hello verk</div>
+  <script>
+    return {
+      hello: true,
+    };
+  </script>
+</template>
+
+ -->

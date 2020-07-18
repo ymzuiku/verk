@@ -123,7 +123,7 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./umd/index.js", "./webside/verk/index.js");
-    fs.copySync("./umd/bindcss.js", "./webside/verk/bindcss.js");
+    fs.copySync("./dev/index.js", "./webside/verk/index.js");
+    fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }
 });

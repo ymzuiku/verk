@@ -11,7 +11,7 @@ import bindEvent from "./bindEvent";
 import bindTemplate from "./bindTemplate";
 import bindAttr from "./bindAttr";
 
-const vof = /^v-(?!if|for|model|show|by|fetch|component|css|watch)/;
+const vof = /^v-(?!if|for|model|show|init|fetch|component|watch|css)/;
 const von = /^v-on/;
 
 export function setVerk(node: HTMLElement) {

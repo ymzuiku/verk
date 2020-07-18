@@ -492,7 +492,7 @@
               var name, live, frag, sc;
               return __generator(this, function (_a) {
                   name = tmp.getAttribute("v-component");
-                  live = tmp.getAttribute("v-live-component");
+                  live = tmp.hasAttribute("v-live-component");
                   if (!live && (!name || coms[name])) {
                       return [2 /*return*/];
                   }
@@ -768,7 +768,7 @@
       checkSingle(node, bind, "verk-attr", "[verk-attr]");
   }
 
-  var vof = /^v-(?!if|for|model|show|by|fetch|component|css|watch)/;
+  var vof = /^v-(?!if|for|model|show|init|fetch|component|watch|css)/;
   var von$1 = /^v-on/;
   function setVerk(node) {
       node.querySelectorAll("*").forEach(function (el) {

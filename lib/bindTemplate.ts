@@ -32,7 +32,7 @@ function comTemplate(node: HTMLAny) {
   (node.querySelectorAll("template[v-component]") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
       const name = tmp.getAttribute("v-component")!;
-      const live = tmp.getAttribute("v-live-component");
+      const live = tmp.hasAttribute("v-live-component");
 
       if (!live && (!name || coms[name])) {
         return;

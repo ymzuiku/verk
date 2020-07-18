@@ -9,23 +9,10 @@
     <script flavorcss-effect src="/verk/bindcss.js"></script>
   </head>
 
-  <body v-verk style="visibility: hidden;">
-    <div v-css="flex-1 h-6xl radius-lg shadow m-xl bg-gray-100 p-md">
-      <template
-        v-init="monaco_live"
-      >
-      </template>
+  <body v-verk style="visibility: hidden;" v-css="bg-gray-100">
+    <div v-css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md">
+      <template v-init="monaco_live"></template>
     </div>
-    <script>
-      var picked = {};
-      var checked = true;
-      var checkedNames = { Jack: true };
-      var data = {
-        show: true,
-        name: "fish",
-        msg: "",
-      };
-    </script>
   </body>
 
   <section v-verk>
