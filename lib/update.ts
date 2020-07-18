@@ -14,7 +14,7 @@ import bindAttr from './bindAttr';
 const vof = /^v-/
 const von = /^v-on/
 
-export function setViolent(node: HTMLElement) {
+export function setVerk(node: HTMLElement) {
   node.querySelectorAll('*').forEach(function (el) {
     if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
       return;
@@ -39,7 +39,7 @@ export function setViolent(node: HTMLElement) {
 
 
 export function queryUpdate(query: string | null) {
-  query = query && query !== '*' ? query : '[violent]';
+  query = query && query !== '*' ? query : '[verk]';
   document.querySelectorAll(query).forEach(function (v) {
     updateAttrs(v);
   })

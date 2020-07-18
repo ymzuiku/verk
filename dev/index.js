@@ -598,7 +598,7 @@
                               el.removeAttribute('ref');
                               el.setAttribute(refs[ref], "1");
                           });
-                          setViolent(div);
+                          setVerk(div);
                           if (!div.querySelector('[defer]')) return [3 /*break*/, 6];
                           return [4 /*yield*/, srcLoader(div, 'script[src]:not([defer])')];
                       case 1:
@@ -717,7 +717,7 @@
 
   var vof = /^v-/;
   var von$1 = /^v-on/;
-  function setViolent(node) {
+  function setVerk(node) {
       node.querySelectorAll('*').forEach(function (el) {
           if (el.getAttribute('bind-on') || el.getAttribute('bind-attr')) {
               return;
@@ -741,7 +741,7 @@
       });
   }
   function queryUpdate(query) {
-      query = query && query !== '*' ? query : '[violent]';
+      query = query && query !== '*' ? query : '[verk]';
       document.querySelectorAll(query).forEach(function (v) {
           updateAttrs(v);
       });
@@ -763,7 +763,7 @@
       });
   });
 
-  var $violent = {
+  var $verk = {
       update: updateAll,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,
@@ -771,8 +771,8 @@
       ReducerList: ReducerList,
   };
   window.addEventListener('load', function () {
-      document.querySelectorAll('[violent]').forEach(function (el) {
-          setViolent(el);
+      document.querySelectorAll('[verk]').forEach(function (el) {
+          setVerk(el);
           updateAll(el);
           setTimeout(function () {
               if (el.style.visibility === 'hidden') {
@@ -782,6 +782,6 @@
       });
   });
 
-  return $violent;
+  return $verk;
 
 }));

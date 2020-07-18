@@ -1,8 +1,8 @@
 import './fixParams';
-import { middlewareByUpdate, updateAll, middlewareByInit, setViolent } from './update'
+import { middlewareByUpdate, updateAll, middlewareByInit, setVerk } from './update'
 import { ReducerList, Reducer } from './utils';
 
-const $violent = {
+const $verk = {
   update: updateAll,
   middlewareByUpdate,
   middlewareByInit,
@@ -11,8 +11,8 @@ const $violent = {
 };
 
 window.addEventListener('load', function () {
-  (document.querySelectorAll('[violent]') as any).forEach(function (el: HTMLElement) {
-    setViolent(el);
+  (document.querySelectorAll('[verk]') as any).forEach(function (el: HTMLElement) {
+    setVerk(el);
     updateAll(el);
     setTimeout(() => {
       if (el.style.visibility === 'hidden') {
@@ -22,4 +22,4 @@ window.addEventListener('load', function () {
   });
 });
 
-export default $violent;
+export default $verk;

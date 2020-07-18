@@ -646,8 +646,8 @@
       }
       checkSingle(node, bind, 'css', '[css]');
   }
-  if (typeof window.$violent !== 'undefined') {
-      window.$violent.middlewareByUpdate.push(bindCss);
+  if (typeof window.$verk !== 'undefined') {
+      window.$verk.middlewareByUpdate.push(bindCss);
   }
 
   return bindCss;

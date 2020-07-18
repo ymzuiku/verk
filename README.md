@@ -1,40 +1,39 @@
-# violent
+# Verk
 
 ## Use
 
-Includ or download the violent.js:
+Includ or download the verk.js:
 
 ```html
-<script src="https://unpkg.com/violent@0.0.2/umd/index.js"></script>
+<script src="https://unpkg.com/verk@0.0.1/umd/index.js"></script>
 ```
 
 ## Route map
 
 ### Base
 
-- [x] if
-- [x] show
-- [x] forin
-- [x] for in forin
-- [x] text
-- [x] bind
-- [x] model
-- [x] css
-- [x] runtime flavorcss
-- [x] watch
+- [x] v-if
+- [x] v-show
+- [x] v-for
+- [x] v-for in v-for
+- [x] v-text
+- [x] v-model
+- [x] v-css runtime flavorcss
+- [x] v-watch
+- [x] v-[any attr]
 
 ### Template
 
-- [x] template/component
-- [x] template/fetch
-- [x] template/by
-- [x] template/by state
-- [x] template/by props
-- [x] template/by slot
-- [x] template/by loading
-- [x] template/by renderState
-- [x] template/by if
-- [x] template/by route
+- [x] template/v-component
+- [x] template/v-fetch
+- [x] template/v-by
+- [x] template/v-by state
+- [x] template/v-by props
+- [x] template/v-by slot
+- [x] template/v-by loading
+- [x] template/v-by renderState
+- [x] template/v-by if
+- [x] template/v-by route
 
 ### Use Other script
 
