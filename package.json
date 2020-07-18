@@ -1,6 +1,6 @@
 {
-  "name": "violent",
-  "version": "0.0.3",
+  "name": "verk",
+  "version": "0.0.1",
   "description": "Only a library, Use library create web application, We don't need a framework",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",
@@ -10,7 +10,6 @@
     "lib": "node rollup.config.js"
   },
   "devDependencies": {
-    "codemirror": "^5.55.0",
     "monaco-editor": "^0.20.0",
     "rollup": "^1.24.0",
     "rollup-plugin-node-resolve": "^5.2.0",
