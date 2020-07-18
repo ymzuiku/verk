@@ -7,30 +7,32 @@
     <div ref="runner" css="w-12/12 h-12/12"></div>
   </div>
   <script>
+    const { props, ref, refs, parent, id, verk } = $hook;
+
     const editorProps = {
       time: 10,
       setValue: function (cb) {
         cb();
       },
       onChange: function (code) {
-        const el = $ref("runner");
+        const el = ref("runner");
         el.innerHTML = code;
         try {
-          $parent.querySelectorAll("[component]").forEach(function (v) {
+          parent.querySelectorAll("[component]").forEach(function (v) {
             const name = v.getAttribute("component");
-            $verk.removeComponent(name);
+            verk.removeComponent(name);
           });
-          $verk.update(el);
+          verk.update(el);
         } catch (err) {}
       },
       options: {
         value: "<div>hello</div>",
         language: "html",
-        ...$props.options,
+        ...props.options,
       },
       $mount: function (state) {
-        if ($props.getValue) {
-          Promise.resolve($props.getValue).then(function (v) {
+        if (props.getValue) {
+          Promise.resolve(props.getValue).then(function (v) {
             editorProps.onChange(v);
             state.editor.setValue(v);
           });

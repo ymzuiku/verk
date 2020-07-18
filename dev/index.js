@@ -367,7 +367,7 @@
   function bindWatch(node) {
       function bind(el) {
           try {
-              var v = new Function("$el", el.getAttribute("watch"))(el);
+              var v = new Function("$el", "return " + el.getAttribute("watch"))(el);
               if (typeof v === "function") {
                   v();
               }
@@ -503,7 +503,7 @@
                   frag.innerHTML = tmp.innerHTML;
                   sc = frag.querySelector("script:not([src])");
                   if (sc) {
-                      comScripts[name] = new Function("$parent", "$id", "$props", "$ref", "$refs", sc.innerHTML);
+                      comScripts[name] = new Function("$hook", sc.innerHTML);
                       sc.remove();
                       tmp.remove();
                   }
@@ -556,13 +556,7 @@
   function initTemplate(node) {
       node.querySelectorAll("template[init]:not([uuid])").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
-              function $ref(k) {
-                  return document.body.querySelector("[" + refs[k] + "]");
-              }
-              function $refs(k) {
-                  return document.body.querySelectorAll("[" + refs[k] + "]");
-              }
-              var name, loading, lid, nextEl, comp, props, baseId, id, pid, div, html, refs, sc, res, useLoading;
+              var name, loading, lid, nextEl, comp, baseId, id, $hook, props, div, html, refs, sc, res, useLoading;
               return __generator(this, function (_a) {
                   switch (_a.label) {
                       case 0:
@@ -584,27 +578,36 @@
                           if (!comp) {
                               return [2 /*return*/];
                           }
-                          props = tmp.getAttribute("props");
                           baseId = uuid();
                           id = name + "_" + baseId;
-                          pid = id + "_props";
+                          $hook = {
+                              id: id,
+                              props: {},
+                              state: {},
+                              verk: window.$verk,
+                              parent: tmp.parentElement,
+                              fragment: tmp.content,
+                              ref: undefined,
+                              refs: undefined,
+                          };
+                          window[id] = $hook;
                           tmp.setAttribute("uuid", id);
                           tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
+                          props = tmp.getAttribute("props");
                           if (props) {
                               try {
-                                  window[pid] = new Function("return " + props)();
+                                  $hook.props = new Function("return " + props)();
                               }
                               catch (err) {
                                   onError(err, tmp, props);
                               }
                           }
-                          else {
-                              window[pid] = {};
-                          }
                           div = document.createElement("div");
-                          html = comp.replace(/\$state/g, id);
+                          html = comp;
+                          html = html.replace(/\$hook/g, id);
+                          html = html.replace(/\$state/g, id + ".state");
+                          html = html.replace(/\$props/g, id + ".props");
                           html = html.replace(/\$id/g, "'" + id + "'");
-                          html = html.replace(/\$props/g, pid);
                           div.innerHTML = html;
                           div.querySelectorAll("*").forEach(function (el, i) {
                               el.setAttribute(id, (i + 1));
@@ -620,22 +623,6 @@
                                   });
                                   div.replaceChild(next.cloneNode(true), el);
                               }
-                              // init get props
-                              // const scEl = tmp.content.querySelector("script");
-                              // if (scEl) {
-                              //   let v: any;
-                              //   try {
-                              //     v = new Function("$parent", "$id", scEl.innerText)(
-                              //       tmp.parentElement,
-                              //       id
-                              //     );
-                              //   } catch (err) {
-                              //     onError(err, scEl);
-                              //   }
-                              //   if (v) {
-                              //     (window as any)[pid] = v;
-                              //   }
-                              // }
                           });
                           refs = {};
                           div.querySelectorAll("[ref]").forEach(function (el) {
@@ -645,6 +632,12 @@
                               el.setAttribute(refs[ref], "1");
                           });
                           setVerk(div);
+                          $hook.ref = function (k) {
+                              return document.body.querySelector("[" + refs[k] + "]");
+                          };
+                          $hook.refs = function (k) {
+                              return document.body.querySelectorAll("[" + refs[k] + "]");
+                          };
                           if (!div.querySelector("[defer]")) return [3 /*break*/, 6];
                           return [4 /*yield*/, srcLoader(div, "script[src]:not([defer])")];
                       case 1:
@@ -672,7 +665,7 @@
                               try {
                                   // window[pid] 为之前计算好的 $props
                                   // 通过计算获取 $state, 赋值至 window[id]
-                                  res = sc(tmp.parentElement, id, window[pid], $ref, $refs);
+                                  res = sc($hook);
                               }
                               catch (err) {
                                   onError(err, tmp, sc);
@@ -688,21 +681,13 @@
                           }
                           tmp.insertAdjacentHTML("afterend", div.innerHTML);
                           Promise.resolve(res).then(function (v) {
-                              window[id] = v;
-                              if (window[pid] && window[pid].$willMount) {
-                                  window[pid].$willMount(window[id]);
-                              }
-                              if (window[id] && window[id].$willMount) {
-                                  window[id].$willMount(window[id]);
-                              }
+                              $hook.state = v;
+                              $hook.state.$append && $hook.state.$append(v);
+                              $hook.props.$append && $hook.props.$append(v);
                               requestAnimationFrame(function () {
                                   updateAll(tmp.parentElement, function () {
-                                      if (window[pid] && window[pid].$mount) {
-                                          window[pid].$mount(window[id]);
-                                      }
-                                      if (window[id] && window[id].$mount) {
-                                          window[id].$mount(window[id]);
-                                      }
+                                      $hook.state.$mount && $hook.state.$mount(v);
+                                      $hook.props.$mount && $hook.props.$mount(v);
                                   });
                               });
                           });

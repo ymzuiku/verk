@@ -47,14 +47,7 @@ function comTemplate(node: HTMLAny) {
     frag.innerHTML = tmp.innerHTML;
     const sc = frag.querySelector("script:not([src])");
     if (sc) {
-      comScripts[name] = new Function(
-        "$parent",
-        "$id",
-        "$props",
-        "$ref",
-        "$refs",
-        sc.innerHTML
-      );
+      comScripts[name] = new Function("$hook", sc.innerHTML);
       sc.remove();
       tmp.remove();
     }
@@ -133,27 +126,38 @@ export function initTemplate(node: HTMLAny) {
       }
 
       // inject props
-      const props = tmp.getAttribute("props");
       const baseId = uuid();
       const id = name + "_" + baseId;
-      const pid = id + "_props";
+      const $hook = {
+        id,
+        props: {} as any,
+        state: {} as any,
+        verk: (window as any).$verk,
+        parent: tmp.parentElement,
+        fragment: tmp.content,
+        ref: undefined as any,
+        refs: undefined as any,
+      };
+      (window as any)[id] = $hook;
+
       tmp.setAttribute("uuid", id);
       tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
 
+      const props = tmp.getAttribute("props");
       if (props) {
         try {
-          (window as any)[pid] = new Function("return " + props)();
+          $hook.props = new Function("return " + props)();
         } catch (err) {
           onError(err, tmp as any, props);
         }
-      } else {
-        (window as any)[pid] = {};
       }
 
       const div = document.createElement("div");
-      let html = comp.replace(/\$state/g, id);
+      let html = comp;
+      html = html.replace(/\$hook/g, id);
+      html = html.replace(/\$state/g, id + ".state");
+      html = html.replace(/\$props/g, id + ".props");
       html = html.replace(/\$id/g, "'" + id + "'");
-      html = html.replace(/\$props/g, pid);
       div.innerHTML = html;
 
       div.querySelectorAll("*").forEach((el, i) => {
@@ -170,23 +174,6 @@ export function initTemplate(node: HTMLAny) {
           });
           div.replaceChild(next.cloneNode(true), el);
         }
-
-        // init get props
-        // const scEl = tmp.content.querySelector("script");
-        // if (scEl) {
-        //   let v: any;
-        //   try {
-        //     v = new Function("$parent", "$id", scEl.innerText)(
-        //       tmp.parentElement,
-        //       id
-        //     );
-        //   } catch (err) {
-        //     onError(err, scEl);
-        //   }
-        //   if (v) {
-        //     (window as any)[pid] = v;
-        //   }
-        // }
       });
 
       const refs = {} as any;
@@ -199,13 +186,13 @@ export function initTemplate(node: HTMLAny) {
 
       setVerk(div);
 
-      function $ref(k: string) {
+      $hook.ref = function (k: string) {
         return document.body.querySelector("[" + refs[k] + "]");
-      }
+      };
 
-      function $refs(k: string) {
+      $hook.refs = function (k: string) {
         return document.body.querySelectorAll("[" + refs[k] + "]");
-      }
+      };
 
       if (div.querySelector("[defer]")) {
         await srcLoader(div, "script[src]:not([defer])");
@@ -223,7 +210,7 @@ export function initTemplate(node: HTMLAny) {
         try {
           // window[pid] 为之前计算好的 $props
           // 通过计算获取 $state, 赋值至 window[id]
-          res = sc(tmp.parentElement, id, (window as any)[pid], $ref, $refs);
+          res = sc($hook);
         } catch (err) {
           onError(err, tmp as any, sc);
         }
@@ -238,23 +225,16 @@ export function initTemplate(node: HTMLAny) {
             v.remove();
           });
       }
+
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
-        (window as any)[id] = v;
-        if ((window as any)[pid] && (window as any)[pid].$willMount) {
-          (window as any)[pid].$willMount((window as any)[id]);
-        }
-        if ((window as any)[id] && (window as any)[id].$willMount) {
-          (window as any)[id].$willMount((window as any)[id]);
-        }
+        $hook.state = v;
+        $hook.state.$append && $hook.state.$append(v);
+        $hook.props.$append && $hook.props.$append(v);
         requestAnimationFrame(function () {
           updateAll(tmp.parentElement, function () {
-            if ((window as any)[pid] && (window as any)[pid].$mount) {
-              (window as any)[pid].$mount((window as any)[id]);
-            }
-            if ((window as any)[id] && (window as any)[id].$mount) {
-              (window as any)[id].$mount((window as any)[id]);
-            }
+            $hook.state.$mount && $hook.state.$mount(v);
+            $hook.props.$mount && $hook.props.$mount(v);
           });
         });
       });

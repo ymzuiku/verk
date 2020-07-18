@@ -3,10 +3,12 @@
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
     return new Promise(function (res) {
+      const { id, ref, props, verk } = $hook;
+
       const state = {};
 
       function init() {
-        const editor = window.monaco.editor.create($ref("editor"), {
+        const editor = window.monaco.editor.create(ref("editor"), {
           value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
             "\n"
           ),
@@ -41,17 +43,20 @@
           },
           // wrappingIndent: "indent",
           wordWrap: "on",
-          ...$props.options,
+          ...props.options,
         });
-        if ($props.onChange) {
+        if (props.onChange) {
           const editorModel = editor.getModel();
-          const reducer = $verk.Reducer(function () {
+          const reducer = verk.Reducer(function () {
             const v = editor.getValue();
-            $props.onChange(v);
-          }, $props.time || 60);
+            props.onChange(v);
+          }, props.time || 60);
           editorModel.onDidChangeContent(reducer);
         }
         state.editor = editor;
+        if (props.onMount) {
+          props.onMount(state);
+        }
         res(state);
       }
 
