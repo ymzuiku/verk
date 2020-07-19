@@ -1,8 +1,9 @@
 import "./fixParams";
 import { ReducerList, Reducer, uuid } from "./utils";
-import { removeComponent } from './bindTemplate';
+import { removeComponent } from "./bindTemplate/removeComponent";
+declare function update(el: HTMLElement): void;
 declare const $verk: {
-    update: (node: any, cb?: Function | undefined) => void;
+    update: typeof update;
     middlewareByUpdate: Function[];
     middlewareByInit: Function[];
     Reducer: typeof Reducer;

@@ -17,6 +17,11 @@
       onChange: function (code) {
         const el = ref("runner");
         el.innerHTML = code;
+        el.querySelectorAll("script").forEach(function (sc) {
+          try {
+            new Function(sc.innerHTML)();
+          } catch (err) {}
+        });
         try {
           parent.querySelectorAll("[component]").forEach(function (v) {
             const name = v.getAttribute("component");

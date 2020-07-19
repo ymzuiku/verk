@@ -1,19 +1,8 @@
-import { HTMLAny } from "./interface";
-import { uuid } from "./utils";
-import { onError } from "./onError";
-import { updateAll, setVerk } from "./update";
-
-const regSrc = new RegExp('src="./', "g");
-const regHref = new RegExp('href="./', "g");
-const regFetch = new RegExp('fetch="./', "g");
-const coms: { [key: string]: string } = {};
-const comScripts: { [key: string]: Function } = {};
-const fetchs: { [key: string]: boolean } = {};
-
-export function removeComponent(name: string) {
-  delete coms[name];
-  delete comScripts[name];
-}
+import { uuid } from "../utils";
+import { onError } from "../onError";
+import { updateAll, setVerk } from "../update";
+import { HTMLAny } from "../interface";
+import { coms, comScripts } from './data';
 
 async function srcLoader(div: HTMLElement, query: string) {
   // fix load
@@ -33,27 +22,6 @@ async function srcLoader(div: HTMLElement, query: string) {
   }
 }
 
-function comTemplate(node: HTMLAny) {
-  (node.querySelectorAll("template[component]") as any).forEach(async function (
-    tmp: HTMLTemplateElement
-  ) {
-    const name = tmp.getAttribute("component")!;
-
-    if (!name || coms[name]) {
-      return;
-    }
-
-    const frag = document.createElement("div");
-    frag.innerHTML = tmp.innerHTML;
-    const sc = frag.querySelector("script:not([src])");
-    if (sc) {
-      comScripts[name] = new Function("$hook", sc.innerHTML);
-      sc.remove();
-      tmp.remove();
-    }
-    coms[name] = frag.innerHTML;
-  });
-}
 
 function fixIfAndRoute(tmp: HTMLAny) {
   // 处理 if
@@ -89,12 +57,13 @@ export function updateTemplate(node: HTMLAny) {
     const id = tmp.getAttribute("uuid");
     if (!id) return;
     if (!fixIfAndRoute(tmp)) {
+      if (node.parentElement) {
+        node.parentElement.querySelectorAll("[" + id + "]").forEach((el) => {
+          el.remove();
+        });
+      }
       tmp.removeAttribute("uuid");
-      document.body.querySelectorAll("[" + id + "]").forEach((el) => {
-        el.remove();
-      });
       delete (window as any)[id];
-      delete (window as any)[id + "_props"];
     }
   });
 }
@@ -102,8 +71,8 @@ export function updateTemplate(node: HTMLAny) {
 const propsIgnore = {
   init: true,
   uuid: true,
-  'verk-on': true,
-  'verk-set': true,
+  "verk-on": true,
+  "verk-set": true,
 };
 
 export function initTemplate(node: HTMLAny) {
@@ -161,18 +130,21 @@ export function initTemplate(node: HTMLAny) {
 
       Array.from(tmp.attributes).forEach(function (attr) {
         if (!(propsIgnore as any)[attr.name]) {
-          console.log(attr.name);
-          $hook.props[attr.name] = new Function('return ' + attr.value)();
+          $hook.props[attr.name] = new Function("return " + attr.value)();
         }
       });
 
       const div = document.createElement("div");
       let html = comp;
       html = html.replace(/\$hook/g, id);
+      html = html.replace(/\-id/g, id);
       div.innerHTML = html;
 
-      div.querySelectorAll("*").forEach((el, i) => {
-        el.setAttribute(id, (i + 1) as any);
+      div.childNodes.forEach(function (el) {
+        if (el.nodeType === 1) {
+          (el as any).setAttribute(id, "1");
+          (el as any).setAttribute('init-from', name);
+        }
       });
       div.querySelectorAll("slot").forEach((el) => {
         const slot = el.getAttribute("name");
@@ -253,58 +225,4 @@ export function initTemplate(node: HTMLAny) {
       });
     }
   );
-}
-
-function fetchTemplate(node: HTMLAny, onlyLoad?: boolean) {
-  (node.querySelectorAll("template[fetch]:not([fetch-loaded])") as any).forEach(
-    function (tmp: HTMLTemplateElement) {
-      tmp.setAttribute("fetch-loaded", "");
-      let url = tmp.getAttribute("fetch")!;
-      if (!url || fetchs[url]) {
-        return;
-      }
-      fetchs[url] = true;
-
-      fetch(url, {
-        mode: "cors",
-        cache: (tmp.getAttribute("cache") as any) || "no-cache",
-      })
-        .then((v) => v.text())
-        .then((code) => {
-          if (!code) return;
-          const ele = document.createElement("div");
-
-          // fix ./url
-          const dir = url.split("/");
-          dir.pop();
-          const dirURL = dir.join("/") + "/";
-          code = code.replace(regSrc, 'src="' + dirURL);
-          code = code.replace(regHref, 'href="' + dirURL);
-          code = code.replace(regFetch, 'fetch="' + dirURL);
-          code = code.replace(/\$dir/, "'" + dirURL + "'");
-          ele.innerHTML = code;
-
-          comTemplate(ele);
-          // 读取res里的 fetch
-          fetchTemplate(ele, true);
-
-          if (!onlyLoad) {
-            requestAnimationFrame(function () {
-              bindTemplate(node);
-            });
-          }
-        })
-        .catch((err) => {
-          fetchs[url] = false;
-        });
-    }
-  );
-}
-
-export default function bindTemplate(node: HTMLAny) {
-  fetchTemplate(node);
-  comTemplate(node);
-  requestAnimationFrame(function () {
-    initTemplate(node);
-  });
 }

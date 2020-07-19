@@ -21,7 +21,7 @@
     <script>
       var liveA = {
         getValue: new Promise(function (res) {
-          res("1123");
+          fetch('/templates/simple.html').then(v=>v.text()).then(res)
         }),
       };
       var dog = {

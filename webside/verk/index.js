@@ -157,7 +157,6 @@
               return;
           var arr = el.getAttribute("verk-on").split(" ");
           arr.forEach(function (attr) {
-              console.log(el);
               var key = attr.replace("-", "");
               var fn = new Function("return " + el.getAttribute(attr));
               el[key] = function (event) {
@@ -451,16 +450,9 @@
       }
   }
 
-  var regSrc = new RegExp('src="./', "g");
-  var regHref = new RegExp('href="./', "g");
-  var regFetch = new RegExp('fetch="./', "g");
   var coms = {};
   var comScripts = {};
-  var fetchs = {};
-  function removeComponent(name) {
-      delete coms[name];
-      delete comScripts[name];
-  }
+
   function srcLoader(div, query) {
       return __awaiter(this, void 0, void 0, function () {
           var scripts, loaded;
@@ -485,29 +477,6 @@
                       _b.label = 2;
                   case 2: return [2 /*return*/];
               }
-          });
-      });
-  }
-  function comTemplate(node) {
-      node.querySelectorAll("template[component]").forEach(function (tmp) {
-          return __awaiter(this, void 0, void 0, function () {
-              var name, frag, sc;
-              return __generator(this, function (_a) {
-                  name = tmp.getAttribute("component");
-                  if (!name || coms[name]) {
-                      return [2 /*return*/];
-                  }
-                  frag = document.createElement("div");
-                  frag.innerHTML = tmp.innerHTML;
-                  sc = frag.querySelector("script:not([src])");
-                  if (sc) {
-                      comScripts[name] = new Function("$hook", sc.innerHTML);
-                      sc.remove();
-                      tmp.remove();
-                  }
-                  coms[name] = frag.innerHTML;
-                  return [2 /*return*/];
-              });
           });
       });
   }
@@ -542,20 +511,21 @@
           if (!id)
               return;
           if (!fixIfAndRoute(tmp)) {
+              if (node.parentElement) {
+                  node.parentElement.querySelectorAll("[" + id + "]").forEach(function (el) {
+                      el.remove();
+                  });
+              }
               tmp.removeAttribute("uuid");
-              document.body.querySelectorAll("[" + id + "]").forEach(function (el) {
-                  el.remove();
-              });
               delete window[id];
-              delete window[id + "_props"];
           }
       });
   }
   var propsIgnore = {
       init: true,
       uuid: true,
-      'verk-on': true,
-      'verk-set': true,
+      "verk-on": true,
+      "verk-set": true,
   };
   function initTemplate(node) {
       node.querySelectorAll("template[init]:not([uuid])").forEach(function (tmp) {
@@ -608,16 +578,19 @@
                           }
                           Array.from(tmp.attributes).forEach(function (attr) {
                               if (!propsIgnore[attr.name]) {
-                                  console.log(attr.name);
-                                  $hook.props[attr.name] = new Function('return ' + attr.value)();
+                                  $hook.props[attr.name] = new Function("return " + attr.value)();
                               }
                           });
                           div = document.createElement("div");
                           html = comp;
                           html = html.replace(/\$hook/g, id);
+                          html = html.replace(/\-id/g, id);
                           div.innerHTML = html;
-                          div.querySelectorAll("*").forEach(function (el, i) {
-                              el.setAttribute(id, (i + 1));
+                          div.childNodes.forEach(function (el) {
+                              if (el.nodeType === 1) {
+                                  el.setAttribute(id, "1");
+                                  el.setAttribute('init-from', name);
+                              }
                           });
                           div.querySelectorAll("slot").forEach(function (el) {
                               var slot = el.getAttribute("name");
@@ -706,6 +679,35 @@
           });
       });
   }
+
+  function comTemplate(node) {
+      node.querySelectorAll("template[component]").forEach(function (tmp) {
+          return __awaiter(this, void 0, void 0, function () {
+              var name, frag, sc;
+              return __generator(this, function (_a) {
+                  name = tmp.getAttribute("component");
+                  if (!name || coms[name]) {
+                      return [2 /*return*/];
+                  }
+                  frag = document.createElement("div");
+                  frag.innerHTML = tmp.innerHTML;
+                  sc = frag.querySelector("script:not([src])");
+                  if (sc) {
+                      comScripts[name] = new Function("$hook", sc.innerHTML);
+                      sc.remove();
+                      tmp.remove();
+                  }
+                  coms[name] = frag.innerHTML;
+                  return [2 /*return*/];
+              });
+          });
+      });
+  }
+
+  var fetchs = {};
+  var regSrc = new RegExp('src="./', "g");
+  var regHref = new RegExp('href="./', "g");
+  var regFetch = new RegExp('fetch="./', "g");
   function fetchTemplate(node, onlyLoad) {
       node.querySelectorAll("template[fetch]:not([fetch-loaded])").forEach(function (tmp) {
           tmp.setAttribute("fetch-loaded", "");
@@ -746,6 +748,7 @@
           });
       });
   }
+
   function bindTemplate(node) {
       fetchTemplate(node);
       comTemplate(node);
@@ -840,8 +843,22 @@
       }
   });
 
+  function removeComponent(name) {
+      delete coms[name];
+      delete comScripts[name];
+  }
+
+  function update(el) {
+      setVerk(el);
+      updateAll(el);
+      setTimeout(function () {
+          if (el.style.visibility === "hidden") {
+              el.style.visibility = "visible";
+          }
+      }, 200);
+  }
   var $verk = {
-      update: updateAll,
+      update: update,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,
       Reducer: Reducer,
@@ -850,15 +867,7 @@
       uuid: uuid,
   };
   window.addEventListener("load", function () {
-      document.querySelectorAll("[verk]").forEach(function (el) {
-          setVerk(el);
-          updateAll(el);
-          setTimeout(function () {
-              if (el.style.visibility === "hidden") {
-                  el.style.visibility = "visible";
-              }
-          }, 200);
-      });
+      document.querySelectorAll("[verk]").forEach(update);
   });
 
   return $verk;
