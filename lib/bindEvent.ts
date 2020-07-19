@@ -9,33 +9,32 @@ export default function bindEvent(node: HTMLAny) {
     if (el.__bindedEvents) return;
     const arr = el.getAttribute("verk-on")!.split(" ");
     arr.forEach(function (attr: string) {
+      console.log(el);
       const key = attr.replace("-", "");
-      if (von.test(attr)) {
-        const fn = new Function(
-          "$el",
-          "$event",
-          "return " + el.getAttribute(attr)
-        );
-        el[key] = function (e: any) {
-          if (el.getAttribute("prevent-" + key)) {
-            e.preventDefault();
-          }
-          if (el.getAttribute("stop-" + key)) {
-            e.stopPropagation();
-          }
-          let res;
-          try {
-            res = fn(el, e);
-          } catch (err) {
-            onError(err, el);
-          }
+      const fn = new Function(
+        "$el",
+        "$event",
+        "return " + el.getAttribute(attr)
+      );
+      el[key] = function (e: any) {
+        if (el.getAttribute("prevent-" + key)) {
+          e.preventDefault();
+        }
+        if (el.getAttribute("stop-" + key)) {
+          e.stopPropagation();
+        }
+        let res;
+        try {
+          res = fn(el, e);
+        } catch (err) {
+          onError(err, el);
+        }
 
-          if (typeof res === "function") {
-            res(e);
-          }
-          queryUpdate(el.getAttribute("query"));
-        };
-      }
+        if (typeof res === "function") {
+          res(e);
+        }
+        queryUpdate(el.getAttribute("query"));
+      };
     });
     el.__bindedEvents = true;
   }

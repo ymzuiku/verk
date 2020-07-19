@@ -15,16 +15,27 @@
     >
       <template init="monaco_verk_editor" props="liveA"></template>
     </div>
+    <template props="{'on-input':'()=>dog.name=$e.value'}" on-input="dog.name = $e.value" init="dog"></template>
+    <input on-input="dog.age=$el.value"></input>
+    <div text>dog.age</div>
     <script>
       var liveA = {
         getValue: new Promise(function (res) {
           res("1123");
         }),
       };
+      var dog = {
+        age:'',
+        name:'1232',
+      };
     </script>
   </body>
 
   <section verk>
     <template fetch="/monaco/verk_editor.html"></template>
+    <template component="dog">
+      <input on-input="$props['on-input']" ></input>
+      <div text>dog.name</div>
+    </template>
   </section>
 </html>

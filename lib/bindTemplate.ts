@@ -228,7 +228,7 @@ export function initTemplate(node: HTMLAny) {
 
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
-        $hook.state = v;
+        $hook.state = v || {};
         $hook.state.$append && $hook.state.$append(v);
         $hook.props.$append && $hook.props.$append(v);
         requestAnimationFrame(function () {

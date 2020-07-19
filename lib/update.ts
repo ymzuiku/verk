@@ -11,28 +11,28 @@ import bindEvent from "./bindEvent";
 import bindTemplate from "./bindTemplate";
 import bindAttr from "./bindAttr";
 
-const vof = /^set-/;
+const vset = /^set-/;
 const von = /^on-/;
 
 export function setVerk(node: HTMLElement) {
   node.querySelectorAll("*").forEach(function (el) {
-    if (el.getAttribute("verk-on") || el.getAttribute("verk-attr")) {
+    if (el.getAttribute("verk-on") || el.getAttribute("verk-set")) {
       return;
     }
-    let attr = "";
-    let on = "";
+    let sets = "";
+    let ons = "";
     Array.from(el.attributes).forEach(function (v) {
       if (von.test(v.name)) {
-        on += v.name + " ";
-      } else if (vof.test(v.name)) {
-        attr += v.name + " ";
+        ons += v.name + " ";
+      } else if (vset.test(v.name)) {
+        sets += v.name + " ";
       }
     });
-    if (attr) {
-      el.setAttribute("verk-attr", attr.trim());
+    if (sets) {
+      el.setAttribute("verk-set", sets.trim());
     }
-    if (on) {
-      el.setAttribute("verk-on", on.trim());
+    if (ons) {
+      el.setAttribute("verk-on", ons.trim());
     }
   });
 }

@@ -151,36 +151,34 @@
       checkSingle(node, bind, "if", "[if]:not([init])");
   }
 
-  var von = /^v-on/;
   function bindEvent(node) {
       function bind(el) {
           if (el.__bindedEvents)
               return;
           var arr = el.getAttribute("verk-on").split(" ");
           arr.forEach(function (attr) {
+              console.log(el);
               var key = attr.replace("-", "");
-              if (von.test(attr)) {
-                  var fn_1 = new Function("$el", "$event", "return " + el.getAttribute(attr));
-                  el[key] = function (e) {
-                      if (el.getAttribute("prevent-" + key)) {
-                          e.preventDefault();
-                      }
-                      if (el.getAttribute("stop-" + key)) {
-                          e.stopPropagation();
-                      }
-                      var res;
-                      try {
-                          res = fn_1(el, e);
-                      }
-                      catch (err) {
-                          onError(err, el);
-                      }
-                      if (typeof res === "function") {
-                          res(e);
-                      }
-                      queryUpdate(el.getAttribute("query"));
-                  };
-              }
+              var fn = new Function("$el", "$event", "return " + el.getAttribute(attr));
+              el[key] = function (e) {
+                  if (el.getAttribute("prevent-" + key)) {
+                      e.preventDefault();
+                  }
+                  if (el.getAttribute("stop-" + key)) {
+                      e.stopPropagation();
+                  }
+                  var res;
+                  try {
+                      res = fn(el, e);
+                  }
+                  catch (err) {
+                      onError(err, el);
+                  }
+                  if (typeof res === "function") {
+                      res(e);
+                  }
+                  queryUpdate(el.getAttribute("query"));
+              };
           });
           el.__bindedEvents = true;
       }
@@ -681,7 +679,7 @@
                           }
                           tmp.insertAdjacentHTML("afterend", div.innerHTML);
                           Promise.resolve(res).then(function (v) {
-                              $hook.state = v;
+                              $hook.state = v || {};
                               $hook.state.$append && $hook.state.$append(v);
                               $hook.props.$append && $hook.props.$append(v);
                               requestAnimationFrame(function () {
@@ -747,7 +745,7 @@
 
   function bindAttr(node) {
       function bind(el) {
-          var attrs = el.getAttribute("verk-attr");
+          var attrs = el.getAttribute("verk-set");
           attrs.split(" ").forEach(function (attr) {
               var v;
               try {
@@ -762,31 +760,31 @@
               el.setAttribute(attr.replace("set-", ""), v);
           });
       }
-      checkSingle(node, bind, "verk-attr", "[verk-attr]");
+      checkSingle(node, bind, "verk-set", "[verk-set]");
   }
 
-  var vof = /^set-/;
-  var von$1 = /^on-/;
+  var vset = /^set-/;
+  var von = /^on-/;
   function setVerk(node) {
       node.querySelectorAll("*").forEach(function (el) {
-          if (el.getAttribute("verk-on") || el.getAttribute("verk-attr")) {
+          if (el.getAttribute("verk-on") || el.getAttribute("verk-set")) {
               return;
           }
-          var attr = "";
-          var on = "";
+          var sets = "";
+          var ons = "";
           Array.from(el.attributes).forEach(function (v) {
-              if (von$1.test(v.name)) {
-                  on += v.name + " ";
+              if (von.test(v.name)) {
+                  ons += v.name + " ";
               }
-              else if (vof.test(v.name)) {
-                  attr += v.name + " ";
+              else if (vset.test(v.name)) {
+                  sets += v.name + " ";
               }
           });
-          if (attr) {
-              el.setAttribute("verk-attr", attr.trim());
+          if (sets) {
+              el.setAttribute("verk-set", sets.trim());
           }
-          if (on) {
-              el.setAttribute("verk-on", on.trim());
+          if (ons) {
+              el.setAttribute("verk-on", ons.trim());
           }
       });
   }
