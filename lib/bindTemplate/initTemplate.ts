@@ -108,7 +108,6 @@ export function initTemplate(node: HTMLAny) {
         id,
         props: {} as any,
         state: {} as any,
-        verk: (window as any).$verk,
         parent: tmp.parentElement,
         fragment: tmp.content,
         ref: undefined as any,
@@ -137,7 +136,7 @@ export function initTemplate(node: HTMLAny) {
       const div = document.createElement("div");
       let html = comp;
       html = html.replace(/\$hook/g, id);
-      html = html.replace(/\-id/g, id);
+      html = html.replace(/-id/g, id);
       div.innerHTML = html;
 
       div.childNodes.forEach(function (el) {

@@ -7,6 +7,7 @@ import {
 } from "./update";
 import { ReducerList, Reducer, uuid } from "./utils";
 import { removeComponent } from "./bindTemplate/removeComponent";
+import initElement from './initElement';
 
 function update(el: HTMLElement) {
   setVerk(el);
@@ -19,6 +20,7 @@ function update(el: HTMLElement) {
 }
 
 const $verk = {
+  initElement,
   update,
   middlewareByUpdate,
   middlewareByInit,

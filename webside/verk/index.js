@@ -558,7 +558,6 @@
                               id: id,
                               props: {},
                               state: {},
-                              verk: window.$verk,
                               parent: tmp.parentElement,
                               fragment: tmp.content,
                               ref: undefined,
@@ -584,7 +583,7 @@
                           div = document.createElement("div");
                           html = comp;
                           html = html.replace(/\$hook/g, id);
-                          html = html.replace(/\-id/g, id);
+                          html = html.replace(/-id/g, id);
                           div.innerHTML = html;
                           div.childNodes.forEach(function (el) {
                               if (el.nodeType === 1) {
@@ -848,6 +847,31 @@
       delete comScripts[name];
   }
 
+  function initElement(el, ignoreErr) {
+      el.querySelectorAll("script").forEach(function (sc) {
+          try {
+              new Function(sc.innerHTML)();
+          }
+          catch (err) {
+              if (!ignoreErr) {
+                  onError(err, el);
+              }
+          }
+      });
+      try {
+          el.querySelectorAll("[component]").forEach(function (v) {
+              var name = v.getAttribute("component");
+              window.$verk.removeComponent(name);
+          });
+          window.$verk.update(el);
+      }
+      catch (err) {
+          if (!ignoreErr) {
+              onError(err, el);
+          }
+      }
+  }
+
   function update(el) {
       setVerk(el);
       updateAll(el);
@@ -858,6 +882,7 @@
       }, 200);
   }
   var $verk = {
+      initElement: initElement,
       update: update,
       middlewareByUpdate: middlewareByUpdate,
       middlewareByInit: middlewareByInit,

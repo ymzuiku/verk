@@ -3,7 +3,7 @@
   <script type="text/javascript" src="./vs/loader.js"></script>
   <script>
     return new Promise(function (res) {
-      const { id, ref, props, verk } = $hook;
+      const { id, ref, props } = $hook;
 
       const state = {};
 
@@ -47,7 +47,7 @@
         });
         if (props.onChange) {
           const editorModel = editor.getModel();
-          const reducer = verk.Reducer(function () {
+          const reducer = $verk.Reducer(function () {
             const v = editor.getValue();
             props.onChange(v);
           }, props.time || 60);

@@ -7,28 +7,17 @@
     <div ref="runner" css="w-12/12 h-12/12"></div>
   </div>
   <script>
-    const { props, ref, refs, parent, id, verk } = $hook;
+    const { props, ref, refs, parent, id } = $hook;
 
     const editorProps = {
-      time: 10,
+      // time: 10,
       setValue: function (cb) {
         cb();
       },
       onChange: function (code) {
         const el = ref("runner");
         el.innerHTML = code;
-        el.querySelectorAll("script").forEach(function (sc) {
-          try {
-            new Function(sc.innerHTML)();
-          } catch (err) {}
-        });
-        try {
-          parent.querySelectorAll("[component]").forEach(function (v) {
-            const name = v.getAttribute("component");
-            verk.removeComponent(name);
-          });
-          verk.update(el);
-        } catch (err) {}
+        $verk.initElement(el, true);
       },
       options: {
         value: "<div>hello</div>",
