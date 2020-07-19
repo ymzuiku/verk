@@ -1,7 +1,7 @@
 <template fetch="./editor.html"></template>
 <template component="monaco_verk_editor">
   <div css="row start-start h-12/12 w-12/12">
-    <template init="monaco_editor" props="$state.editorProps">
+    <template init="monaco_editor" props="$hook.state.editorProps">
       <div loading>loading...</div>
     </template>
     <div ref="runner" css="w-12/12 h-12/12"></div>
@@ -43,9 +43,9 @@
         }
       },
     };
-    const state = {
+
+    return {
       editorProps,
     };
-    return state;
   </script>
 </template>

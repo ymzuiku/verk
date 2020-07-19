@@ -10,11 +10,11 @@
   </head>
 
   <body verk style="visibility: hidden;" css="bg-gray-100">
-    <!-- <div
+    <div
       css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md"
     >
       <template init="monaco_verk_editor" props="liveA"></template>
-    </div> -->
+    </div>
     <span>template</span><template on-input="e=>dog.name=e.value" init="dog"></template>
     <span>global</span><input on-input="e=>dog.age=e.value"></input>
     <div text>dog.age</div>
