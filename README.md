@@ -26,10 +26,11 @@ Includ or download the verk.js:
 ### Template
 
 - [x] template/component
-- [x] template/component $state
-- [x] template/component $props
+- [x] template/component $hook state
+- [x] template/component $hook props
+- [x] template/component $hook parent
+- [x] template/component $hook id
 - [x] template/component $dir
-- [x] template/component $parent
 
 - [x] template/init
 - [x] template/init slot

@@ -1,2 +1,2 @@
 import { HTMLAny } from "./interface";
-export default function bindFor(node: HTMLAny): void;
+export default function bindList(node: HTMLAny): void;

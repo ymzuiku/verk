@@ -61,7 +61,7 @@ export default function bindModel(node: HTMLAny) {
         }
         let fnv: any;
         try {
-          fnv = new Function("$el", code)(el);
+          fnv = new Function(code)();
         } catch (err) {
           onError(err, el);
         }

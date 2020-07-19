@@ -2,13 +2,13 @@ import { HTMLAny } from "./interface";
 import bindEvent from "./bindEvent";
 import { onError } from "./onError";
 
-export default function bindFor(node: HTMLAny) {
+export default function bindList(node: HTMLAny) {
   function bind(el: HTMLAny) {
     if (!el.__bindedList) {
       el.__bindedList = el.getAttribute("list")!;
       el.__html = el.innerHTML;
       try {
-        el.__forData = new Function("$el", "return " + el.__bindedList)(el);
+        el.__forData = new Function("return " + el.__bindedList)();
       } catch (err) {
         onError(err, el);
       }

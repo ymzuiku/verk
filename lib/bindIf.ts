@@ -7,9 +7,9 @@ export default function bindIf(node: HTMLAny) {
     let ifData: any;
     el.style.display = "none";
     try {
-      ifData = new Function("$el", "return " + el.getAttribute("if"))(el);
+      ifData = new Function("return " + el.getAttribute("if"))();
       if (typeof ifData === "function") {
-        ifData = ifData();
+        ifData = ifData(el);
       }
     } catch (err) {
       onError(err, el);

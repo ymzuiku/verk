@@ -12,9 +12,9 @@ export default function bindText(node: Element) {
     }
     let v: any;
     try {
-      v = new Function("$el", "return " + el.getAttribute("text-save"))(el);
+      v = new Function("return " + el.getAttribute("text-save"))();
       if (typeof v === "function") {
-        v = v();
+        v = v(el);
       }
     } catch (err) {
       onError(err, el);

@@ -1,6 +1,6 @@
 import { HTMLAny } from "./interface";
 import bindIf from "./bindIf";
-import bindFor from "./bindFor";
+import bindList from "./bindList";
 import bindText from "./bindText";
 import bindModel from "./bindModel";
 import bindWatch from "./bindWatch";
@@ -52,7 +52,7 @@ export const middlewareByUpdate: Function[] = [
   updateTemplate,
   initTemplate,
   bindIf,
-  bindFor,
+  bindList,
   bindShow,
   bindModel,
   bindText,

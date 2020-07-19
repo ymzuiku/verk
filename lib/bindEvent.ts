@@ -11,27 +11,23 @@ export default function bindEvent(node: HTMLAny) {
     arr.forEach(function (attr: string) {
       console.log(el);
       const key = attr.replace("-", "");
-      const fn = new Function(
-        "$el",
-        "$event",
-        "return " + el.getAttribute(attr)
-      );
-      el[key] = function (e: any) {
+      const fn = new Function("return " + el.getAttribute(attr));
+      el[key] = function (event: any) {
         if (el.getAttribute("prevent-" + key)) {
-          e.preventDefault();
+          event.preventDefault();
         }
         if (el.getAttribute("stop-" + key)) {
-          e.stopPropagation();
+          event.stopPropagation();
         }
         let res;
         try {
-          res = fn(el, e);
+          res = fn();
         } catch (err) {
           onError(err, el);
         }
 
         if (typeof res === "function") {
-          res(e);
+          res(el, event);
         }
         queryUpdate(el.getAttribute("query"));
       };

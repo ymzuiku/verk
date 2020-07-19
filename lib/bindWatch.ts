@@ -5,9 +5,9 @@ import { onError } from "./onError";
 export default function bindWatch(node: Element) {
   function bind(el: HTMLAny) {
     try {
-      const v = new Function("$el", "return " + el.getAttribute("watch")!)(el);
+      const v = new Function("return " + el.getAttribute("watch")!)();
       if (typeof v === "function") {
-        v();
+        v(el);
       }
     } catch (err) {
       onError(err, el);

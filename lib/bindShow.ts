@@ -7,9 +7,9 @@ export default function bindShow(node: HTMLAny) {
     let v: any;
 
     try {
-      v = new Function("$el", "return " + el.getAttribute("show"))(el);
+      v = new Function("return " + el.getAttribute("show"))();
       if (typeof v === "function") {
-        v = v();
+        v = v(el);
       }
     } catch (err) {
       onError(err, el);

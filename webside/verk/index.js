@@ -107,9 +107,9 @@
           var ifData;
           el.style.display = "none";
           try {
-              ifData = new Function("$el", "return " + el.getAttribute("if"))(el);
+              ifData = new Function("return " + el.getAttribute("if"))();
               if (typeof ifData === "function") {
-                  ifData = ifData();
+                  ifData = ifData(el);
               }
           }
           catch (err) {
@@ -159,23 +159,23 @@
           arr.forEach(function (attr) {
               console.log(el);
               var key = attr.replace("-", "");
-              var fn = new Function("$el", "$event", "return " + el.getAttribute(attr));
-              el[key] = function (e) {
+              var fn = new Function("return " + el.getAttribute(attr));
+              el[key] = function (event) {
                   if (el.getAttribute("prevent-" + key)) {
-                      e.preventDefault();
+                      event.preventDefault();
                   }
                   if (el.getAttribute("stop-" + key)) {
-                      e.stopPropagation();
+                      event.stopPropagation();
                   }
                   var res;
                   try {
-                      res = fn(el, e);
+                      res = fn();
                   }
                   catch (err) {
                       onError(err, el);
                   }
                   if (typeof res === "function") {
-                      res(e);
+                      res(el, event);
                   }
                   queryUpdate(el.getAttribute("query"));
               };
@@ -188,13 +188,13 @@
       node.querySelectorAll("[verk-on]").forEach(bind);
   }
 
-  function bindFor(node) {
+  function bindList(node) {
       function bind(el) {
           if (!el.__bindedList) {
               el.__bindedList = el.getAttribute("list");
               el.__html = el.innerHTML;
               try {
-                  el.__forData = new Function("$el", "return " + el.__bindedList)(el);
+                  el.__forData = new Function("return " + el.__bindedList)();
               }
               catch (err) {
                   onError(err, el);
@@ -238,9 +238,9 @@
           }
           var v;
           try {
-              v = new Function("$el", "return " + el.getAttribute("text-save"))(el);
+              v = new Function("return " + el.getAttribute("text-save"))();
               if (typeof v === "function") {
-                  v = v();
+                  v = v(el);
               }
           }
           catch (err) {
@@ -317,7 +317,7 @@
                   }
                   var fnv;
                   try {
-                      fnv = new Function("$el", code)(el);
+                      fnv = new Function(code)();
                   }
                   catch (err) {
                       onError(err, el);
@@ -365,9 +365,9 @@
   function bindWatch(node) {
       function bind(el) {
           try {
-              var v = new Function("$el", "return " + el.getAttribute("watch"))(el);
+              var v = new Function("return " + el.getAttribute("watch"))();
               if (typeof v === "function") {
-                  v();
+                  v(el);
               }
           }
           catch (err) {
@@ -381,9 +381,9 @@
       function bind(el) {
           var v;
           try {
-              v = new Function("$el", "return " + el.getAttribute("show"))(el);
+              v = new Function("return " + el.getAttribute("show"))();
               if (typeof v === "function") {
-                  v = v();
+                  v = v(el);
               }
           }
           catch (err) {
@@ -551,6 +551,12 @@
           }
       });
   }
+  var propsIgnore = {
+      init: true,
+      uuid: true,
+      'verk-on': true,
+      'verk-set': true,
+  };
   function initTemplate(node) {
       node.querySelectorAll("template[init]:not([uuid])").forEach(function (tmp) {
           return __awaiter(this, void 0, void 0, function () {
@@ -590,7 +596,7 @@
                           };
                           window[id] = $hook;
                           tmp.setAttribute("uuid", id);
-                          tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
+                          tmp.innerHTML = tmp.innerHTML.replace(/\$renderHook/g, id);
                           props = tmp.getAttribute("props");
                           if (props) {
                               try {
@@ -600,12 +606,15 @@
                                   onError(err, tmp, props);
                               }
                           }
+                          Array.from(tmp.attributes).forEach(function (attr) {
+                              if (!propsIgnore[attr.name]) {
+                                  console.log(attr.name);
+                                  $hook.props[attr.name] = new Function('return ' + attr.value)();
+                              }
+                          });
                           div = document.createElement("div");
                           html = comp;
                           html = html.replace(/\$hook/g, id);
-                          html = html.replace(/\$state/g, id + ".state");
-                          html = html.replace(/\$props/g, id + ".props");
-                          html = html.replace(/\$id/g, "'" + id + "'");
                           div.innerHTML = html;
                           div.querySelectorAll("*").forEach(function (el, i) {
                               el.setAttribute(id, (i + 1));
@@ -661,8 +670,8 @@
                           sc = comScripts[name];
                           if (sc) {
                               try {
-                                  // window[pid] 为之前计算好的 $props
-                                  // 通过计算获取 $state, 赋值至 window[id]
+                                  // window[pid] 为之前计算好的 $hook
+                                  // 通过计算获取 $hook, 赋值至 window[id]
                                   res = sc($hook);
                               }
                               catch (err) {
@@ -679,7 +688,9 @@
                           }
                           tmp.insertAdjacentHTML("afterend", div.innerHTML);
                           Promise.resolve(res).then(function (v) {
-                              $hook.state = v || {};
+                              if (v) {
+                                  $hook.state = v;
+                              }
                               $hook.state.$append && $hook.state.$append(v);
                               $hook.props.$append && $hook.props.$append(v);
                               requestAnimationFrame(function () {
@@ -749,9 +760,9 @@
           attrs.split(" ").forEach(function (attr) {
               var v;
               try {
-                  v = new Function("$el", "return " + el.getAttribute(attr))(el);
+                  v = new Function("return " + el.getAttribute(attr))();
                   if (typeof v === "function") {
-                      v = v();
+                      v = v(el);
                   }
               }
               catch (err) {
@@ -801,7 +812,7 @@
       updateTemplate,
       initTemplate,
       bindIf,
-      bindFor,
+      bindList,
       bindShow,
       bindModel,
       bindText,

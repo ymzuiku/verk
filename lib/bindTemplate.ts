@@ -99,6 +99,13 @@ export function updateTemplate(node: HTMLAny) {
   });
 }
 
+const propsIgnore = {
+  init: true,
+  uuid: true,
+  'verk-on': true,
+  'verk-set': true,
+};
+
 export function initTemplate(node: HTMLAny) {
   (node.querySelectorAll("template[init]:not([uuid])") as any).forEach(
     async function (tmp: HTMLTemplateElement) {
@@ -141,7 +148,7 @@ export function initTemplate(node: HTMLAny) {
       (window as any)[id] = $hook;
 
       tmp.setAttribute("uuid", id);
-      tmp.innerHTML = tmp.innerHTML.replace(/\$renderState/g, id);
+      tmp.innerHTML = tmp.innerHTML.replace(/\$renderHook/g, id);
 
       const props = tmp.getAttribute("props");
       if (props) {
@@ -152,12 +159,16 @@ export function initTemplate(node: HTMLAny) {
         }
       }
 
+      Array.from(tmp.attributes).forEach(function (attr) {
+        if (!(propsIgnore as any)[attr.name]) {
+          console.log(attr.name);
+          $hook.props[attr.name] = new Function('return ' + attr.value)();
+        }
+      });
+
       const div = document.createElement("div");
       let html = comp;
       html = html.replace(/\$hook/g, id);
-      html = html.replace(/\$state/g, id + ".state");
-      html = html.replace(/\$props/g, id + ".props");
-      html = html.replace(/\$id/g, "'" + id + "'");
       div.innerHTML = html;
 
       div.querySelectorAll("*").forEach((el, i) => {
@@ -208,8 +219,8 @@ export function initTemplate(node: HTMLAny) {
       let res: any;
       if (sc) {
         try {
-          // window[pid] 为之前计算好的 $props
-          // 通过计算获取 $state, 赋值至 window[id]
+          // window[pid] 为之前计算好的 $hook
+          // 通过计算获取 $hook, 赋值至 window[id]
           res = sc($hook);
         } catch (err) {
           onError(err, tmp as any, sc);
@@ -228,7 +239,9 @@ export function initTemplate(node: HTMLAny) {
 
       tmp.insertAdjacentHTML("afterend", div.innerHTML);
       Promise.resolve(res).then(function (v) {
-        $hook.state = v || {};
+        if (v) {
+          $hook.state = v;
+        }
         $hook.state.$append && $hook.state.$append(v);
         $hook.props.$append && $hook.props.$append(v);
         requestAnimationFrame(function () {
