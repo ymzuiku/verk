@@ -35,58 +35,58 @@ function haveArgv(...args) {
 clearDir(pwd("umd"));
 
 const watchOptions = [
-  {
-    input: "./lib/addon/bindCss.ts",
-    output: {
-      file: "./umd/bindcss.js",
-      format: "umd",
-      name: "$bindcss",
-      sourcemap: false,
-    },
-    plugins: [
-      nodeResolve(),
-      rollupTypescript({
-        useTsconfigDeclarationDir: false,
-      }),
-      uglify({
-        sourcemap: false,
-      }),
-    ],
-  },
-  {
-    input: "./lib/addon/bindCss.ts",
-    output: {
-      file: "./dev/bindcss.js",
-      format: "umd",
-      name: "$bindcss",
-      sourcemap: false,
-    },
-    plugins: [
-      nodeResolve(),
-      rollupTypescript({
-        useTsconfigDeclarationDir: false,
-      }),
-    ],
-  },
-  {
-    input: "./lib/index.ts",
-    output: {
-      file: "./umd/index.js",
-      format: "umd",
-      name: "$verk",
-      sourcemap: false,
-    },
-    plugins: [
-      nodeResolve(),
-      rollupTypescript({
-        useTsconfigDeclarationDir: false,
-        // tsconfigOverride: {...tsconfig, compilerOptions: { ...tsconfig.compilerOptions, declaration: false }},
-      }),
-      uglify({
-        sourcemap: false,
-      }),
-    ],
-  },
+  // {
+  //   input: "./lib/addon/bindCss.ts",
+  //   output: {
+  //     file: "./umd/bindcss.js",
+  //     format: "umd",
+  //     name: "$bindcss",
+  //     sourcemap: false,
+  //   },
+  //   plugins: [
+  //     nodeResolve(),
+  //     rollupTypescript({
+  //       useTsconfigDeclarationDir: false,
+  //     }),
+  //     uglify({
+  //       sourcemap: false,
+  //     }),
+  //   ],
+  // },
+  // {
+  //   input: "./lib/addon/bindCss.ts",
+  //   output: {
+  //     file: "./dev/bindcss.js",
+  //     format: "umd",
+  //     name: "$bindcss",
+  //     sourcemap: false,
+  //   },
+  //   plugins: [
+  //     nodeResolve(),
+  //     rollupTypescript({
+  //       useTsconfigDeclarationDir: false,
+  //     }),
+  //   ],
+  // },
+  // {
+  //   input: "./lib/index.ts",
+  //   output: {
+  //     file: "./umd/index.js",
+  //     format: "umd",
+  //     name: "$verk",
+  //     sourcemap: false,
+  //   },
+  //   plugins: [
+  //     nodeResolve(),
+  //     rollupTypescript({
+  //       useTsconfigDeclarationDir: false,
+  //       // tsconfigOverride: {...tsconfig, compilerOptions: { ...tsconfig.compilerOptions, declaration: false }},
+  //     }),
+  //     uglify({
+  //       sourcemap: false,
+  //     }),
+  //   ],
+  // },
   {
     input: "./lib/index.ts",
     output: {

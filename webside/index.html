@@ -5,37 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="icon" href="data:image/ico;base64,aWNv" />
-    <script src="/verk/index.js"></script>
-    <script flavorcss-effect src="/verk/bindcss.js"></script>
   </head>
+  <body>
+    <style>
+      .dog {
+        background-color: #f00;
+      }
+    </style>
+    <v-define default>
 
-  <body verk style="visibility: hidden;" css="bg-gray-100">
-    <div
-      css="flex-1 h-6xl radius-lg shadow-lg shadow-opacity-5 m-xl bg-white p-md"
-    >
-      <template init="monaco_verk_editor" props="liveA"></template>
-    </div>
-    <span>template</span><template on-input="e=>dog.name=e.value" init="dog"></template>
-    <span>global</span><input on-input="e=>dog.age=e.value"></input>
-    <div text>dog.age</div>
+    </v-define>
+    <v-load src="./aaa.html"></v-load>
+    <v-txt>20+40 + data.name.length;</v-txt>
+    <v-if value="data.name.length > 5">
+      <h1 class="dog">hello</h1>
+    </v-if>
+    <h1>name:<v-txt>data.name</v-txt></h1>
+    <v-set style="`font-size: ${data.name.length*5}px;`">
+      <v-txt>data.name.length</v-txt>
+    </v-set>
+    <v-set oninput="e=>data.name=e.target.value">
+      <input></input>
+    </v-set>
     <script>
-      var liveA = {
-        getValue: new Promise(function (res) {
-          fetch('/templates/simple.html').then(v=>v.text()).then(res)
-        }),
-      };
-      var dog = {
-        age:'',
-        name:'1232',
+       window.data = {
+        name:'dog',
+        age:10,
       };
     </script>
+    <script src="/verk/index.js"></script>
   </body>
-
-  <section verk>
-    <template fetch="/monaco/verk_editor.html"></template>
-    <template component="dog">
-      <input on-input="$hook.props['on-input']" ></input>
-      <div text>dog.name</div>
-    </template>
-  </section>
 </html>

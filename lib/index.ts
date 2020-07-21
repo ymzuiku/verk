@@ -1,37 +1,6 @@
-import "./fixParams";
-import {
-  middlewareByUpdate,
-  updateAll,
-  middlewareByInit,
-  setVerk,
-} from "./update";
-import { ReducerList, Reducer, uuid } from "./utils";
-import { removeComponent } from "./bindTemplate/removeComponent";
-import initElement from './initElement';
+import "./v-txt";
+import "./v-if";
+import "./v-txt";
+import "./v-set";
 
-function update(el: HTMLElement) {
-  setVerk(el);
-  updateAll(el);
-  setTimeout(() => {
-    if (el.style.visibility === "hidden") {
-      el.style.visibility = "visible";
-    }
-  }, 200);
-}
-
-const $verk = {
-  initElement,
-  update,
-  middlewareByUpdate,
-  middlewareByInit,
-  Reducer,
-  ReducerList,
-  removeComponent,
-  uuid,
-};
-
-window.addEventListener("load", function () {
-  (document.querySelectorAll("[verk]") as any).forEach(update);
-});
-
-export default $verk;
+export const verk = 0;
