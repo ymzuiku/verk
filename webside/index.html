@@ -13,6 +13,14 @@
       }
     </style>
 
+    <v-for data="[10,20,30]">
+      <div>hello $v</div>
+      <div>world $i</div>
+      <v-for value="\$b" index="\$u" data="['dog','cat','fish']">
+        <div>hello $b $v</div>
+        <div>world $u $i</div>
+      </v-for>
+    </v-for>
     <v-new name="bb"></v-new>
 
     <h3>out</h3>
@@ -42,28 +50,18 @@
 
     <v-component name="bb">
       <template>
-        
+        <div>titlebbbbbbbbbbbbbbbbbbbb<v-txt>$hook.state.age</v-txt></div>
+        <h2>hello</h2>
+        <h3>component</h3>
         <v-set oninput="e=>$hook.state.age = e.target.value"><input /></v-set>
         <script>
           $hook.state = {
             age: 20,
           };
         </script>
-        <template>
-          <div>
-            title-----------------------------:<v-txt>$hook.state.age</v-txt>
-          </div>
-          <h2>hello</h2>
-          <h3>component</h3>
-          <v-set oninput="e=>$hook.state.age = e.target.value"><input /></v-set>
-          <script>
-            $hook.state = {
-              age: 20,
-            };
-          </script>
-        </template>
       </template>
     </v-component>
+
     <script src="/verk/index.js"></script>
   </body>
 </html>

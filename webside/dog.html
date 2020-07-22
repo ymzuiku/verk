@@ -1,11 +1,17 @@
 <div>title:<v-txt>$hook.state.age</v-txt></div>
-<div style="background: #aaf;">
+<div class="verk-title">
   <v-txt>$hook.props.money</v-txt>
   <h3>aaaaa</h3>
   <v-set oninput="e=>$hook.state.age = e.target.value"><input /></v-set>
   <v-new name="fish"></v-new>
   <v-new src="./sub/cat.html"></v-new>
 </div>
+
+<style>
+  .verk-title {
+    background: #f00;
+  }
+</style>
 
 <script>
   $hook.state = {

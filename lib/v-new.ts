@@ -5,10 +5,11 @@ import { comps, fns, loadComponent, fetchs } from "./component";
 
 const tag = "v-new";
 const srcReg = new RegExp('(src|href)=".', "g");
+const hookReg = /(\$hook|verk-)/g;
 
 class Component extends HTMLElement {
-  _id = uuid("v_new");
   _name = this.getAttribute("src") || this.getAttribute("name")!;
+  _id = uuid();
   _isSrc = this.hasAttribute("src");
   _html: any;
   _fn: any;
@@ -59,13 +60,12 @@ class Component extends HTMLElement {
       this._fn = fns.get(this._name);
     }
 
-    console.log(this._name, this._html);
     if (!this._html) {
       return;
     }
 
     (window as any)[this._id] = this._hook;
-    this._html = this._html.replace(/\$hook/g, this._id);
+    this._html = this._html.replace(hookReg, this._id);
 
     if (this._fn) {
       Promise.resolve(this._fn(this._hook)).then((cb) => {

@@ -1,3 +1,4 @@
+import "./v-for";
 import "./v-txt";
 import "./v-if";
 import "./v-show";

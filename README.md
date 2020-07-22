@@ -15,7 +15,7 @@ Includ or download the verk.js:
 - [x] v-if
 - [x] v-route
 - [x] v-show
-- [ ] v-for
+- [x] v-for
 - [x] v-txt
 - [x] v-set
 - [x] v-watch
@@ -28,6 +28,7 @@ x] v-component
 - [x] v-new
 - [x] v-new props
 - [x] v-new script
+- [x] v-new verk-css
 - [ ] v-new slot
 - [ ] v-new loading
 - [ ] v-new $renderHook
@@ -42,7 +43,6 @@ x] v-component
 ### Debug
 
 - [x] error in Element
-- [x] fetch no cache
 
 ### Document
 
