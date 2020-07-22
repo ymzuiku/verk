@@ -12,34 +12,25 @@ Includ or download the verk.js:
 
 ### Base
 
-- [x] verk
-- [x] if
-- [x] show
-- [x] list
-- [x] text
-- [x] query
-- [x] watch
-- [x] model
-- [x] set-*
-- [x] on-*
+- [x] v-if
+- [x] v-route
+- [x] v-show
+- [ ] v-for
+- [x] v-txt
+- [x] v-set
+- [x] v-watch
+- [ ] v-model
+- [ ] v-form
 
 ### Template
 
-- [x] template/component
-- [x] template/component $hook state
-- [x] template/component $hook props
-- [x] template/component $hook parent
-- [x] template/component $hook id
-- [x] template/component $dir
-
-- [x] template/init
-- [x] template/init slot
-- [x] template/init props
-- [x] template/init loading
-- [x] template/init if
-- [x] template/init route
-- [x] template/init ref
-- [x] template/init $renderState
+x] v-component
+- [x] v-new
+- [x] v-new props
+- [x] v-new script
+- [ ] v-new slot
+- [ ] v-new loading
+- [ ] v-new $renderHook
 
 - [x] template/fetch
 

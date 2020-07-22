@@ -1,0 +1,11 @@
+<div>
+  <div>hello im other</div>
+  <h2>name: <v-txt>$hook.state.num</v-txt></h2>
+  <v-set oninput="e=>$hook.state.num = e.target.value"><input /></v-set>
+</div>
+
+<script>
+  $hook.state = {
+    num: 95,
+  };
+</script>

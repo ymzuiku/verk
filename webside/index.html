@@ -12,25 +12,44 @@
         background-color: #f00;
       }
     </style>
-    <v-define default>
-
-    </v-define>
-    <v-load src="./aaa.html"></v-load>
+    <!-- <v-load src="./aaa.html"></v-load>
+    <v-new src="./aaa.html"></v-new> -->
+    <!-- <v-component name="com">
+      <template>
+        <div>title:<v-txt>$hook.state.age</v-txt></div>
+        <h2>hello</h2>
+        <h3>component</h3>
+        <v-set oninput="e=>$hook.state.age = e.target.value"><input /></v-set>
+        <script>
+          $hook.state = {
+            age: 20,
+          };
+        </script>
+      </template>
+    </v-component> -->
+    <h3>out</h3>
+    <v-new props="{money:10000}" src="./dog.html"></v-new>
+    <div></div>
     <v-txt>20+40 + data.name.length;</v-txt>
     <v-if value="data.name.length > 5">
       <h1 class="dog">hello</h1>
+      <v-new props="{money:10000}" src="./dog.html"></v-new>
     </v-if>
     <h1>name:<v-txt>data.name</v-txt></h1>
-    <v-set style="`font-size: ${data.name.length*5}px;`">
+    <v-route path="#/aaaa">
+      <v-new src="./dog.html"></v-new>
+    </v-route>
+    <v-set v-style="`font-size: ${data.name.length*5}px;`">
       <v-txt>data.name.length</v-txt>
     </v-set>
     <v-set oninput="e=>data.name=e.target.value">
-      <input></input>
+      <input />
     </v-set>
+    <v-tag tag="input" oninput="e=>data.name=e.target.value" />
     <script>
-       window.data = {
-        name:'dog',
-        age:10,
+      window.data = {
+        name: "dog",
+        age: 10,
       };
     </script>
     <script src="/verk/index.js"></script>

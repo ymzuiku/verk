@@ -1,26 +1,24 @@
-import { ob } from "./ob";
+import { events } from "./ob";
 import { uuid } from "./uuid";
-import { newf } from "./newf";
+import { newFnReturn } from "./newFn";
 
 export const a = 0;
 
 const tag = "v-txt";
 
 class Component extends HTMLElement {
-  text = newf(this.innerHTML);
-  id = uuid("str");
+  _text = newFnReturn(this.innerHTML);
+  _id = uuid("v_txt");
   constructor() {
     super();
-    console.log(this.id);
-    ob.set(this.id, this.onUpdate);
+    events.set(this._id, this.onUpdate);
     this.onUpdate();
   }
   onUpdate = () => {
-    this.innerHTML = this.text();
-    return;
+    this.innerHTML = this._text();
   };
   public disconnectedCallback() {
-    ob.delete(this.id);
+    events.delete(this._id);
   }
 }
 

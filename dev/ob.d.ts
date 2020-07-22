@@ -1,2 +1,3 @@
-export declare const ob: Map<any, any>;
-export declare function dispatchOb(): void;
+export declare const watch: Set<unknown>;
+export declare const events: Map<any, any>;
+export declare function dispatch(): void;

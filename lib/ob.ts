@@ -1,6 +1,9 @@
-export const ob = new Map();
-export function dispatchOb(){
-  ob.forEach((v, k)=>{
+export const watch = new Set();
+
+export const events = new Map();
+export function dispatch() {
+  watch.forEach((fn: any) => fn());
+  events.forEach((v, k) => {
     v();
-  })
+  });
 }
