@@ -1,4 +1,4 @@
-import { newFnReturn } from "./newFn";
+import { newFnReturn, runFn } from "./newFn";
 import { events } from "./ob";
 import { uuid } from "./uuid";
 
@@ -7,17 +7,21 @@ const tag = "v-for";
 class Component extends HTMLElement {
   _id = uuid("v_for");
   _getVal = newFnReturn(this.getAttribute("data")!);
-  _v = new RegExp(this.getAttribute("value") || "\\$v", "g");
-  _i = new RegExp(this.getAttribute("index") || "\\$i", "g");
-  _html = this.innerHTML;
+  _v: any;
+  _i: any;
+  _html: any;
+
   constructor() {
     super();
+    this._getVal = newFnReturn(this.getAttribute("data")!);
+    this._v = new RegExp(this.getAttribute("value") || "\\$v", "g");
+    this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
+    this._html = this.innerHTML;
     events.set(this._id, this.onUpdate);
-
     this.onUpdate();
   }
   onUpdate = () => {
-    const val = this._getVal();
+    const val = runFn(this._getVal);
     if (val && val.length > 0) {
       let nextHTML = "";
       val.forEach((v: any, i: any) => {
@@ -30,6 +34,7 @@ class Component extends HTMLElement {
       this.innerHTML = "";
     }
   };
+  // public connectedCallback() {}
   public disconnectedCallback() {
     events.delete(this._id);
   }

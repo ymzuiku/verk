@@ -1,4 +1,4 @@
-import { newFnReturn } from "./newFn";
+import { newFnReturn, runFn } from "./newFn";
 import { events } from "./ob";
 import { uuid } from "./uuid";
 import { comps, fns, loadComponent, fetchs } from "./component";
@@ -8,20 +8,27 @@ const srcReg = new RegExp('(src|href)=".', "g");
 const hookReg = /(\$hook|verk-)/g;
 
 class Component extends HTMLElement {
-  _name = this.getAttribute("src") || this.getAttribute("name")!;
   _id = uuid();
-  _isSrc = this.hasAttribute("src");
+  _destroy = false;
+  _name: any;
+  _isSrc: any;
   _html: any;
   _fn: any;
-  _props = newFnReturn(this.getAttribute("props") || "{}")();
-  _hook = {
-    el: this,
-    props: this._props,
-    id: this._id,
-    name: this._name,
-  };
+  _props: any;
+  _hook: any;
   constructor() {
     super();
+  }
+  public connectedCallback() {
+    this._name = this.getAttribute("src") || this.getAttribute("name")!;
+    this._isSrc = this.hasAttribute("src");
+    this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
+    this._hook = {
+      el: this,
+      props: this._props,
+      id: this._id,
+      name: this._name,
+    };
     this.load();
   }
   load = () => {
@@ -55,6 +62,9 @@ class Component extends HTMLElement {
     this.onUpdate();
   };
   onUpdate = () => {
+    if (this._destroy) {
+      return;
+    }
     if (!this._html) {
       this._html = comps.get(this._name);
       this._fn = fns.get(this._name);
@@ -79,6 +89,7 @@ class Component extends HTMLElement {
     }
   };
   public disconnectedCallback() {
+    this._destroy = true;
     events.delete(this._id);
   }
 }

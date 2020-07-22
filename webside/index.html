@@ -13,15 +13,16 @@
       }
     </style>
 
-    <v-for data="[10,20,30]">
+    <v-for data="[10]">
       <div>hello $v</div>
       <div>world $i</div>
-      <v-for value="\$b" index="\$u" data="['dog','cat','fish']">
+      <v-for value="\$b" index="\$u" data="['dog']">
         <div>hello $b $v</div>
-        <div>world $u $i</div>
+        <v-new props="{money: $v + $i + '$b' + $u}" src="./dog.html"></v-new>
       </v-for>
     </v-for>
-    <v-new name="bb"></v-new>
+    <v-new props="{money: 100}" src="./dog.html"></v-new>
+    <!-- <v-new name="bb"></v-new>
 
     <h3>out</h3>
     <v-new props="{money:10000}" src="./dog.html"></v-new>
@@ -60,7 +61,7 @@
           };
         </script>
       </template>
-    </v-component>
+    </v-component> -->
 
     <script src="/verk/index.js"></script>
   </body>

@@ -1,4 +1,4 @@
-import { newFnReturn } from "./newFn";
+import { newFnReturn, runFn } from "./newFn";
 import { events, dispatch } from "./ob";
 import { uuid } from "./uuid";
 
@@ -6,21 +6,24 @@ const tag = "v-set";
 
 class Component extends HTMLElement {
   _id = uuid("fn");
-  _html = this.innerHTML;
-  _getVal = newFnReturn(this.getAttribute("value")!);
+  _html: any;
+  _getVal: any;
   _attrs: { [key: string]: any } = [];
+
   constructor() {
     super();
+    this._html = this.innerHTML;
+    this._getVal = newFnReturn(this.getAttribute("value")!);
     events.set(this._id, this.onUpdate);
     if (this.firstElementChild) {
       Array.from(this.attributes).map((attr) => {
         if (/^on/.test(attr.name)) {
           (this.firstElementChild as any)[attr.name] = function (e: any) {
-            newFnReturn(attr.value)()(e);
+            runFn(newFnReturn(attr.value)(), e);
             dispatch();
           };
         } else {
-          const name = attr.name.replace(/^v-/, '');;
+          const name = attr.name.replace(/^v-/, "");
           this._attrs[name] = newFnReturn(attr.value);
         }
       });
@@ -28,9 +31,6 @@ class Component extends HTMLElement {
     this.onUpdate();
   }
 
-  text = () => {
-    return new Function("return " + this.innerHTML)();
-  };
   onUpdate = () => {
     if (this.firstElementChild) {
       Object.keys(this._attrs).forEach((k) => {
@@ -41,6 +41,7 @@ class Component extends HTMLElement {
       });
     }
   };
+
   public disconnectedCallback() {
     events.delete(this._id);
   }

@@ -10,6 +10,14 @@
   function newFnRun(code) {
       return new Function("$hook", code);
   }
+  function runFn(fn, ...args) {
+      try {
+          return fn(...args);
+      }
+      catch (err) {
+          console.error(err, fn);
+      }
+  }
 
   const watch = new Set();
   const events = new Map();
@@ -42,11 +50,8 @@
           super();
           this._id = uuid("v_for");
           this._getVal = newFnReturn(this.getAttribute("data"));
-          this._v = new RegExp(this.getAttribute("value") || "\\$v", "g");
-          this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
-          this._html = this.innerHTML;
           this.onUpdate = () => {
-              const val = this._getVal();
+              const val = runFn(this._getVal);
               if (val && val.length > 0) {
                   let nextHTML = "";
                   val.forEach((v, i) => {
@@ -60,9 +65,14 @@
                   this.innerHTML = "";
               }
           };
+          this._getVal = newFnReturn(this.getAttribute("data"));
+          this._v = new RegExp(this.getAttribute("value") || "\\$v", "g");
+          this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
+          this._html = this.innerHTML;
           events.set(this._id, this.onUpdate);
           this.onUpdate();
       }
+      // public connectedCallback() {}
       disconnectedCallback() {
           events.delete(this._id);
       }
@@ -73,11 +83,11 @@
   class Component$1 extends HTMLElement {
       constructor() {
           super();
-          this._text = newFnReturn(this.innerHTML);
           this._id = uuid("v_txt");
           this.onUpdate = () => {
-              this.innerHTML = this._text();
+              this.innerHTML = runFn(this._fn);
           };
+          this._fn = newFnReturn(this.innerHTML);
           events.set(this._id, this.onUpdate);
           this.onUpdate();
       }
@@ -91,20 +101,26 @@
   class Component$2 extends HTMLElement {
       constructor() {
           super();
-          this._id = uuid('v_if');
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
+          this._id = uuid("v_if");
           this.onUpdate = () => {
-              if (this._getVal()) {
+              if (runFn(this._getVal)) {
                   this.innerHTML = this._html;
               }
               else {
                   this.innerHTML = "";
               }
           };
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           events.set(this._id, this.onUpdate);
           this.onUpdate();
       }
+      // public connectedCallback() {
+      //   this._html = this.innerHTML;
+      //   this._getVal = newFnReturn(this.getAttribute("value")!);
+      //   events.set(this._id, this.onUpdate);
+      //   this.onUpdate();
+      // }
       disconnectedCallback() {
           events.delete(this._id);
       }
@@ -116,17 +132,17 @@
       constructor() {
           super();
           this._id = uuid("v_show");
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
           this._display = this.style.display;
           this.onUpdate = () => {
-              if (this._getVal()) {
+              if (runFn(this._getVal)) {
                   this.style.display = this._display;
               }
               else {
                   this.style.display = "none";
               }
           };
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           events.set(this._id, this.onUpdate);
           this.onUpdate();
       }
@@ -141,12 +157,7 @@
       constructor() {
           super();
           this._id = uuid("fn");
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
           this._attrs = [];
-          this.text = () => {
-              return new Function("return " + this.innerHTML)();
-          };
           this.onUpdate = () => {
               if (this.firstElementChild) {
                   Object.keys(this._attrs).forEach((k) => {
@@ -157,17 +168,19 @@
                   });
               }
           };
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           events.set(this._id, this.onUpdate);
           if (this.firstElementChild) {
               Array.from(this.attributes).map((attr) => {
                   if (/^on/.test(attr.name)) {
                       this.firstElementChild[attr.name] = function (e) {
-                          newFnReturn(attr.value)()(e);
+                          runFn(newFnReturn(attr.value)(), e);
                           dispatch();
                       };
                   }
                   else {
-                      const name = attr.name.replace(/^v-/, '');
+                      const name = attr.name.replace(/^v-/, "");
                       this._attrs[name] = newFnReturn(attr.value);
                   }
               });
@@ -309,16 +322,8 @@
   class Component$6 extends HTMLElement {
       constructor() {
           super();
-          this._name = this.getAttribute("src") || this.getAttribute("name");
           this._id = uuid();
-          this._isSrc = this.hasAttribute("src");
-          this._props = newFnReturn(this.getAttribute("props") || "{}")();
-          this._hook = {
-              el: this,
-              props: this._props,
-              id: this._id,
-              name: this._name,
-          };
+          this._destroy = false;
           this.load = () => {
               if (fetchs.get(this._name) === 1) {
                   requestAnimationFrame(this.load);
@@ -350,6 +355,9 @@
               this.onUpdate();
           };
           this.onUpdate = () => {
+              if (this._destroy) {
+                  return;
+              }
               if (!this._html) {
                   this._html = comps.get(this._name);
                   this._fn = fns.get(this._name);
@@ -371,9 +379,21 @@
                   this.innerHTML = this._html;
               }
           };
+      }
+      connectedCallback() {
+          this._name = this.getAttribute("src") || this.getAttribute("name");
+          this._isSrc = this.hasAttribute("src");
+          this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
+          this._hook = {
+              el: this,
+              props: this._props,
+              id: this._id,
+              name: this._name,
+          };
           this.load();
       }
       disconnectedCallback() {
+          this._destroy = true;
           events.delete(this._id);
       }
   }
@@ -398,10 +418,8 @@
       constructor() {
           super();
           this._id = uuid("v_route");
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
           this.onUpdate = () => {
-              const path = this.getAttribute("path") || this._getVal();
+              const path = this.getAttribute("path") || runFn(this._getVal);
               if (location.hash.indexOf(path) === 0) {
                   this.innerHTML = this._html;
               }
@@ -409,6 +427,8 @@
                   this.innerHTML = "";
               }
           };
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           events.set(this._id, this.onUpdate);
           this.onUpdate();
       }

@@ -1,4 +1,4 @@
-import { newFnReturn } from "./newFn";
+import { newFnReturn, runFn } from "./newFn";
 import { events } from "./ob";
 import { uuid } from "./uuid";
 
@@ -6,15 +6,17 @@ const tag = "v-route";
 
 class Component extends HTMLElement {
   _id = uuid("v_route");
-  _html = this.innerHTML;
-  _getVal = newFnReturn(this.getAttribute("value")!);
+  _html: any;
+  _getVal: any;
   constructor() {
     super();
+    this._html = this.innerHTML;
+    this._getVal = newFnReturn(this.getAttribute("value")!);
     events.set(this._id, this.onUpdate);
     this.onUpdate();
   }
   onUpdate = () => {
-    const path = this.getAttribute("path") || this._getVal();
+    const path = this.getAttribute("path") || runFn(this._getVal);
     if (location.hash.indexOf(path) === 0) {
       this.innerHTML = this._html;
     } else {
