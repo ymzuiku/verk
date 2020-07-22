@@ -12,10 +12,10 @@ class Component extends HTMLElement {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    events.set(this._id, this.onUpdate);
-    this.onUpdate();
+    events.set(this._id, this.update);
+    this.update();
   }
-  onUpdate = () => {
+  update = () => {
     const path = this.getAttribute("path") || runFn(this._getVal);
     if (location.hash.indexOf(path) === 0) {
       this.innerHTML = this._html;

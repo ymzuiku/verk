@@ -12,10 +12,10 @@ class Component extends HTMLElement {
   constructor() {
     super();
     this._fn = newFnReturn(this.innerHTML);
-    events.set(this._id, this.onUpdate);
-    this.onUpdate();
+    events.set(this._id, this.update);
+    this.update();
   }
-  onUpdate = () => {
+  update = () => {
     this.innerHTML = runFn(this._fn);
   };
 

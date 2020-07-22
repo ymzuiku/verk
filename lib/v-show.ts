@@ -13,10 +13,10 @@ class Component extends HTMLElement {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    events.set(this._id, this.onUpdate);
-    this.onUpdate();
+    events.set(this._id, this.update);
+    this.update();
   }
-  onUpdate = () => {
+  update = () => {
     if (runFn(this._getVal)) {
       this.style.display = this._display;
     } else {

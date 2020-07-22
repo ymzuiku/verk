@@ -37,7 +37,7 @@ class Component extends HTMLElement {
       return;
     }
     if (fetchs.get(this._name) === 2) {
-      this.onUpdate();
+      this.update();
       return;
     }
     if (this._isSrc) {
@@ -54,14 +54,14 @@ class Component extends HTMLElement {
           v = v.replace(srcReg, 'src="' + dir);
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
-            this.onUpdate();
+            this.update();
           });
         });
       return;
     }
-    this.onUpdate();
+    this.update();
   };
-  onUpdate = () => {
+  update = () => {
     if (this._destroy) {
       return;
     }

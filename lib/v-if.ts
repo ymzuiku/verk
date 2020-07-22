@@ -12,22 +12,16 @@ class Component extends HTMLElement {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    events.set(this._id, this.onUpdate);
-    this.onUpdate();
+    events.set(this._id, this.update);
+    this.update();
   }
-  onUpdate = () => {
+  update = () => {
     if (runFn(this._getVal)) {
       this.innerHTML = this._html;
     } else {
       this.innerHTML = "";
     }
   };
-  // public connectedCallback() {
-  //   this._html = this.innerHTML;
-  //   this._getVal = newFnReturn(this.getAttribute("value")!);
-  //   events.set(this._id, this.onUpdate);
-  //   this.onUpdate();
-  // }
   public disconnectedCallback() {
     events.delete(this._id);
   }

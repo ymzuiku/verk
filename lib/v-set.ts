@@ -14,7 +14,7 @@ class Component extends HTMLElement {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    events.set(this._id, this.onUpdate);
+    events.set(this._id, this.update);
     if (this.firstElementChild) {
       Array.from(this.attributes).map((attr) => {
         if (/^on/.test(attr.name)) {
@@ -28,10 +28,10 @@ class Component extends HTMLElement {
         }
       });
     }
-    this.onUpdate();
+    this.update();
   }
 
-  onUpdate = () => {
+  update = () => {
     if (this.firstElementChild) {
       Object.keys(this._attrs).forEach((k) => {
         const v = this._attrs[k]();

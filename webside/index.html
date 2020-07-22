@@ -13,15 +13,21 @@
       }
     </style>
 
-    <v-for data="[10]">
-      <div>hello $v</div>
-      <div>world $i</div>
-      <v-for value="\$b" index="\$u" data="['dog']">
-        <div>hello $b $v</div>
-        <v-new props="{money: $v + $i + '$b' + $u}" src="./dog.html"></v-new>
-      </v-for>
+    <v-for data="data">
+      <div>
+        <v-txt>data[$i]</v-txt>
+        <v-set
+          onkeydown="e=>{if(e.code === 'Enter'){data.push(e.target.value)}}"
+          oninput="e=>data[$i]=e.target.value"
+          ><input
+        /></v-set>
+      </div>
     </v-for>
-    <v-new props="{money: 100}" src="./dog.html"></v-new>
+    <div><v-txt>JSON.stringify(data)</v-txt></div>
+    <script>
+      var data = Array(3).fill(0);
+    </script>
+    <v-new bbb props="{money: 100}" src="./dog.html"></v-new>
     <!-- <v-new name="bb"></v-new>
 
     <h3>out</h3>

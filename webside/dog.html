@@ -18,7 +18,6 @@
   $hook.state = {
     age: 20,
   };
-  console.log($hook);
   return () => {
     $hook.el.querySelector("h3").innerText = "hook-el";
   };

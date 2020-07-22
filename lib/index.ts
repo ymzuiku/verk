@@ -8,7 +8,15 @@ import "./v-component";
 import "./v-new";
 import "./v-watch";
 import "./v-route";
-import * as verk from "./ob";
+import { watch, dispatch, events } from "./ob";
+import * as deep from "./deep";
+
+const verk = {
+  watch,
+  dispatch,
+  events,
+  deep,
+};
 
 (window as any).$verk = verk;
 
