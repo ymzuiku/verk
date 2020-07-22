@@ -553,6 +553,21 @@
   }
   customElements.define(tag$8, Component$8);
 
+  const tag$9 = "v-shadow";
+  class Component$9 extends HTMLElement {
+      constructor() {
+          super();
+          this.shadow = this.attachShadow({
+              mode: this.getAttribute("mode") || "open",
+          });
+          const tmp = this.querySelector('template');
+          if (tmp) {
+              this.shadow.innerHTML = tmp.innerHTML;
+          }
+      }
+  }
+  customElements.define(tag$9, Component$9);
+
   const verk = {
       watch,
       dispatch,

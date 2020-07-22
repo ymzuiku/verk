@@ -8,6 +8,7 @@ import "./v-component";
 import "./v-new";
 import "./v-watch";
 import "./v-route";
+import "./v-shadow";
 import { watch, dispatch, events } from "./ob";
 import * as deep from "./deep";
 

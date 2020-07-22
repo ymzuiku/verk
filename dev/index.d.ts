@@ -8,6 +8,7 @@ import "./v-component";
 import "./v-new";
 import "./v-watch";
 import "./v-route";
+import "./v-shadow";
 import { dispatch } from "./ob";
 import * as deep from "./deep";
 declare const verk: {

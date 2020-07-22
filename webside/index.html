@@ -8,11 +8,29 @@
   </head>
   <body>
     <style>
+      :host {
+        font-size: 40px;
+      }
       .dog {
+        font-size: 40px;
+        background-color: #f00;
+      }
+      .dog::shadow {
+        font-size: 34px;
         background-color: #f00;
       }
     </style>
-
+    <v-shadow>
+      <template>
+        <style>
+          div {
+            background: #f0f0f0;
+          }
+        </style>
+        <div class="dog">shadow</div>
+      </template>
+    </v-shadow>
+    <div class="dog">dog-size</div>
     <v-for data="data">
       <div>
         <v-txt>data[$i]</v-txt>
@@ -25,49 +43,55 @@
     </v-for>
     <div><v-txt>JSON.stringify(data)</v-txt></div>
     <script>
-      var data = Array(3).fill(0);
+      var data = Array(33).fill(0);
     </script>
-    <v-new bbb props="{money: 100}" src="./dog.html"></v-new>
-    <!-- <v-new name="bb"></v-new>
-
-    <h3>out</h3>
-    <v-new props="{money:10000}" src="./dog.html"></v-new>
-    <div></div>
-    <v-txt>20+40 + data.name.length;</v-txt>
-    <v-if value="data.name.length > 5">
-      <h1 class="dog">hello</h1>
-      <v-new props="{money:10000}" src="./dog.html"></v-new>
-    </v-if>
-    <h1>name:<v-txt>data.name</v-txt></h1>
-    <v-route path="#/aaaa">
-      <v-new src="./dog.html"></v-new>
-    </v-route>
-    <v-set v-style="`font-size: ${data.name.length*5}px;`">
-      <v-txt>data.name.length</v-txt>
-    </v-set>
-    <v-set oninput="e=>data.name=e.target.value">
-      <input />
-    </v-set>
-    <script>
-      window.data = {
-        name: "dog",
-        age: 10,
-      };
-    </script>
-
-    <v-component name="bb">
+    <v-shadow>
       <template>
-        <div>titlebbbbbbbbbbbbbbbbbbbb<v-txt>$hook.state.age</v-txt></div>
-        <h2>hello</h2>
-        <h3>component</h3>
-        <v-set oninput="e=>$hook.state.age = e.target.value"><input /></v-set>
+        <v-new bbb props="{money: 100}" src="./dog.html"></v-new>
+        <v-new name="bb"></v-new>
+
+        <h3>out</h3>
+        <v-new props="{money:10000}" src="./dog.html"></v-new>
+        <div></div>
+        <v-txt>20+40 + data.name.length;</v-txt>
+        <v-if value="data.name.length > 5">
+          <h1 class="dog">hello</h1>
+          <v-new props="{money:10000}" src="./dog.html"></v-new>
+        </v-if>
+        <h1>name:<v-txt>data.name</v-txt></h1>
+        <v-route path="#/aaaa">
+          <v-new src="./dog.html"></v-new>
+        </v-route>
+        <v-set v-style="`font-size: ${data.name.length*5}px;`">
+          <v-txt>data.name.length</v-txt>
+        </v-set>
+        <v-set oninput="e=>data.name=e.target.value">
+          <input />
+        </v-set>
         <script>
-          $hook.state = {
-            age: 20,
+          window.data = {
+            name: "dog",
+            age: 10,
           };
         </script>
+
+        <v-component name="bb">
+          <template>
+            <div>titlebbbbbbbbbbbbbbbbbbbb<v-txt>$hook.state.age</v-txt></div>
+            <h2>hello</h2>
+            <h3>component</h3>
+            <v-set oninput="e=>$hook.state.age = e.target.value"
+              ><input
+            /></v-set>
+            <script>
+              $hook.state = {
+                age: 20,
+              };
+            </script>
+          </template>
+        </v-component>
       </template>
-    </v-component> -->
+    </v-shadow>
 
     <script src="/verk/index.js"></script>
   </body>

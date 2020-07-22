@@ -24,16 +24,15 @@ Includ or download the verk.js:
 
 ### Template
 
-x] v-component
+- [x] v-component
 - [x] v-new
+- [x] v-new src
 - [x] v-new props
 - [x] v-new script
 - [x] v-new verk-css
 - [ ] v-new slot
 - [ ] v-new loading
 - [ ] v-new $renderHook
-
-- [x] template/fetch
 
 
 ### Use Other script
