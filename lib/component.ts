@@ -4,13 +4,18 @@ export const comps = new Map();
 export const fns = new Map();
 export const fetchs = new Map();
 
+const vstart = new RegExp("<v-", "g");
+const vend = new RegExp("</v-", "g");
+const sstart = new RegExp("<v_", "g");
+const send = new RegExp("</v_", "g");
+
 function loadSc(sc: Element, list: any[]) {
   list.push(
     new Promise((res) => {
       const src = sc.getAttribute("src")!;
       function getFetch() {
         if (fetchs.get(src) === 1) {
-          setTimeout(getFetch, 100);
+          requestAnimationFrame(getFetch);
           return;
         }
         if (fetchs.get(src) === 2) {
@@ -52,8 +57,9 @@ export function loadComponent(html: string, name: string) {
     if (!html) {
       return;
     }
-    html = html.replace(/\<v-/g, "<v_");
-    html = html.replace(/\<\/v-/g, "</v_");
+    fetchs.set(name, 1);
+    html = html.replace(vstart, "<v_");
+    html = html.replace(vend, "</v_");
 
     const el = document.createElement("div");
     el.innerHTML = html;
@@ -84,10 +90,11 @@ export function loadComponent(html: string, name: string) {
     });
 
     html = el.innerHTML;
-    html = html.replace(/\<v_/g, "<v-");
-    html = html.replace(/\<\/v_/g, "</v-");
+    html = html.replace(sstart, "<v-");
+    html = html.replace(send, "</v-");
 
     comps.set(name, html);
+    fetchs.set(name, 2);
     res();
   });
 }

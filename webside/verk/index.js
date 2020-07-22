@@ -174,12 +174,16 @@
   const comps = new Map();
   const fns = new Map();
   const fetchs = new Map();
+  const vstart = new RegExp("<v-", "g");
+  const vend = new RegExp("</v-", "g");
+  const sstart = new RegExp("<v_", "g");
+  const send = new RegExp("</v_", "g");
   function loadSc(sc, list) {
       list.push(new Promise((res) => {
           const src = sc.getAttribute("src");
           function getFetch() {
               if (fetchs.get(src) === 1) {
-                  setTimeout(getFetch, 100);
+                  requestAnimationFrame(getFetch);
                   return;
               }
               if (fetchs.get(src) === 2) {
@@ -219,8 +223,9 @@
           if (!html) {
               return;
           }
-          html = html.replace(/\<v-/g, "<v_");
-          html = html.replace(/\<\/v-/g, "</v_");
+          fetchs.set(name, 1);
+          html = html.replace(vstart, "<v_");
+          html = html.replace(vend, "</v_");
           const el = document.createElement("div");
           el.innerHTML = html;
           el.querySelectorAll("v_component").forEach((com) => {
@@ -246,9 +251,10 @@
               sc.remove();
           });
           html = el.innerHTML;
-          html = html.replace(/\<v_/g, "<v-");
-          html = html.replace(/\<\/v_/g, "</v-");
+          html = html.replace(sstart, "<v-");
+          html = html.replace(send, "</v-");
           comps.set(name, html);
+          fetchs.set(name, 2);
           res();
       }));
   }
@@ -261,15 +267,11 @@
           this._name = this.getAttribute("name");
           loadComponent(this.innerHTML, this._name);
       }
-      connectedCallback() {
-          this.innerHTML = "";
-      }
   }
   customElements.define(tag$4, Component$4);
 
   const tag$5 = "v-new";
   const srcReg = new RegExp('(src|href)=".', "g");
-  // (window as any).$hook = {};
   class Component$5 extends HTMLElement {
       constructor() {
           super();
@@ -284,15 +286,15 @@
               name: this._name,
           };
           this.load = () => {
+              if (fetchs.get(this._name) === 1) {
+                  requestAnimationFrame(this.load);
+                  return;
+              }
+              if (fetchs.get(this._name) === 2) {
+                  this.onUpdate();
+                  return;
+              }
               if (this._isSrc) {
-                  if (fetchs.get(this._name) === 1) {
-                      setTimeout(this.load, 100);
-                      return;
-                  }
-                  if (fetchs.get(this._name) === 2) {
-                      this.onUpdate();
-                      return;
-                  }
                   fetchs.set(this._name, 1);
                   fetch(this._name)
                       .then((v) => v.text())
@@ -314,13 +316,16 @@
               this.onUpdate();
           };
           this.onUpdate = () => {
-              this._html = comps.get(this._name);
+              if (!this._html) {
+                  this._html = comps.get(this._name);
+                  this._fn = fns.get(this._name);
+              }
+              console.log(this._name, this._html);
               if (!this._html) {
                   return;
               }
               window[this._id] = this._hook;
               this._html = this._html.replace(/\$hook/g, this._id);
-              this._fn = fns.get(this._name);
               if (this._fn) {
                   Promise.resolve(this._fn(this._hook)).then((cb) => {
                       this.innerHTML = this._html;

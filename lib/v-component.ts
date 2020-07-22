@@ -1,7 +1,6 @@
-import { loadComponent } from './component';
+import { loadComponent } from "./component";
 
 const tag = "v-component";
-
 
 class Component extends HTMLElement {
   // html: any;
@@ -9,9 +8,6 @@ class Component extends HTMLElement {
   constructor() {
     super();
     loadComponent(this.innerHTML, this._name);
-  }
-  public connectedCallback() {
-    this.innerHTML = "";
   }
 }
 

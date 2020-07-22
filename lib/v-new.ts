@@ -5,7 +5,6 @@ import { comps, fns, loadComponent, fetchs } from "./component";
 
 const tag = "v-new";
 const srcReg = new RegExp('(src|href)=".', "g");
-// (window as any).$hook = {};
 
 class Component extends HTMLElement {
   _id = uuid("v_new");
@@ -25,15 +24,15 @@ class Component extends HTMLElement {
     this.load();
   }
   load = () => {
+    if (fetchs.get(this._name) === 1) {
+      requestAnimationFrame(this.load);
+      return;
+    }
+    if (fetchs.get(this._name) === 2) {
+      this.onUpdate();
+      return;
+    }
     if (this._isSrc) {
-      if (fetchs.get(this._name) === 1) {
-        setTimeout(this.load, 100);
-        return;
-      }
-      if (fetchs.get(this._name) === 2) {
-        this.onUpdate();
-        return;
-      }
       fetchs.set(this._name, 1);
       fetch(this._name)
         .then((v) => v.text())
@@ -55,7 +54,12 @@ class Component extends HTMLElement {
     this.onUpdate();
   };
   onUpdate = () => {
-    this._html = comps.get(this._name);
+    if (!this._html) {
+      this._html = comps.get(this._name);
+      this._fn = fns.get(this._name);
+    }
+
+    console.log(this._name, this._html);
     if (!this._html) {
       return;
     }
@@ -63,7 +67,6 @@ class Component extends HTMLElement {
     (window as any)[this._id] = this._hook;
     this._html = this._html.replace(/\$hook/g, this._id);
 
-    this._fn = fns.get(this._name);
     if (this._fn) {
       Promise.resolve(this._fn(this._hook)).then((cb) => {
         this.innerHTML = this._html;
