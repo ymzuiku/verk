@@ -1,7 +1,6 @@
 import { newFnReturn, runFn } from "./newFn";
 import { events, dispatch } from "./ob";
 import { uuid } from "./uuid";
-import { diff } from "./diff";
 
 const tag = "v-set";
 
@@ -12,6 +11,7 @@ class Component extends HTMLElement {
   _diff: any;
   _lastDiff: any;
   _attrs: { [key: string]: any } = [];
+  _query = this.getAttribute("query");
 
   constructor() {
     super();
@@ -21,6 +21,13 @@ class Component extends HTMLElement {
         if (/^on/.test(attr.name)) {
           (this.firstElementChild as any)[attr.name] = (e: any) => {
             runFn(newFnReturn(attr.value)(), e);
+            if (this._query) {
+              document.querySelectorAll(this._query).forEach((el: any) => {
+                if (el.update) {
+                  el.update();
+                }
+              });
+            }
             dispatch();
           };
         } else {
@@ -31,7 +38,7 @@ class Component extends HTMLElement {
       });
     }
     this.update();
-    if (isNeedListen) {
+    if (isNeedListen && !this.closest("v-keep")) {
       events.set(this._id, this.update);
     }
   }

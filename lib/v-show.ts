@@ -10,15 +10,18 @@ class Component extends HTMLElement {
   _getVal: any;
   _lastVal: any;
   _display = this.style.display;
+
   constructor() {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    events.set(this._id, this.update);
+    if (!this.closest('v-keep')) {
+      events.set(this._id, this.update);
+    }
     this.update();
   }
   update = () => {
-    const v= runFn(this._getVal)
+    const v = runFn(this._getVal);
     if (this._lastVal === v) {
       return;
     }

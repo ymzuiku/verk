@@ -9,7 +9,9 @@ class Component extends HTMLElement {
   _getVal = newFnRun(this.getAttribute("value")!);
   constructor() {
     super();
-    events.set(this._id, this._getVal);
+    if (!this.closest('v-keep')) {
+      events.set(this._id, this._getVal);
+    }
   }
   public disconnectedCallback() {
     events.delete(this._id);

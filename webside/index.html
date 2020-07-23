@@ -20,31 +20,24 @@
         background-color: #f5f5f5;
       }
     </style>
-    <!-- <v-shadow>
-      <template>
-        <style>
-          div {
-            background: #f0f0f0;
-          }
-        </style>
-        <div class="dog">shadow</div>
-      </template>
-    </v-shadow>
-    <div class="dog">dog-size</div> -->
     <v-for len="list">
       <div>
-        <v-txt>list[$i]</v-txt>
-        <v-set
-          onkeydown="e=>{if(e.code === 'Enter'){list.push(e.target.value)}}"
-          oninput="e=>list[$i]=e.target.value"
-        >
-          <input />
-        </v-set>
+        <v-keep>
+          <v-txt list-$i>list[$i]</v-txt>
+          <v-set
+            query="[list-$i]"
+            onkeydown="e=>{if(e.code === 'Enter'){list.push(e.target.value)}}"
+            oninput="e=>list[$i]=e.target.value"
+          >
+            <input />
+          </v-set>
+        </v-keep>
       </div>
     </v-for>
     <div><v-txt>JSON.stringify(list)</v-txt></div>
+    <v-set onclick="e=>console.log('1')"><button>btn</button></v-set>
     <script>
-      window.list = Array(5000).fill(0);
+      window.list = Array(3000).fill(0);
     </script>
     <!-- <v-shadow>
       <template>

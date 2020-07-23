@@ -11,7 +11,9 @@ class Component extends HTMLElement {
   _lastVal: any;
   constructor() {
     super();
-    events.set(this._id, this.update);
+    if (!this.closest('v-keep')) {
+      events.set(this._id, this.update);
+    }
     this.update();
   }
 

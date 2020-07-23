@@ -20,6 +20,7 @@ Includ or download the verk.js:
 - [x] v-set
 - [x] v-watch
 - [x] v-shadow
+- [x] v-keep
 - [ ] v-model
 - [ ] v-form
 

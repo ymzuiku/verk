@@ -10,7 +10,13 @@ export function dispatch() {
   time = requestAnimationFrame(() => {
     watch.forEach((fn: any) => fn());
     events.forEach((v, k) => {
-      v();
+      if (Array.isArray(v)) {
+        v.forEach((sub) => {
+          sub();
+        });
+      } else {
+        v();
+      }
     });
   });
 }

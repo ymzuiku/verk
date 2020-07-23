@@ -9,6 +9,7 @@ class Component extends HTMLElement {
   _html: any;
   _getVal: any;
   _lastVal: any;
+  _lastHash: any;
   constructor() {
     super();
     this._html = this.innerHTML;
@@ -17,12 +18,12 @@ class Component extends HTMLElement {
     this.update();
   }
   update = () => {
-    const path = this.getAttribute("path") || runFn(this._getVal);
-    const v = location.hash.indexOf(path) === 0;
-    if (this._lastVal === v) {
+    if (this._lastHash === location.hash) {
       return;
     }
-    this._lastVal = v;
+    this._lastHash = location.hash;
+    const path = this.getAttribute("path") || runFn(this._getVal);
+    const v = location.hash.indexOf(path) === 0;
     if (v) {
       this.innerHTML = this._html;
     } else {

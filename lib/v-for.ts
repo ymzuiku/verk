@@ -26,9 +26,12 @@ class Component extends HTMLElement {
 
   constructor() {
     super();
-    events.set(this._id, this.update);
+    if (!this.closest('v-keep')) {
+      events.set(this._id, this.update);
+    }
     this.update();
   }
+
   getH = (i: any) => {
     const h = this._html.replace(this._i, i);
     return `<v-for-item ${this._id}="${i}">${h}</v-for-item>`;

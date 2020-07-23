@@ -9,10 +9,13 @@ const tag = "v-txt";
 class Component extends HTMLElement {
   _fn: any;
   _id = uuid("v_txt");
+
   constructor() {
     super();
     this._fn = newFnReturn(this.innerHTML);
-    events.set(this._id, this.update);
+    if (!this.closest('v-keep')) {
+      events.set(this._id, this.update);
+    }
     this.update();
   }
   update = () => {

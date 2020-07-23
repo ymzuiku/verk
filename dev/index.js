@@ -29,7 +29,14 @@
       time = requestAnimationFrame(() => {
           watch.forEach((fn) => fn());
           events.forEach((v, k) => {
-              v();
+              if (Array.isArray(v)) {
+                  v.forEach((sub) => {
+                      sub();
+                  });
+              }
+              else {
+                  v();
+              }
           });
       });
   }
@@ -105,7 +112,9 @@
               }
               this._lastLen = len;
           };
-          events.set(this._id, this.update);
+          if (!this.closest('v-keep')) {
+              events.set(this._id, this.update);
+          }
           this.update();
       }
       disconnectedCallback() {
@@ -126,7 +135,9 @@
               }
           };
           this._fn = newFnReturn(this.innerHTML);
-          events.set(this._id, this.update);
+          if (!this.closest('v-keep')) {
+              events.set(this._id, this.update);
+          }
           this.update();
       }
       disconnectedCallback() {
@@ -155,7 +166,9 @@
                   this.innerHTML = "";
               }
           };
-          events.set(this._id, this.update);
+          if (!this.closest('v-keep')) {
+              events.set(this._id, this.update);
+          }
           this.update();
       }
       disconnectedCallback() {
@@ -185,7 +198,9 @@
           };
           this._html = this.innerHTML;
           this._getVal = newFnReturn(this.getAttribute("value"));
-          events.set(this._id, this.update);
+          if (!this.closest('v-keep')) {
+              events.set(this._id, this.update);
+          }
           this.update();
       }
       disconnectedCallback() {
@@ -202,6 +217,7 @@
           this._html = this.innerHTML;
           this._getVal = newFnReturn(this.getAttribute("value"));
           this._attrs = [];
+          this._query = this.getAttribute("query");
           this.update = () => {
               if (this.firstElementChild) {
                   Object.keys(this._attrs).forEach((k) => {
@@ -218,6 +234,13 @@
                   if (/^on/.test(attr.name)) {
                       this.firstElementChild[attr.name] = (e) => {
                           runFn(newFnReturn(attr.value)(), e);
+                          if (this._query) {
+                              document.querySelectorAll(this._query).forEach((el) => {
+                                  if (el.update) {
+                                      el.update();
+                                  }
+                              });
+                          }
                           dispatch();
                       };
                   }
@@ -229,7 +252,7 @@
               });
           }
           this.update();
-          if (isNeedListen) {
+          if (isNeedListen && !this.closest("v-keep")) {
               events.set(this._id, this.update);
           }
       }
@@ -453,7 +476,9 @@
           super();
           this._id = uuid("v_watch");
           this._getVal = newFnRun(this.getAttribute("value"));
-          events.set(this._id, this._getVal);
+          if (!this.closest('v-keep')) {
+              events.set(this._id, this._getVal);
+          }
       }
       disconnectedCallback() {
           events.delete(this._id);
@@ -467,12 +492,12 @@
           super();
           this._id = uuid("v_route");
           this.update = () => {
-              const path = this.getAttribute("path") || runFn(this._getVal);
-              const v = location.hash.indexOf(path) === 0;
-              if (this._lastVal === v) {
+              if (this._lastHash === location.hash) {
                   return;
               }
-              this._lastVal = v;
+              this._lastHash = location.hash;
+              const path = this.getAttribute("path") || runFn(this._getVal);
+              const v = location.hash.indexOf(path) === 0;
               if (v) {
                   this.innerHTML = this._html;
               }
