@@ -40,6 +40,9 @@ export function equal(a: any, b: any) {
 }
 
 export function copy(obj: any) {
+  if (typeof obj !== 'object') {
+    return obj;
+  }
   if (Array.isArray(obj)) {
     return cloneArray(obj);
   }

@@ -43,156 +43,68 @@
       return u + Date.now().toString().slice(4, 13) + n + '_';
   }
 
-  function equal(a, b) {
-      if (a === b)
-          return true;
-      if (a && b && typeof a == "object" && typeof b == "object") {
-          if (a.constructor !== b.constructor)
-              return false;
-          var length, i, keys;
-          if (Array.isArray(a)) {
-              length = a.length;
-              if (length != b.length)
-                  return false;
-              for (i = length; i-- !== 0;)
-                  if (!equal(a[i], b[i]))
-                      return false;
-              return true;
-          }
-          if (a.constructor === RegExp)
-              return a.source === b.source && a.flags === b.flags;
-          if (a.valueOf !== Object.prototype.valueOf)
-              return a.valueOf() === b.valueOf();
-          if (a.toString !== Object.prototype.toString)
-              return a.toString() === b.toString();
-          keys = Object.keys(a);
-          length = keys.length;
-          if (length !== Object.keys(b).length)
-              return false;
-          for (i = length; i-- !== 0;)
-              if (!Object.prototype.hasOwnProperty.call(b, keys[i]))
-                  return false;
-          for (i = length; i-- !== 0;) {
-              var key = keys[i];
-              if (!equal(a[key], b[key]))
-                  return false;
-          }
-          return true;
-      }
-      // true if both NaN, false otherwise
-      return a !== a && b !== b;
-  }
-  function copy(obj) {
-      if (Array.isArray(obj)) {
-          return cloneArray(obj);
-      }
-      return cloneObject(obj);
-  }
-  function cloneObject(object) {
-      let clone = {};
-      for (let property in object) {
-          if (Array.isArray(object[property])) {
-              clone[property] = cloneArray(object[property]);
-          }
-          else if (object[property] !== null &&
-              typeof object[property] === "object") {
-              clone[property] = cloneObject(object[property]);
-          }
-          else {
-              clone[property] = object[property];
-          }
-      }
-      return clone;
-  }
-  function cloneArray(array) {
-      let clone = [];
-      if (array.length === 0) {
-          return clone;
-      }
-      for (let i = 0; i < array.length; i++) {
-          if (Array.isArray(array[i])) {
-              clone[i] = cloneArray(array[i]);
-          }
-          else {
-              if (array[i] !== null && typeof array[i] === "object") {
-                  clone[i] = cloneObject(array[i]);
-              }
-              else {
-                  clone[i] = array[i];
-              }
-          }
-      }
-      return clone;
-  }
-
-  var deep = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    equal: equal,
-    copy: copy
-  });
-
   const tag = "v-for";
   class Item extends HTMLElement {
   }
   customElements.define("v-for-item", Item);
+  function getLen(val) {
+      if (typeof val === "number") {
+          return val;
+      }
+      if (Array.isArray(val)) {
+          return val.length;
+      }
+      return 0;
+  }
   class Component extends HTMLElement {
       constructor() {
           super();
           this._id = uuid("v_for");
-          this._getVal = newFnReturn(this.getAttribute("data"));
-          this.getH = (v, i) => {
-              let h = this._html.replace(this._v, v);
-              h = h.replace(this._i, i);
+          this._len = newFnReturn(this.getAttribute("len"));
+          this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
+          this._getVal = newFnReturn(this.getAttribute("len"));
+          this._html = this.innerHTML;
+          this.getH = (i) => {
+              const h = this._html.replace(this._i, i);
               return `<v-for-item ${this._id}="${i}">${h}</v-for-item>`;
           };
           this.update = () => {
-              const val = runFn(this._getVal);
-              if (!this._lastVal) {
-                  if (val && val.length > 0) {
+              const len = getLen(runFn(this._getVal));
+              if (typeof this._lastLen === "undefined") {
+                  if (len) {
                       let nextHTML = "";
-                      val.forEach((v, i) => {
-                          let h = this._html.replace(this._v, v);
-                          h = h.replace(this._i, i);
-                          nextHTML += this.getH(v, i);
-                      });
+                      for (let i = 0; i < len; i++) {
+                          nextHTML += this.getH(i);
+                      }
                       this.innerHTML = nextHTML;
                   }
                   else {
                       this.innerHTML = "";
                   }
-                  this._lastVal = copy(val);
+                  this._lastLen = len;
                   return;
               }
-              if (this._keep || this._lastVal.length === val.length) {
+              if (this._lastLen === len) {
                   return;
               }
-              if (val) {
-                  val.forEach((v, i) => {
-                      if (i > this._lastVal.length - 1) {
-                          let h = this._html.replace(this._v, v);
-                          h = h.replace(this._i, i);
-                          const list = this.querySelectorAll(`[${this._id}]`);
-                          const end = list[list.length - 1];
-                          if (end) {
-                              end.insertAdjacentHTML("afterend", this.getH(v, i));
-                          }
+              if (len > this._lastLen) {
+                  for (let i = this._lastLen; i < len; i++) {
+                      const list = this.querySelectorAll(`[${this._id}]`);
+                      const end = list[list.length - 1];
+                      if (end) {
+                          end.insertAdjacentHTML("afterend", this.getH(i));
                       }
-                  });
-                  const a = val.length;
-                  const b = this._lastVal.length;
-                  for (let i = a; i < b; i++) {
+                  }
+              }
+              else {
+                  for (let i = len; i < this._lastLen; i++) {
                       this.querySelectorAll(`[${this._id}="${i}"]`).forEach((v) => {
                           v.remove();
                       });
                   }
               }
-              this._lastVal = copy(val);
+              this._lastLen = len;
           };
-          this._getVal = newFnReturn(this.getAttribute("data"));
-          this._v = new RegExp(this.getAttribute("value") || "\\$v", "g");
-          this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
-          this._html = this.innerHTML;
-          this._keep = this.hasAttribute("keep");
           events.set(this._id, this.update);
           this.update();
       }
@@ -208,7 +120,10 @@
           super();
           this._id = uuid("v_txt");
           this.update = () => {
-              this.innerHTML = runFn(this._fn);
+              const v = runFn(this._fn);
+              if (this.innerHTML !== v) {
+                  this.innerHTML = v;
+              }
           };
           this._fn = newFnReturn(this.innerHTML);
           events.set(this._id, this.update);
@@ -226,7 +141,12 @@
           super();
           this._id = uuid("v_if");
           this.update = () => {
-              if (runFn(this._getVal)) {
+              const v = runFn(this._getVal);
+              if (this._lastVal === v) {
+                  return;
+              }
+              this._lastVal = v;
+              if (v) {
                   this.innerHTML = this._html;
               }
               else {
@@ -251,7 +171,12 @@
           this._id = uuid("v_show");
           this._display = this.style.display;
           this.update = () => {
-              if (runFn(this._getVal)) {
+              const v = runFn(this._getVal);
+              if (this._lastVal === v) {
+                  return;
+              }
+              this._lastVal = v;
+              if (v) {
                   this.style.display = this._display;
               }
               else {
@@ -274,6 +199,8 @@
       constructor() {
           super();
           this._id = uuid("fn");
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           this._attrs = [];
           this.update = () => {
               if (this.firstElementChild) {
@@ -285,24 +212,26 @@
                   });
               }
           };
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
-          events.set(this._id, this.update);
+          let isNeedListen = false;
           if (this.firstElementChild) {
               Array.from(this.attributes).map((attr) => {
                   if (/^on/.test(attr.name)) {
-                      this.firstElementChild[attr.name] = function (e) {
+                      this.firstElementChild[attr.name] = (e) => {
                           runFn(newFnReturn(attr.value)(), e);
                           dispatch();
                       };
                   }
                   else {
+                      isNeedListen = true;
                       const name = attr.name.replace(/^v-/, "");
                       this._attrs[name] = newFnReturn(attr.value);
                   }
               });
           }
           this.update();
+          if (isNeedListen) {
+              events.set(this._id, this.update);
+          }
       }
       disconnectedCallback() {
           events.delete(this._id);
@@ -443,8 +372,8 @@
           this._destroy = false;
           this.load = () => {
               if (fetchs.get(this._name) === 1) {
-                  this.querySelectorAll('[loading]').forEach(el => {
-                      console.log('------');
+                  this.querySelectorAll("[loading]").forEach((el) => {
+                      console.log("------");
                   });
                   requestAnimationFrame(this.load);
                   return;
@@ -514,7 +443,6 @@
       }
       disconnectedCallback() {
           this._destroy = true;
-          events.delete(this._id);
       }
   }
   customElements.define(tag$6, Component$6);
@@ -540,7 +468,12 @@
           this._id = uuid("v_route");
           this.update = () => {
               const path = this.getAttribute("path") || runFn(this._getVal);
-              if (location.hash.indexOf(path) === 0) {
+              const v = location.hash.indexOf(path) === 0;
+              if (this._lastVal === v) {
+                  return;
+              }
+              this._lastVal = v;
+              if (v) {
                   this.innerHTML = this._html;
               }
               else {
@@ -581,7 +514,6 @@
       watch,
       dispatch,
       events,
-      deep,
   };
   window.$verk = verk;
 

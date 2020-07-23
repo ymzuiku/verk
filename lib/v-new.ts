@@ -1,5 +1,4 @@
 import { newFnReturn, runFn } from "./newFn";
-import { events } from "./ob";
 import { uuid } from "./uuid";
 import { comps, fns, loadComponent, fetchs } from "./component";
 
@@ -33,9 +32,9 @@ class Component extends HTMLElement {
   }
   load = () => {
     if (fetchs.get(this._name) === 1) {
-      this.querySelectorAll('[loading]').forEach(el=>{
-        console.log('------');
-      })
+      this.querySelectorAll("[loading]").forEach((el) => {
+        console.log("------");
+      });
       requestAnimationFrame(this.load);
       return;
     }
@@ -64,6 +63,7 @@ class Component extends HTMLElement {
     }
     this.update();
   };
+  
   update = () => {
     if (this._destroy) {
       return;
@@ -93,7 +93,6 @@ class Component extends HTMLElement {
   };
   public disconnectedCallback() {
     this._destroy = true;
-    events.delete(this._id);
   }
 }
 

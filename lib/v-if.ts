@@ -8,6 +8,7 @@ class Component extends HTMLElement {
   _id = uuid("v_if");
   _html: any;
   _getVal: any;
+  _lastVal: any;
   constructor() {
     super();
     this._html = this.innerHTML;
@@ -15,8 +16,14 @@ class Component extends HTMLElement {
     events.set(this._id, this.update);
     this.update();
   }
+
   update = () => {
-    if (runFn(this._getVal)) {
+    const v = runFn(this._getVal);
+    if (this._lastVal === v) {
+      return;
+    }
+    this._lastVal = v;
+    if (v) {
       this.innerHTML = this._html;
     } else {
       this.innerHTML = "";

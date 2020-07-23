@@ -8,6 +8,7 @@ class Component extends HTMLElement {
   _id = uuid("v_show");
   _html: any;
   _getVal: any;
+  _lastVal: any;
   _display = this.style.display;
   constructor() {
     super();
@@ -17,7 +18,12 @@ class Component extends HTMLElement {
     this.update();
   }
   update = () => {
-    if (runFn(this._getVal)) {
+    const v= runFn(this._getVal)
+    if (this._lastVal === v) {
+      return;
+    }
+    this._lastVal = v;
+    if (v) {
       this.style.display = this._display;
     } else {
       this.style.display = "none";

@@ -16,7 +16,10 @@ class Component extends HTMLElement {
     this.update();
   }
   update = () => {
-    this.innerHTML = runFn(this._fn);
+    const v = runFn(this._fn);
+    if (this.innerHTML !== v) {
+      this.innerHTML = v;
+    }
   };
 
   public disconnectedCallback() {

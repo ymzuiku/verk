@@ -13,17 +13,14 @@
       }
       .dog {
         font-size: 40px;
-        background-color: #f00;
+        background-color: #f2f2f2;
       }
       .dog::shadow {
         font-size: 34px;
-        background-color: #f00;
+        background-color: #f5f5f5;
       }
     </style>
-    <!-- <v-new src="./dog.html">
-      <div loading>loading</div>
-    </v-new> -->
-    <v-shadow>
+    <!-- <v-shadow>
       <template>
         <style>
           div {
@@ -33,22 +30,23 @@
         <div class="dog">shadow</div>
       </template>
     </v-shadow>
-    <div class="dog">dog-size</div>
-    <v-for data="list">
+    <div class="dog">dog-size</div> -->
+    <v-for len="list">
       <div>
         <v-txt>list[$i]</v-txt>
         <v-set
           onkeydown="e=>{if(e.code === 'Enter'){list.push(e.target.value)}}"
           oninput="e=>list[$i]=e.target.value"
-          ><input
-        /></v-set>
+        >
+          <input />
+        </v-set>
       </div>
     </v-for>
     <div><v-txt>JSON.stringify(list)</v-txt></div>
     <script>
-      window.list = Array(33).fill(0);
+      window.list = Array(5000).fill(0);
     </script>
-    <v-shadow>
+    <!-- <v-shadow>
       <template>
         <v-new bbb props="{money: 100}" src="./dog.html"></v-new>
         <v-new name="bb"></v-new>
@@ -57,7 +55,7 @@
         <v-new props="{money:10000}" src="./dog.html"></v-new>
         <div></div>
         <v-txt>20+40 + data.name.length;</v-txt>
-        <v-if value="$shadow.data.name.length > 5">
+        <v-if value="data.name.length > 5">
           <h1 class="dog">hello</h1>
           <v-new props="{money:10000}" src="./dog.html"></v-new>
         </v-if>
@@ -72,7 +70,7 @@
           <input />
         </v-set>
         <script>
-          $shadow.data = {
+          window.data = {
             name: "dog",
             age: 10,
           };
@@ -94,7 +92,7 @@
           </template>
         </v-component>
       </template>
-    </v-shadow>
+    </v-shadow> -->
 
     <script src="/verk/index.js"></script>
   </body>
