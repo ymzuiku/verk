@@ -388,6 +388,7 @@
   const tag$6 = "v-new";
   const srcReg = new RegExp('(src|href)=".', "g");
   const hookReg = /(\$hook|verk-)/g;
+  const renderHookReg = /\$renderHook/g;
   class Component$6 extends HTMLElement {
       constructor() {
           super();
@@ -407,10 +408,11 @@
           };
           this.load = () => {
               if (this._tmp) {
+                  this._tmp.innerHTML = this._tmp.innerHTML.replace(renderHookReg, this._id);
                   this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
                       const slot = el.getAttribute("slot");
                       const node = el.cloneNode(true);
-                      node.removeAttribute('slot');
+                      node.removeAttribute("slot");
                       this._slot.set(slot, node);
                   });
               }
@@ -443,7 +445,7 @@
                   });
                   return;
               }
-              this.innerHTML = '';
+              this.innerHTML = "";
               this.update();
           };
           this.update = () => {

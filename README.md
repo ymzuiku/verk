@@ -33,8 +33,8 @@ Includ or download the verk.js:
 - [x] v-new script
 - [x] v-new verk-css
 - [x] v-new loading
-- [ ] v-new slot
-- [ ] v-new $renderHook
+- [x] v-new slot
+- [x] v-new $renderHook
 
 
 ### Use Other script

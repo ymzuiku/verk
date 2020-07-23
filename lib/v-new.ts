@@ -5,6 +5,7 @@ import { comps, fns, loadComponent, fetchs } from "./component";
 const tag = "v-new";
 const srcReg = new RegExp('(src|href)=".', "g");
 const hookReg = /(\$hook|verk-)/g;
+const renderHookReg = /\$renderHook/g;
 
 class Component extends HTMLElement {
   _id = uuid();
@@ -46,10 +47,14 @@ class Component extends HTMLElement {
   };
   load = () => {
     if (this._tmp) {
+      this._tmp.innerHTML = this._tmp.innerHTML.replace(
+        renderHookReg,
+        this._id
+      );
       this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
         const slot = el.getAttribute("slot")!;
         const node = el.cloneNode(true) as any;
-        node.removeAttribute('slot')
+        node.removeAttribute("slot");
         this._slot.set(slot, node);
       });
     }
@@ -85,7 +90,7 @@ class Component extends HTMLElement {
         });
       return;
     }
-    this.innerHTML = '';
+    this.innerHTML = "";
     this.update();
   };
 
@@ -108,9 +113,7 @@ class Component extends HTMLElement {
       Promise.resolve(this._fn(this._hook)).then((cb) => {
         this.innerHTML = this._html;
         this._slot.forEach((v: HTMLElement, k) => {
-          this.querySelectorAll(
-            `slot[name="${k}"]`
-          ).forEach((el) => {
+          this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
             Array.from(el.attributes).forEach((attr) => {
               v.setAttribute(attr.name, attr.value);
             });
