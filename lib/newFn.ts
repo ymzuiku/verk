@@ -1,9 +1,17 @@
 export function newFnReturn(code: string) {
-  return new Function("return " + code);
+  try {
+    return new Function("return " + code);
+  } catch (err) {
+    console.error(err, code);
+  }
 }
 
 export function newFnRun(code: string) {
-  return new Function("$hook", code);
+  try {
+    return new Function("$hook", code);
+  } catch (err) {
+    console.error(err, code);
+  }
 }
 
 export function runFn(fn: any, ...args: any[]) {

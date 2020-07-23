@@ -5,10 +5,20 @@
 }(this, function () { 'use strict';
 
   function newFnReturn(code) {
-      return new Function("return " + code);
+      try {
+          return new Function("return " + code);
+      }
+      catch (err) {
+          console.error(err, code);
+      }
   }
   function newFnRun(code) {
-      return new Function("$hook", code);
+      try {
+          return new Function("$hook", code);
+      }
+      catch (err) {
+          console.error(err, code);
+      }
   }
   function runFn(fn, ...args) {
       try {
@@ -370,43 +380,18 @@
   const vend = new RegExp("</v-", "g");
   const sstart = new RegExp("<v_", "g");
   const send = new RegExp("</v_", "g");
-  function loadSc(sc, list) {
+  function appendSc(sc, list) {
       list.push(new Promise((res) => {
-          const src = sc.getAttribute("src");
-          function getFetch() {
-              if (fetchs.get(src) === 1) {
-                  requestAnimationFrame(getFetch);
-                  return;
-              }
-              if (fetchs.get(src) === 2) {
-                  res();
-                  return;
-              }
-              fetchs.set(src, 1);
-              fetch(src)
-                  .then((v) => {
-                  if (v.ok) {
-                      return v.text();
-                  }
-                  return new Promise((res) => res(""));
-              })
-                  .then((v) => {
-                  if (v) {
-                      newFnRun(v)();
-                      fetchs.set(src, 2);
-                  }
-                  else {
-                      fetchs.set(src, 0);
-                  }
-                  res();
-              });
-          }
-          getFetch();
+          const sc2 = document.createElement("script");
+          sc2.setAttribute("src", sc.getAttribute("src"));
+          sc2.setAttribute("type", sc.getAttribute("type") || "");
+          sc2.onload = res;
+          document.head.append(sc2);
       }));
   }
   function elementLoadScript(el, query, list) {
       el.querySelectorAll(query).forEach((sc) => {
-          loadSc(sc, list);
+          appendSc(sc, list);
           sc.remove();
       });
   }
@@ -508,13 +493,7 @@
                   fetch(this._name)
                       .then((v) => v.text())
                       .then((v) => {
-                      let list = this._name.split("/");
-                      list.pop();
-                      if (list[0] === ".") {
-                          list.shift();
-                      }
-                      const dir = list.join("/");
-                      v = v.replace(srcReg, 'src="' + dir);
+                      v = v.replace(srcReg, 'src="' + this._hook.dir);
                       fetchs.set(this._name, 2);
                       loadComponent(v, this._name).then(() => {
                           this.update();
@@ -563,11 +542,18 @@
           this._name = this.getAttribute("src") || this.getAttribute("name");
           this._isSrc = this.hasAttribute("src");
           this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
+          let list = this._name.split("/");
+          list.pop();
+          if (list[0] === ".") {
+              list.shift();
+          }
+          const dir = list.join("/");
           this._hook = {
               el: this,
               props: this._props,
               id: this._id,
               name: this._name,
+              dir,
           };
           this.load();
       }

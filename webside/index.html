@@ -8,20 +8,27 @@
     <script>
       window.location.href = "#/home";
     </script>
-    <script src="/verk/index.js"></script>
-    <script src="/verk/bindcss.js"></script>
+    <script src="./verk/flavorcss.js"></script>
   </head>
 
-  <body
-    verk
-    style="visibility: hidden; margin: 0px; padding: 0px;"
-    css="bg-gray-100"
-  >
-    <link rel="verk" href="./doc.html" />
+  <body>
+    <v-if value="20">
+      <div>dog</div>
+    </v-if>
+    <v-txt>10+20</v-txt>
+    <div class="w-4xl h-4xl">
+      <v-new src="./monaco/monaco_editor.html"></v-new>
+    </div>
+    <div class="w-4xl h-4xl">
+      <v-new src="./monaco/monaco_verk_editor.html"></v-new>
+    </div>
+
+    <!-- <link rel="verk" href="./doc.html" />
     <link rel="verk" href="./home.html" />
     <link rel="verk" href="./about.html" />
     <template route="#/home" init="home"></template>
     <template route="#/doc" init="doc"></template>
-    <template route="#/about" init="about"></template>
+    <template route="#/about" init="about"></template> -->
+    <script src="./verk/index.js"></script>
   </body>
 </html>

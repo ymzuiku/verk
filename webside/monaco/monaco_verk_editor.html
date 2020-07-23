@@ -1,56 +1,51 @@
-<template component="monaco_verk_editor">
-  <link rel="verk" href="./monaco_editor.html" />
-  <div css="col pc:row start-start h-12/12 w-12/12">
-    <template init="monaco_editor" props="$hook.state.editorProps">
-      <div
-        loading
-        css="flavor w-12/12 h-12/12 col center-center c-gray-700 bg-gray-100 fs-sm"
-      >
-        Loading Editor...
-      </div>
-    </template>
+<div class="col pc:row start-start h-12/12 w-12/12">
+  <v-new
+    class="w-12/12 h-12/12"
+    src="./monaco_editor.html"
+    props="$hook.editorProps"
+  >
     <div
-      show="!$hook.props['hidden-view']"
-      ref="runner"
-      css="w-12/12 h-12/12 pl-sm pt-sm overflow-auto mini-scrollbar"
-    ></div>
-  </div>
-  <script>
-    const { props, ref, refs, parent, id } = $hook;
-
-    const editorProps = {
-      // time: 10,
-      setValue: function (cb) {
-        cb();
-      },
-      onChange: function (code) {
-        if (!$hook.props["hidden-view"]) {
-          const el = ref("runner");
-          el.innerHTML = code;
-          $verk.updateInnerHTML(el, true);
-        }
-      },
-      options: {
-        value: "<div>hello</div>",
-        language: "html",
-        ...props.options,
-      },
-      $mount: function (state) {
-        if (props.getValue) {
-          Promise.resolve(props.getValue).then(function (v) {
-            editorProps.onChange(v);
-            state.editor.setValue(v);
-          });
-        } else {
-          const v = editorProps.options.value;
-          editorProps.onChange(v);
-          state.editor.setValue(v);
-        }
-      },
-    };
-
-    return {
-      editorProps,
-    };
-  </script>
-</template>
+      loading
+      class="w-12/12 h-12/12 col center-center c-gray-700 bg-gray-100 fs-sm"
+    >
+      Loading Editor...
+    </div>
+  </v-new>
+  <div
+    runner
+    show="!$hook.props['hidden-view']"
+    class="w-12/12 h-12/12 pl-sm pt-sm overflow-auto mini-scrollbar"
+  ></div>
+</div>
+<script>
+  $hook.editorProps = {
+    // time: 10,
+    setValue: function (cb) {
+      cb();
+    },
+    onChange: function (code) {
+      if (!$hook.props["hidden-view"]) {
+        const el = $hook.el.querySelector("[runner]");
+        // code.replace(/(\$hook|verk-)/g, Date.now());
+        el.innerHTML = code;
+        // $verk.updateInnerHTML(el, true);
+      }
+    },
+    options: {
+      value: "<div>hello</div>",
+      language: "html",
+      ...$hook.props.options,
+    },
+    onMount: function (state) {
+      if ($hook.props.getValue) {
+        Promise.resolve(props.getValue).then(function (v) {
+          $hook.editorProps.onChange(v);
+        });
+      } else {
+        const v = $hook.editorProps.options.value;
+        $hook.editorProps.onChange(v);
+        // state.editor.setValue(v);
+      }
+    },
+  };
+</script>

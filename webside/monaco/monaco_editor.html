@@ -1,46 +1,43 @@
-<template component="monaco_editor">
-  <style>
-    .mtk6 {
-      color: var(--theme-l, #0000ff) !important;
-    }
-    .monaco-editor .minimap-shadow-visible {
-      box-shadow: none !important;
-    }
-    .monaco-editor .scroll-decoration {
-      box-shadow: none !important;
-    }
-    .monaco-editor .overflow-guard {
-      position: relative;
-      overflow: hidden;
-    }
-    .monaco-editor .minimap-slider,
-    .monaco-editor .minimap-slider .minimap-slider-horizontal {
-      background: rgba(100, 100, 100, 0.3) !important;
-    }
+<style>
+  .mtk6 {
+    color: var(--theme-l, #0000ff) !important;
+  }
+  .monaco-editor .minimap-shadow-visible {
+    box-shadow: none !important;
+  }
+  .monaco-editor .scroll-decoration {
+    box-shadow: none !important;
+  }
+  .monaco-editor .overflow-guard {
+    position: relative;
+    overflow: hidden;
+  }
+  .monaco-editor .minimap-slider,
+  .monaco-editor .minimap-slider .minimap-slider-horizontal {
+    background: rgba(100, 100, 100, 0.3) !important;
+  }
 
-    .slider-always {
-      display: none;
-      opacity: 0.5 !important;
-    }
+  .slider-always {
+    display: none;
+    opacity: 0.5 !important;
+  }
 
-    .minimap-decorations-layer {
-      border-left: 1px solid var(--white-xl-7, #f0f0f0);
-    }
-    .decorationsOverviewRuler {
-      display: none;
-    }
-    .monaco-scrollable-element > .invisible.fade {
-      transition: none;
-    }
-  </style>
-  <div ref="editor" css="w-12/12 h-12/12" name="root"></div>
-  <script type="text/javascript" src="./amd/vs/loader.js"></script>
-  <script>
-    return new Promise(function (res) {
-      const { ref, props } = $hook;
-
-      const state = {};
-
+  .minimap-decorations-layer {
+    border-left: 1px solid var(--white-xl-7, #f0f0f0);
+  }
+  .decorationsOverviewRuler {
+    display: none;
+  }
+  .monaco-scrollable-element > .invisible.fade {
+    transition: none;
+  }
+</style>
+<div monaco-editor class="w-12/12 h-12/12" name="root"></div>
+<script type="text/javascript" src="./amd/vs/loader.js"></script>
+<script>
+  return new Promise(function (res) {
+    return res(() => {
+      const el = $hook.el.querySelector("[monaco-editor]");
       function init() {
         window.monaco_creating = true;
         if (!window.monaco_theme_verk) {
@@ -56,7 +53,7 @@
             },
           });
         }
-        const editor = window.monaco.editor.create(ref("editor"), {
+        const editor = window.monaco.editor.create(el, {
           value: "<div>hello</div>",
           language: "html",
           automaticLayout: true,
@@ -89,23 +86,25 @@
           },
           wrappingIndent: "indent",
           wordWrap: "on",
-          ...props.options,
+          ...$hook.props.options,
         });
-        if (props.onChange) {
-          const editorModel = editor.getModel();
-          const reducer = $verk.Reducer(function () {
-            const v = editor.getValue();
-            props.onChange(v);
-          }, props.time || 60);
-          editorModel.onDidChangeContent(reducer);
+
+        $hook.editor = editor;
+        if ($hook.props.onMount) {
+          $hook.props.onMount(editor);
         }
-        state.editor = editor;
-        res(state);
+        if ($hook.props.onChange) {
+          const editorModel = editor.getModel();
+          editorModel.onDidChangeContent(() => {
+            const v = editor.getValue();
+            $hook.props.onChange(v);
+          });
+        }
       }
-      require.config({ paths: { vs: $dir + "amd/vs" } });
-        require(["vs/editor/editor.main"], function (monaco) {
-          window.monaco = monaco;
-        });
+      require.config({ paths: { vs: $hook.dir + "/amd/vs" } });
+      require(["vs/editor/editor.main"], function (monaco) {
+        window.monaco = monaco;
+      });
       function reload() {
         if (!window.monaco) {
           setTimeout(reload, 100);
@@ -115,5 +114,5 @@
       }
       reload();
     });
-  </script>
-</template>
+  });
+</script>

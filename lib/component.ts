@@ -9,45 +9,21 @@ const vend = new RegExp("</v-", "g");
 const sstart = new RegExp("<v_", "g");
 const send = new RegExp("</v_", "g");
 
-function loadSc(sc: Element, list: any[]) {
+function appendSc(sc: Element, list: any[]) {
   list.push(
     new Promise((res) => {
-      const src = sc.getAttribute("src")!;
-      function getFetch() {
-        if (fetchs.get(src) === 1) {
-          requestAnimationFrame(getFetch);
-          return;
-        }
-        if (fetchs.get(src) === 2) {
-          res();
-          return;
-        }
-        fetchs.set(src, 1);
-        fetch(src)
-          .then((v) => {
-            if (v.ok) {
-              return v.text();
-            }
-            return new Promise((res) => res(""));
-          })
-          .then((v: any) => {
-            if (v) {
-              newFnRun(v)();
-              fetchs.set(src, 2);
-            } else {
-              fetchs.set(src, 0);
-            }
-            res();
-          });
-      }
-      getFetch();
+      const sc2 = document.createElement("script");
+      sc2.setAttribute("src", sc.getAttribute("src")!);
+      sc2.setAttribute("type", sc.getAttribute("type") || "");
+      sc2.onload = res;
+      document.head.append(sc2);
     })
   );
 }
 
 export function elementLoadScript(el: Element, query: string, list: any[]) {
   el.querySelectorAll(query).forEach((sc) => {
-    loadSc(sc, list);
+    appendSc(sc, list);
     sc.remove();
   });
 }

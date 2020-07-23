@@ -27,11 +27,18 @@ class Component extends HTMLElement {
     this._name = this.getAttribute("src") || this.getAttribute("name")!;
     this._isSrc = this.hasAttribute("src");
     this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
+    let list = this._name.split("/");
+    list.pop();
+    if (list[0] === ".") {
+      list.shift();
+    }
+    const dir = list.join("/");
     this._hook = {
       el: this,
       props: this._props,
       id: this._id,
       name: this._name,
+      dir,
     };
     this.load();
   }
@@ -76,13 +83,7 @@ class Component extends HTMLElement {
       fetch(this._name)
         .then((v) => v.text())
         .then((v) => {
-          let list = this._name.split("/");
-          list.pop();
-          if (list[0] === ".") {
-            list.shift();
-          }
-          const dir = list.join("/");
-          v = v.replace(srcReg, 'src="' + dir);
+          v = v.replace(srcReg, 'src="' + this._hook.dir);
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
             this.update();
