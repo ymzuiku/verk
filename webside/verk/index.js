@@ -140,6 +140,8 @@
       constructor() {
           super();
           this._id = uuid("v_if");
+          this._html = this.innerHTML;
+          this._getVal = newFnReturn(this.getAttribute("value"));
           this.update = () => {
               const v = runFn(this._getVal);
               if (this._lastVal === v) {
@@ -153,8 +155,6 @@
                   this.innerHTML = "";
               }
           };
-          this._html = this.innerHTML;
-          this._getVal = newFnReturn(this.getAttribute("value"));
           events.set(this._id, this.update);
           this.update();
       }
