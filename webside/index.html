@@ -20,7 +20,14 @@
         background-color: #f5f5f5;
       }
     </style>
-    <v-for len="list">
+    <v-new props="{menoy:100}" src="./dog.html">
+      <template>
+        <div slot="dog">555555</div>
+        <v-txt>$renderHook.age + 20+40</v-txt>
+        <div loading>loading</div>
+      </template>
+    </v-new>
+    <!-- <v-for len="list">
       <div>
         <v-keep>
           <v-txt list-$i>list[$i]</v-txt>
@@ -38,7 +45,7 @@
     <v-set onclick="e=>console.log('1')"><button>btn</button></v-set>
     <script>
       window.list = Array(3000).fill(0);
-    </script>
+    </script> -->
     <!-- <v-shadow>
       <template>
         <v-new bbb props="{money: 100}" src="./dog.html"></v-new>

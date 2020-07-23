@@ -12,9 +12,13 @@ class Component extends HTMLElement {
   _name: any;
   _isSrc: any;
   _html: any;
+  _child: any;
   _fn: any;
   _props: any;
   _hook: any;
+  _loading: any;
+  _slot = new Map();
+  _tmp = this.querySelector("template");
   constructor() {
     super();
   }
@@ -30,19 +34,39 @@ class Component extends HTMLElement {
     };
     this.load();
   }
+  renderLoading = () => {
+    if (!this._loading && this._tmp) {
+      const el = this._tmp.content.querySelector("[loading]");
+      if (el) {
+        this._loading = true;
+        // this.innerHTML = "";
+        this.append(el.cloneNode(true));
+      }
+    }
+  };
   load = () => {
-    if (fetchs.get(this._name) === 1) {
-      this.querySelectorAll("[loading]").forEach((el) => {
-        console.log("------");
+    if (this._tmp) {
+      this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
+        const slot = el.getAttribute("slot")!;
+        const node = el.cloneNode(true) as any;
+        node.removeAttribute('slot')
+        this._slot.set(slot, node);
       });
+    }
+
+    if (fetchs.get(this._name) === 1) {
+      this.renderLoading();
       requestAnimationFrame(this.load);
       return;
     }
+
     if (fetchs.get(this._name) === 2) {
       this.update();
       return;
     }
+
     if (this._isSrc) {
+      this.renderLoading();
       fetchs.set(this._name, 1);
       fetch(this._name)
         .then((v) => v.text())
@@ -61,20 +85,20 @@ class Component extends HTMLElement {
         });
       return;
     }
+    this.innerHTML = '';
     this.update();
   };
-  
+
   update = () => {
     if (this._destroy) {
+      return;
+    }
+    if (!comps.has(this._name)) {
       return;
     }
     if (!this._html) {
       this._html = comps.get(this._name);
       this._fn = fns.get(this._name);
-    }
-
-    if (!this._html) {
-      return;
     }
 
     (window as any)[this._id] = this._hook;
@@ -83,6 +107,16 @@ class Component extends HTMLElement {
     if (this._fn) {
       Promise.resolve(this._fn(this._hook)).then((cb) => {
         this.innerHTML = this._html;
+        this._slot.forEach((v: HTMLElement, k) => {
+          this.querySelectorAll(
+            `slot[name="${k}"]`
+          ).forEach((el) => {
+            Array.from(el.attributes).forEach((attr) => {
+              v.setAttribute(attr.name, attr.value);
+            });
+            el.replaceWith(v.cloneNode(true));
+          });
+        });
         if (typeof cb === "function") {
           cb();
         }
@@ -92,6 +126,8 @@ class Component extends HTMLElement {
     }
   };
   public disconnectedCallback() {
+    this._slot.clear();
+    this._slot = null as any;
     this._destroy = true;
   }
 }

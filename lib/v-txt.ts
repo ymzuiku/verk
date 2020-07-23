@@ -13,7 +13,7 @@ class Component extends HTMLElement {
   constructor() {
     super();
     this._fn = newFnReturn(this.innerHTML);
-    if (!this.closest('v-keep')) {
+    if (!this.closest("v-keep")) {
       events.set(this._id, this.update);
     }
     this.update();

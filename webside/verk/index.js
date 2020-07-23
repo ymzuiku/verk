@@ -135,7 +135,7 @@
               }
           };
           this._fn = newFnReturn(this.innerHTML);
-          if (!this.closest('v-keep')) {
+          if (!this.closest("v-keep")) {
               events.set(this._id, this.update);
           }
           this.update();
@@ -393,11 +393,29 @@
           super();
           this._id = uuid();
           this._destroy = false;
+          this._slot = new Map();
+          this._tmp = this.querySelector("template");
+          this.renderLoading = () => {
+              if (!this._loading && this._tmp) {
+                  const el = this._tmp.content.querySelector("[loading]");
+                  if (el) {
+                      this._loading = true;
+                      // this.innerHTML = "";
+                      this.append(el.cloneNode(true));
+                  }
+              }
+          };
           this.load = () => {
-              if (fetchs.get(this._name) === 1) {
-                  this.querySelectorAll("[loading]").forEach((el) => {
-                      console.log("------");
+              if (this._tmp) {
+                  this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
+                      const slot = el.getAttribute("slot");
+                      const node = el.cloneNode(true);
+                      node.removeAttribute('slot');
+                      this._slot.set(slot, node);
                   });
+              }
+              if (fetchs.get(this._name) === 1) {
+                  this.renderLoading();
                   requestAnimationFrame(this.load);
                   return;
               }
@@ -406,6 +424,7 @@
                   return;
               }
               if (this._isSrc) {
+                  this.renderLoading();
                   fetchs.set(this._name, 1);
                   fetch(this._name)
                       .then((v) => v.text())
@@ -424,24 +443,33 @@
                   });
                   return;
               }
+              this.innerHTML = '';
               this.update();
           };
           this.update = () => {
               if (this._destroy) {
                   return;
               }
+              if (!comps.has(this._name)) {
+                  return;
+              }
               if (!this._html) {
                   this._html = comps.get(this._name);
                   this._fn = fns.get(this._name);
-              }
-              if (!this._html) {
-                  return;
               }
               window[this._id] = this._hook;
               this._html = this._html.replace(hookReg, this._id);
               if (this._fn) {
                   Promise.resolve(this._fn(this._hook)).then((cb) => {
                       this.innerHTML = this._html;
+                      this._slot.forEach((v, k) => {
+                          this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
+                              Array.from(el.attributes).forEach((attr) => {
+                                  v.setAttribute(attr.name, attr.value);
+                              });
+                              el.replaceWith(v.cloneNode(true));
+                          });
+                      });
                       if (typeof cb === "function") {
                           cb();
                       }
@@ -465,6 +493,8 @@
           this.load();
       }
       disconnectedCallback() {
+          this._slot.clear();
+          this._slot = null;
           this._destroy = true;
       }
   }

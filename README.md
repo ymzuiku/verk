@@ -32,8 +32,8 @@ Includ or download the verk.js:
 - [x] v-new props
 - [x] v-new script
 - [x] v-new verk-css
+- [x] v-new loading
 - [ ] v-new slot
-- [ ] v-new loading
 - [ ] v-new $renderHook
 
 
