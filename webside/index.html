@@ -4,96 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="icon" href="data:image/ico;base64,aWNv" />
-  </head>
-  <body>
-    <style>
-      :host {
-        font-size: 40px;
-      }
-      .dog {
-        font-size: 40px;
-        background-color: #f2f2f2;
-      }
-      .dog::shadow {
-        font-size: 34px;
-        background-color: #f5f5f5;
-      }
-    </style>
-    <v-new props="{menoy:100}" src="./dog.html">
-      <template>
-        <v-txt slot="dog">$renderHook.state.age + 555555</v-txt>
-        <v-txt>$renderHook.age + 20+40</v-txt>
-        <div loading>loading</div>
-      </template>
-    </v-new>
-    <!-- <v-for len="list">
-      <div>
-        <v-keep>
-          <v-txt list-$i>list[$i]</v-txt>
-          <v-set
-            query="[list-$i]"
-            onkeydown="e=>{if(e.code === 'Enter'){list.push(e.target.value)}}"
-            oninput="e=>list[$i]=e.target.value"
-          >
-            <input />
-          </v-set>
-        </v-keep>
-      </div>
-    </v-for>
-    <div><v-txt>JSON.stringify(list)</v-txt></div>
-    <v-set onclick="e=>console.log('1')"><button>btn</button></v-set>
+    <link rel="icon" href="/favicon.ico" />
     <script>
-      window.list = Array(3000).fill(0);
-    </script> -->
-    <!-- <v-shadow>
-      <template>
-        <v-new bbb props="{money: 100}" src="./dog.html"></v-new>
-        <v-new name="bb"></v-new>
-
-        <h3>out</h3>
-        <v-new props="{money:10000}" src="./dog.html"></v-new>
-        <div></div>
-        <v-txt>20+40 + data.name.length;</v-txt>
-        <v-if value="data.name.length > 5">
-          <h1 class="dog">hello</h1>
-          <v-new props="{money:10000}" src="./dog.html"></v-new>
-        </v-if>
-        <h1>name:<v-txt>data.name</v-txt></h1>
-        <v-route path="#/aaaa">
-          <v-new src="./dog.html"></v-new>
-        </v-route>
-        <v-set v-style="`font-size: ${data.name.length*5}px;`">
-          <v-txt>data.name.length</v-txt>
-        </v-set>
-        <v-set oninput="e=>data.name=e.target.value">
-          <input />
-        </v-set>
-        <script>
-          window.data = {
-            name: "dog",
-            age: 10,
-          };
-        </script>
-
-        <v-component name="bb">
-          <template>
-            <div>titlebbbbbbbbbbbbbbbbbbbb<v-txt>$hook.state.age</v-txt></div>
-            <h2>hello</h2>
-            <h3>component</h3>
-            <v-set oninput="e=>$hook.state.age = e.target.value"
-              ><input
-            /></v-set>
-            <script>
-              $hook.state = {
-                age: 20,
-              };
-            </script>
-          </template>
-        </v-component>
-      </template>
-    </v-shadow> -->
-
+      window.location.href = "#/home";
+    </script>
     <script src="/verk/index.js"></script>
+    <script src="/verk/bindcss.js"></script>
+  </head>
+
+  <body
+    verk
+    style="visibility: hidden; margin: 0px; padding: 0px;"
+    css="bg-gray-100"
+  >
+    <link rel="verk" href="./doc.html" />
+    <link rel="verk" href="./home.html" />
+    <link rel="verk" href="./about.html" />
+    <template route="#/home" init="home"></template>
+    <template route="#/doc" init="doc"></template>
+    <template route="#/about" init="about"></template>
   </body>
 </html>

@@ -1,0 +1,23 @@
+<style>
+  .-id-simple h1 {
+    font-size: 24px;
+  }
+  .-id-simple input {
+    border: 1px solid #f0f0f0;
+  }
+</style>
+
+<div class="-id-simple">
+  <h1 >Use Simple</h1>
+  <input on-input="e=>simple.text=e.value" placeholder="Plase input"></input>
+  <div>
+    <span>text: </span>
+    <span text>simple.text</span>
+  </div>
+</div>
+
+<script>
+  window.simple = {
+    text:'',
+  }
+</script>

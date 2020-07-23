@@ -1,0 +1,119 @@
+<template component="monaco_editor">
+  <style>
+    .mtk6 {
+      color: var(--theme-l, #0000ff) !important;
+    }
+    .monaco-editor .minimap-shadow-visible {
+      box-shadow: none !important;
+    }
+    .monaco-editor .scroll-decoration {
+      box-shadow: none !important;
+    }
+    .monaco-editor .overflow-guard {
+      position: relative;
+      overflow: hidden;
+    }
+    .monaco-editor .minimap-slider,
+    .monaco-editor .minimap-slider .minimap-slider-horizontal {
+      background: rgba(100, 100, 100, 0.3) !important;
+    }
+
+    .slider-always {
+      display: none;
+      opacity: 0.5 !important;
+    }
+
+    .minimap-decorations-layer {
+      border-left: 1px solid var(--white-xl-7, #f0f0f0);
+    }
+    .decorationsOverviewRuler {
+      display: none;
+    }
+    .monaco-scrollable-element > .invisible.fade {
+      transition: none;
+    }
+  </style>
+  <div ref="editor" css="w-12/12 h-12/12" name="root"></div>
+  <script type="text/javascript" src="./amd/vs/loader.js"></script>
+  <script>
+    return new Promise(function (res) {
+      const { ref, props } = $hook;
+
+      const state = {};
+
+      function init() {
+        window.monaco_creating = true;
+        if (!window.monaco_theme_verk) {
+          window.monaco_theme_verk = true;
+          monaco.editor.defineTheme("verk", {
+            base: "vs",
+            inherit: true,
+            rules: [],
+            colors: {
+              "editor.background": "#FAFBFC",
+              "editorLineNumber.foreground": "#222222",
+              "editor.lineHighlightBackground": "#f0f0f0",
+            },
+          });
+        }
+        const editor = window.monaco.editor.create(ref("editor"), {
+          value: "<div>hello</div>",
+          language: "html",
+          automaticLayout: true,
+          fontSize: 13,
+          scrollbar: {
+            // vertical: "hidden",
+            verticalScrollbarSize: 7,
+            verticalHasArrows: false,
+            horizontalSliderSize: 7,
+            horizontalHasArrows: false,
+            // horizontal: "hidden",
+          },
+          // lineNumbers: "off",
+          lineNumbersMinChars: 2,
+          lineDecorationsWidth: 0,
+          codeLens: false,
+          cursorStyle: "line-thin",
+          cursorBlinking: "blink",
+          theme: "verk",
+          find: {
+            addExtraSpaceOnTop: true,
+          },
+          renderLineHighlight: "all",
+          renderIndentGuides: false,
+          minimap: {
+            enabled: false,
+            showSlider: "always",
+            scale: 2,
+            maxColumn: 20,
+          },
+          wrappingIndent: "indent",
+          wordWrap: "on",
+          ...props.options,
+        });
+        if (props.onChange) {
+          const editorModel = editor.getModel();
+          const reducer = $verk.Reducer(function () {
+            const v = editor.getValue();
+            props.onChange(v);
+          }, props.time || 60);
+          editorModel.onDidChangeContent(reducer);
+        }
+        state.editor = editor;
+        res(state);
+      }
+      require.config({ paths: { vs: $dir + "amd/vs" } });
+        require(["vs/editor/editor.main"], function (monaco) {
+          window.monaco = monaco;
+        });
+      function reload() {
+        if (!window.monaco) {
+          setTimeout(reload, 100);
+        } else {
+          init();
+        }
+      }
+      reload();
+    });
+  </script>
+</template>
