@@ -332,6 +332,7 @@
                       }
                       this._attrs.set(name, v);
                   }
+                  this.removeAttribute(attr.name);
               });
           }
           this.update();

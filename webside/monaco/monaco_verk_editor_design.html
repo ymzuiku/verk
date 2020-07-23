@@ -1,25 +1,26 @@
-<template component="monaco_verk_editor_design">
-  <link rel="verk" href="./monaco_verk_editor.html" />
-  <div
-    css="{
-      'flex-1 radius-lg shadow-lg shadow-opacity-5 mb-lg bg-white p-sm b-px b-gray-400 b-opacity-50 hover:b-opacity-100 hover:transition-500':true,
-      'h-5xl pc:h-5xl': $hook.props['hidden-view'],
-      'h-screen-sm pc:h-6xl': !$hook.props['hidden-view'],
-    }"
-  >
-    <template set-options="$hook.props.options" set-hidden-view="$hook.props['hidden-view']" init="monaco_verk_editor" props="$hook.state"></template>
+<v-set
+  class="['flex-1 radius-lg shadow-lg shadow-opacity-5 mb-lg bg-white p-sm b-px b-gray-400 b-opacity-50 hover:b-opacity-100 hover:transition-500', $hook.props.hiddenView ? 'h-5xl pc:h-5xl' : 'h-screen-sm pc:h-6xl' ].join(' ')"
+>
+  <div>
+    <v-new
+      src="./monaco_verk_editor.html"
+      props="$hook.state"
+    />
   </div>
-  <script>
-    return {
-      getValue: new Promise(function (res) {
-        if ($hook.props.code) {
-          res($hook.props.code);
-        } else if ($hook.props.code) {
-          fetch($hook.props.url)
-            .then((v) => v.text())
-            .then(res);
-        }
-      }),
-    };
-  </script>
-</template>
+</v-set>
+
+<script>
+  $hook.state = {
+    setOptions: $hook.props.options,
+    setHiddenView: $hook.props.hiddenView,
+    getValue: new Promise(function (res) {
+      if ($hook.props.code) {
+        res($hook.props.code);
+      } else if ($hook.props.code) {
+        fetch($hook.props.url)
+          .then((v) => v.text())
+          .then(res);
+      }
+    }),
+  };
+</script>

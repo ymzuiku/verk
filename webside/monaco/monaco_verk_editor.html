@@ -1,21 +1,14 @@
 <div class="col pc:row start-start h-12/12 w-12/12">
-  <v-new
-    class="w-12/12 h-12/12"
-    src="./monaco_editor.html"
-    props="$hook.editorProps"
-  >
-    <div
-      loading
-      class="w-12/12 h-12/12 col center-center c-gray-700 bg-gray-100 fs-sm"
-    >
+  <v-new class="full" src="./monaco_editor.html" props="$hook.editorProps">
+    <div loading class="full col center-center c-gray-700 bg-gray-100 fs-sm">
       Loading Editor...
     </div>
   </v-new>
-  <div
-    runner
-    show="!$hook.props['hidden-view']"
-    class="w-12/12 h-12/12 pl-sm pt-sm overflow-auto mini-scrollbar"
-  ></div>
+  <v-show
+    value="!$hook.props.hiddenView"
+    class="full pl-sm pt-sm overflow-auto mini-scrollbar"
+  >
+  </v-show>
 </div>
 <script>
   $hook.editorProps = {
@@ -38,13 +31,12 @@
     },
     onMount: function (state) {
       if ($hook.props.getValue) {
-        Promise.resolve(props.getValue).then(function (v) {
+        Promise.resolve($hook.props.getValue).then(function (v) {
           $hook.editorProps.onChange(v);
         });
       } else {
         const v = $hook.editorProps.options.value;
         $hook.editorProps.onChange(v);
-        // state.editor.setValue(v);
       }
     },
   };

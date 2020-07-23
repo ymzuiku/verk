@@ -1,4 +1,4 @@
-export function newFnReturn(code: string) {
+export function newFnReturn(code: string): any {
   try {
     return new Function("return " + code);
   } catch (err) {
@@ -6,7 +6,7 @@ export function newFnReturn(code: string) {
   }
 }
 
-export function newFnRun(code: string) {
+export function newFnRun(code: string): any {
   try {
     return new Function("$hook", code);
   } catch (err) {

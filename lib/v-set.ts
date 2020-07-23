@@ -41,7 +41,7 @@ class Component extends HTMLElement {
   _html = this.innerHTML;
   _getVal = newFnReturn(this.getAttribute("value")!);
   _diff: any;
-  _model = this.getAttribute("model")!;
+  _model = this.getAttribute("model");
   _getModel = this._model && newFnReturn(this._model);
   _lastDiff: any;
   _attrs: Map<string, any> = new Map();
@@ -50,6 +50,7 @@ class Component extends HTMLElement {
 
   constructor() {
     super();
+
     let isNeedListen = false;
     if (this.firstElementChild) {
       if (this._getModel) {
@@ -63,7 +64,7 @@ class Component extends HTMLElement {
             e.stopPropagation();
           }
           const v = el[el.__valueName];
-          newFnRun(`${this._model} = ${v};`)((window as any)[this._id]);
+          newFnRun(`${this._model as any} = ${v};`)((window as any)[this._id]);
           this.dispatch();
         };
         this.updateModel = () => {
@@ -88,6 +89,7 @@ class Component extends HTMLElement {
           }
           this._attrs.set(name, v);
         }
+        this.removeAttribute(attr.name);
       });
     }
     this.update();
