@@ -20,6 +20,9 @@
         background-color: #f00;
       }
     </style>
+    <!-- <v-new src="./dog.html">
+      <div loading>loading</div>
+    </v-new> -->
     <v-shadow>
       <template>
         <style>
@@ -31,19 +34,19 @@
       </template>
     </v-shadow>
     <div class="dog">dog-size</div>
-    <v-for data="data">
+    <v-for data="list">
       <div>
-        <v-txt>data[$i]</v-txt>
+        <v-txt>list[$i]</v-txt>
         <v-set
-          onkeydown="e=>{if(e.code === 'Enter'){data.push(e.target.value)}}"
-          oninput="e=>data[$i]=e.target.value"
+          onkeydown="e=>{if(e.code === 'Enter'){list.push(e.target.value)}}"
+          oninput="e=>list[$i]=e.target.value"
           ><input
         /></v-set>
       </div>
     </v-for>
-    <div><v-txt>JSON.stringify(data)</v-txt></div>
+    <div><v-txt>JSON.stringify(list)</v-txt></div>
     <script>
-      var data = Array(33).fill(0);
+      window.list = Array(33).fill(0);
     </script>
     <v-shadow>
       <template>
@@ -54,7 +57,7 @@
         <v-new props="{money:10000}" src="./dog.html"></v-new>
         <div></div>
         <v-txt>20+40 + data.name.length;</v-txt>
-        <v-if value="data.name.length > 5">
+        <v-if value="$shadow.data.name.length > 5">
           <h1 class="dog">hello</h1>
           <v-new props="{money:10000}" src="./dog.html"></v-new>
         </v-if>
@@ -69,7 +72,7 @@
           <input />
         </v-set>
         <script>
-          window.data = {
+          $shadow.data = {
             name: "dog",
             age: 10,
           };

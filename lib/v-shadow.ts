@@ -1,3 +1,5 @@
+import { newFnRun } from "./newFn";
+
 const tag = "v-shadow";
 
 class Component extends HTMLElement {
@@ -6,8 +8,13 @@ class Component extends HTMLElement {
   });
   constructor() {
     super();
-    const tmp = this.querySelector('template');
+    const tmp = this.querySelector("template");
     if (tmp) {
+      tmp.content.querySelectorAll("script:not([src])").forEach((sc) => {
+        newFnRun(sc.innerHTML)();
+        sc.remove();
+      });
+      
       this.shadow.innerHTML = tmp.innerHTML;
     }
   }

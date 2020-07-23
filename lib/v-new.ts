@@ -33,6 +33,9 @@ class Component extends HTMLElement {
   }
   load = () => {
     if (fetchs.get(this._name) === 1) {
+      this.querySelectorAll('[loading]').forEach(el=>{
+        console.log('------');
+      })
       requestAnimationFrame(this.load);
       return;
     }

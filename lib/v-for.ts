@@ -53,23 +53,25 @@ class Component extends HTMLElement {
       return;
     }
 
-    val.forEach((v: any, i: any) => {
-      if (i > this._lastVal.length - 1) {
-        let h = this._html.replace(this._v, v);
-        h = h.replace(this._i, i);
-        const list = this.querySelectorAll(`[${this._id}]`);
-        const end = list[list.length - 1];
-        if (end) {
-          end.insertAdjacentHTML("afterend", this.getH(v, i));
+    if (val) {
+      val.forEach((v: any, i: any) => {
+        if (i > this._lastVal.length - 1) {
+          let h = this._html.replace(this._v, v);
+          h = h.replace(this._i, i);
+          const list = this.querySelectorAll(`[${this._id}]`);
+          const end = list[list.length - 1];
+          if (end) {
+            end.insertAdjacentHTML("afterend", this.getH(v, i));
+          }
         }
-      }
-    });
-    const a = val.length;
-    const b = this._lastVal.length;
-    for (let i = a; i < b; i++) {
-      this.querySelectorAll(`[${this._id}="${i}"]`).forEach((v) => {
-        v.remove();
       });
+      const a = val.length;
+      const b = this._lastVal.length;
+      for (let i = a; i < b; i++) {
+        this.querySelectorAll(`[${this._id}="${i}"]`).forEach((v) => {
+          v.remove();
+        });
+      }
     }
 
     this._lastVal = copy(val);

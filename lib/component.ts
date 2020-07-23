@@ -45,7 +45,7 @@ function loadSc(sc: Element, list: any[]) {
   );
 }
 
-function elLoadSc(el: Element, query: string, list: any[]) {
+export function elementLoadScript(el: Element, query: string, list: any[]) {
   el.querySelectorAll(query).forEach((sc) => {
     loadSc(sc, list);
     sc.remove();
@@ -75,12 +75,12 @@ export function loadComponent(html: string, name: string) {
       return;
     }
     const promiseList: Promise<any>[] = [];
-    elLoadSc(el, "script[src]:not([defer])", promiseList);
+    elementLoadScript(el, "script[src]:not([defer])", promiseList);
     if (el.querySelector("script[defer]")) {
-      elLoadSc(el, 'script[defer=""]', promiseList);
-      elLoadSc(el, 'script[defer="1"]', promiseList);
-      elLoadSc(el, 'script[defer="2"]', promiseList);
-      elLoadSc(el, 'script[defer="3"]', promiseList);
+      elementLoadScript(el, 'script[defer=""]', promiseList);
+      elementLoadScript(el, 'script[defer="1"]', promiseList);
+      elementLoadScript(el, 'script[defer="2"]', promiseList);
+      elementLoadScript(el, 'script[defer="3"]', promiseList);
     }
     await Promise.all(promiseList);
 

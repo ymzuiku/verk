@@ -166,23 +166,25 @@
               if (this._keep || this._lastVal.length === val.length) {
                   return;
               }
-              val.forEach((v, i) => {
-                  if (i > this._lastVal.length - 1) {
-                      let h = this._html.replace(this._v, v);
-                      h = h.replace(this._i, i);
-                      const list = this.querySelectorAll(`[${this._id}]`);
-                      const end = list[list.length - 1];
-                      if (end) {
-                          end.insertAdjacentHTML("afterend", this.getH(v, i));
+              if (val) {
+                  val.forEach((v, i) => {
+                      if (i > this._lastVal.length - 1) {
+                          let h = this._html.replace(this._v, v);
+                          h = h.replace(this._i, i);
+                          const list = this.querySelectorAll(`[${this._id}]`);
+                          const end = list[list.length - 1];
+                          if (end) {
+                              end.insertAdjacentHTML("afterend", this.getH(v, i));
+                          }
                       }
-                  }
-              });
-              const a = val.length;
-              const b = this._lastVal.length;
-              for (let i = a; i < b; i++) {
-                  this.querySelectorAll(`[${this._id}="${i}"]`).forEach((v) => {
-                      v.remove();
                   });
+                  const a = val.length;
+                  const b = this._lastVal.length;
+                  for (let i = a; i < b; i++) {
+                      this.querySelectorAll(`[${this._id}="${i}"]`).forEach((v) => {
+                          v.remove();
+                      });
+                  }
               }
               this._lastVal = copy(val);
           };
@@ -373,7 +375,7 @@
           getFetch();
       }));
   }
-  function elLoadSc(el, query, list) {
+  function elementLoadScript(el, query, list) {
       el.querySelectorAll(query).forEach((sc) => {
           loadSc(sc, list);
           sc.remove();
@@ -399,12 +401,12 @@
               return;
           }
           const promiseList = [];
-          elLoadSc(el, "script[src]:not([defer])", promiseList);
+          elementLoadScript(el, "script[src]:not([defer])", promiseList);
           if (el.querySelector("script[defer]")) {
-              elLoadSc(el, 'script[defer=""]', promiseList);
-              elLoadSc(el, 'script[defer="1"]', promiseList);
-              elLoadSc(el, 'script[defer="2"]', promiseList);
-              elLoadSc(el, 'script[defer="3"]', promiseList);
+              elementLoadScript(el, 'script[defer=""]', promiseList);
+              elementLoadScript(el, 'script[defer="1"]', promiseList);
+              elementLoadScript(el, 'script[defer="2"]', promiseList);
+              elementLoadScript(el, 'script[defer="3"]', promiseList);
           }
           yield Promise.all(promiseList);
           el.querySelectorAll("script:not([src])").forEach((sc) => {
@@ -441,6 +443,9 @@
           this._destroy = false;
           this.load = () => {
               if (fetchs.get(this._name) === 1) {
+                  this.querySelectorAll('[loading]').forEach(el => {
+                      console.log('------');
+                  });
                   requestAnimationFrame(this.load);
                   return;
               }
@@ -560,8 +565,12 @@
           this.shadow = this.attachShadow({
               mode: this.getAttribute("mode") || "open",
           });
-          const tmp = this.querySelector('template');
+          const tmp = this.querySelector("template");
           if (tmp) {
+              tmp.content.querySelectorAll("script:not([src])").forEach((sc) => {
+                  newFnRun(sc.innerHTML)();
+                  sc.remove();
+              });
               this.shadow.innerHTML = tmp.innerHTML;
           }
       }
