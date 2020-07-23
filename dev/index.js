@@ -210,53 +210,130 @@
   customElements.define(tag$3, Component$3);
 
   const tag$4 = "v-set";
+  const ignoreAttr = {
+      query: true,
+      model: true,
+  };
+  function fixKind(el) {
+      if (el.__modelName) {
+          return;
+      }
+      const tag = el.tagName.toLowerCase();
+      const kind = el.type;
+      if (tag === "select") {
+          el.__modelName = "onchange";
+      }
+      else if (tag === "input" || tag === "textarea") {
+          el.__modelName = "oninput";
+      }
+      else {
+          el.__modelName = "onclick";
+      }
+      if (tag === "select") {
+          el.__valueName = "value";
+      }
+      else if (kind === "checkbox") {
+          el.__valueName = "checked";
+          el.__valueIsBool = true;
+      }
+      else if (kind === "radio") {
+          el.__modelName = "onclick";
+          el.__valueName = "checked";
+          el.__valueIsBool = true;
+      }
+      else {
+          el.__valueName = "value";
+      }
+  }
   class Component$4 extends HTMLElement {
       constructor() {
           super();
           this._id = uuid("fn");
           this._html = this.innerHTML;
           this._getVal = newFnReturn(this.getAttribute("value"));
-          this._attrs = [];
+          this._model = this.getAttribute("model");
+          this._getModel = this._model && newFnReturn(this._model);
+          this._attrs = new Map();
           this._query = this.getAttribute("query");
+          this.updateModel = () => { };
+          this.runModel = () => {
+              let v = runFn(this._getModel);
+              if (typeof v === "function") {
+                  v = runFn(v, this.firstElementChild);
+              }
+              return v;
+          };
           this.update = () => {
+              this.updateModel();
               if (this.firstElementChild) {
-                  Object.keys(this._attrs).forEach((k) => {
-                      const v = this._attrs[k]();
+                  this._attrs.forEach((v, k) => {
                       if (this.firstElementChild.getAttribute(k) !== v) {
                           this.firstElementChild.setAttribute(k, v);
                       }
                   });
               }
           };
+          this.dispatch = () => {
+              if (this._query) {
+                  document.querySelectorAll(this._query).forEach((el) => {
+                      if (el.update) {
+                          el.update();
+                      }
+                  });
+              }
+              dispatch();
+          };
           let isNeedListen = false;
           if (this.firstElementChild) {
+              if (this._getModel) {
+                  const el = this.firstElementChild;
+                  fixKind(el);
+                  el[el.__modelName] = (e) => {
+                      if (el.getAttribute("prevent-" + el.__modelName)) {
+                          e.preventDefault();
+                      }
+                      if (el.getAttribute("stop-" + el.__modelName)) {
+                          e.stopPropagation();
+                      }
+                      const v = el[el.__valueName];
+                      newFnRun(`${this._model} = ${v};`)(window[this._id]);
+                      this.dispatch();
+                  };
+                  this.updateModel = () => {
+                      const v = this.runModel();
+                      if (el[el.__valueName] !== v) {
+                          el[el.__valueName] = v;
+                      }
+                  };
+              }
               Array.from(this.attributes).map((attr) => {
                   if (/^on/.test(attr.name)) {
                       this.firstElementChild[attr.name] = (e) => {
                           runFn(newFnReturn(attr.value)(), e);
-                          if (this._query) {
-                              document.querySelectorAll(this._query).forEach((el) => {
-                                  if (el.update) {
-                                      el.update();
-                                  }
-                              });
-                          }
-                          dispatch();
+                          this.dispatch();
                       };
                   }
-                  else {
+                  else if (!ignoreAttr[attr.name]) {
                       isNeedListen = true;
                       const name = attr.name.replace(/^v-/, "");
-                      this._attrs[name] = newFnReturn(attr.value);
+                      let v = runFn(newFnReturn(attr.value));
+                      if (typeof v === "function") {
+                          v = runFn(v, this.firstElementChild);
+                      }
+                      this._attrs.set(name, v);
                   }
               });
           }
           this.update();
-          if (isNeedListen && !this.closest("v-keep")) {
-              events.set(this._id, this.update);
+          if (!this.closest("v-keep")) {
+              if (isNeedListen || this._getModel) {
+                  events.set(this._id, this.update);
+              }
           }
       }
       disconnectedCallback() {
+          this._attrs.clear();
+          this._attrs = null;
           events.delete(this._id);
       }
   }
