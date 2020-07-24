@@ -22,6 +22,7 @@ Includ or download the verk.js:
 - [x] v-shadow
 - [x] v-keep
 - [x] v-model
+- [x] v-preload
 
 ### Template
 

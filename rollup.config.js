@@ -123,7 +123,10 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./dev/index.js", "./webside/verk/index.js");
+    fs.copySync("./dev/index.js", "./webside/js/verk.js");
+    fs.copySync("./dev/index.js", "/Users/pillar/work/github/tinyci/static/js/verk.js");
+    
+    
     // fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }
 });

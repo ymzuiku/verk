@@ -9,6 +9,7 @@ import "./v-new";
 import "./v-watch";
 import "./v-route";
 import "./v-shadow";
+import "./v-preload";
 import { dispatch } from "./ob";
 declare const verk: {
     watch: Set<unknown>;

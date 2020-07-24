@@ -9,6 +9,8 @@ import "./v-new";
 import "./v-watch";
 import "./v-route";
 import "./v-shadow";
+import "./v-preload";
+
 import { watch, dispatch, events } from "./ob";
 
 const verk = {

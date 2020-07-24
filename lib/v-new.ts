@@ -9,7 +9,6 @@ const renderHookReg = /\$renderHook/g;
 
 class Component extends HTMLElement {
   _id = uuid();
-  _destroy = false;
   _name: any;
   _isSrc: any;
   _html: any;
@@ -20,6 +19,9 @@ class Component extends HTMLElement {
   _loading: any;
   _slot = new Map();
   _tmp = this.querySelector("template");
+  
+  destroy = false;
+
   constructor() {
     super();
   }
@@ -29,9 +31,9 @@ class Component extends HTMLElement {
     this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
     let list = this._name.split("/");
     list.pop();
-    if (list[0] === ".") {
-      list.shift();
-    }
+    // if (list[0] === ".") {
+    //   list.shift();
+    // }
     const dir = list.join("/");
     this._hook = {
       el: this,
@@ -73,6 +75,7 @@ class Component extends HTMLElement {
     }
 
     if (fetchs.get(this._name) === 2) {
+      this.onload();
       this.update();
       return;
     }
@@ -86,17 +89,20 @@ class Component extends HTMLElement {
           v = v.replace(srcReg, 'src="' + this._hook.dir);
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
+            this.onload();
             this.update();
           });
         });
       return;
     }
     this.innerHTML = "";
+    this.onload();
     this.update();
   };
+  onload = () => {};
 
   update = () => {
-    if (this._destroy) {
+    if (this.destroy) {
       return;
     }
     if (!comps.has(this._name)) {
@@ -132,7 +138,7 @@ class Component extends HTMLElement {
   public disconnectedCallback() {
     this._slot.clear();
     this._slot = null as any;
-    this._destroy = true;
+    this.destroy = true;
   }
 }
 

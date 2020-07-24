@@ -456,9 +456,9 @@
       constructor() {
           super();
           this._id = uuid();
-          this._destroy = false;
           this._slot = new Map();
           this._tmp = this.querySelector("template");
+          this.destroy = false;
           this.renderLoading = () => {
               if (!this._loading && this._tmp) {
                   const el = this._tmp.content.querySelector("[loading]");
@@ -485,6 +485,7 @@
                   return;
               }
               if (fetchs.get(this._name) === 2) {
+                  this.onload();
                   this.update();
                   return;
               }
@@ -497,16 +498,19 @@
                       v = v.replace(srcReg, 'src="' + this._hook.dir);
                       fetchs.set(this._name, 2);
                       loadComponent(v, this._name).then(() => {
+                          this.onload();
                           this.update();
                       });
                   });
                   return;
               }
               this.innerHTML = "";
+              this.onload();
               this.update();
           };
+          this.onload = () => { };
           this.update = () => {
-              if (this._destroy) {
+              if (this.destroy) {
                   return;
               }
               if (!comps.has(this._name)) {
@@ -545,9 +549,9 @@
           this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
           let list = this._name.split("/");
           list.pop();
-          if (list[0] === ".") {
-              list.shift();
-          }
+          // if (list[0] === ".") {
+          //   list.shift();
+          // }
           const dir = list.join("/");
           this._hook = {
               el: this,
@@ -561,7 +565,7 @@
       disconnectedCallback() {
           this._slot.clear();
           this._slot = null;
-          this._destroy = true;
+          this.destroy = true;
       }
   }
   customElements.define(tag$6, Component$6);
@@ -630,6 +634,44 @@
       }
   }
   customElements.define(tag$9, Component$9);
+
+  const tag$a = "v-preload";
+  class Component$a extends HTMLElement {
+      constructor() {
+          super();
+          this._id = uuid("v_preload");
+          this._showQuery = this.getAttribute("show-query");
+          this.onload = newFnRun(this.getAttribute("onload"));
+          const pList = [];
+          if (this._showQuery) {
+              document.body.querySelectorAll(this._showQuery).forEach((el) => {
+                  el.style.visibility = "hidden";
+                  console.log(el);
+              });
+          }
+          this.querySelectorAll('link[rel="verk"]').forEach((el) => {
+              const href = el.getAttribute("href");
+              el.remove();
+              const vn = document.createElement("v-new");
+              vn.destory = true;
+              vn.setAttribute("src", href);
+              pList.push(new Promise((res) => {
+                  vn.onload = res;
+                  this.append(vn);
+              }));
+          });
+          Promise.all(pList).then(() => {
+              this.innerHTML = "";
+              if (this._showQuery) {
+                  document.body.querySelectorAll(this._showQuery).forEach((el) => {
+                      el.style.visibility = "visible";
+                  });
+              }
+              this.onload();
+          });
+      }
+  }
+  customElements.define(tag$a, Component$a);
 
   const verk = {
       watch,
