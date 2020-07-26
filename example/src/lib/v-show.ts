@@ -15,7 +15,7 @@ class Component extends HTMLElement {
     super();
     this._html = this.innerHTML;
     this._getVal = newFnReturn(this.getAttribute("value")!);
-    if (!this.closest('v-keep')) {
+    if (!this.closest("v-keep")) {
       events.set(this._id, this.update);
     }
     this.update();

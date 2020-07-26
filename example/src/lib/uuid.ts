@@ -4,5 +4,5 @@ export function uuid(u = "u") {
   if (n > 9990) {
     n = 0;
   }
-  return u + Date.now().toString().slice(4, 13) + n + '_';
+  return u + Date.now().toString().slice(4, 13) + n + "_";
 }

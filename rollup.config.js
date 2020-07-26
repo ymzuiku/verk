@@ -8,7 +8,7 @@ const nodeResolve = require("rollup-plugin-node-resolve");
 const pwd = (...args) => resolve(process.cwd(), ...args);
 const fs = require("fs-extra");
 const argv = process.argv.splice(2);
-const tsconfig = require('./tsconfig.json');
+const tsconfig = require("./tsconfig.json");
 
 function clearDir(dir) {
   if (fs.existsSync(dir)) {
@@ -35,62 +35,10 @@ function haveArgv(...args) {
 clearDir(pwd("umd"));
 
 const watchOptions = [
-  // {
-  //   input: "./lib/addon/bindCss.ts",
-  //   output: {
-  //     file: "./umd/bindcss.js",
-  //     format: "umd",
-  //     name: "$bindcss",
-  //     sourcemap: false,
-  //   },
-  //   plugins: [
-  //     nodeResolve(),
-  //     rollupTypescript({
-  //       useTsconfigDeclarationDir: false,
-  //     }),
-  //     uglify({
-  //       sourcemap: false,
-  //     }),
-  //   ],
-  // },
-  // {
-  //   input: "./lib/addon/bindCss.ts",
-  //   output: {
-  //     file: "./dev/bindcss.js",
-  //     format: "umd",
-  //     name: "$bindcss",
-  //     sourcemap: false,
-  //   },
-  //   plugins: [
-  //     nodeResolve(),
-  //     rollupTypescript({
-  //       useTsconfigDeclarationDir: false,
-  //     }),
-  //   ],
-  // },
-  // {
-  //   input: "./lib/index.ts",
-  //   output: {
-  //     file: "./umd/index.js",
-  //     format: "umd",
-  //     name: "$verk",
-  //     sourcemap: false,
-  //   },
-  //   plugins: [
-  //     nodeResolve(),
-  //     rollupTypescript({
-  //       useTsconfigDeclarationDir: false,
-  //       // tsconfigOverride: {...tsconfig, compilerOptions: { ...tsconfig.compilerOptions, declaration: false }},
-  //     }),
-  //     uglify({
-  //       sourcemap: false,
-  //     }),
-  //   ],
-  // },
   {
-    input: "./lib/index.ts",
+    input: "./example/src/lib/index.ts",
     output: {
-      file: "./dev/index.js",
+      file: "./umd/index.js",
       format: "umd",
       name: "$verk",
       sourcemap: false,
@@ -100,6 +48,9 @@ const watchOptions = [
       rollupTypescript({
         useTsconfigDeclarationDir: false,
       }),
+      // uglify({
+      //   sourcemap: false,
+      // }),
     ],
   },
 ];
@@ -123,10 +74,12 @@ watcher.on("event", (event) => {
       watcher.close();
     }
 
-    fs.copySync("./dev/index.js", "./webside/js/verk.js");
-    fs.copySync("./dev/index.js", "/Users/pillar/work/github/tinyci/static/js/verk.js");
-    
-    
+    fs.copySync("./umd/index.js", "./webside/js/verk.js");
+    fs.copySync(
+      "./umd/index.js",
+      "/Users/pillar/work/github/tinyci/static/js/verk.js"
+    );
+
     // fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }
 });

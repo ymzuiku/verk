@@ -14,7 +14,7 @@ class Component extends HTMLElement {
         newFnRun(sc.innerHTML)();
         sc.remove();
       });
-      
+
       this.shadow.innerHTML = tmp.innerHTML;
     }
   }

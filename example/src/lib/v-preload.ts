@@ -13,7 +13,6 @@ class Component extends HTMLElement {
     if (this._showQuery) {
       document.body.querySelectorAll(this._showQuery).forEach((el: any) => {
         el.style.visibility = "hidden";
-        console.log(el);
       });
     }
     this.querySelectorAll('link[rel="verk"]').forEach((el: any) => {

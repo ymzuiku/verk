@@ -26,7 +26,7 @@ class Component extends HTMLElement {
 
   constructor() {
     super();
-    if (!this.closest('v-keep')) {
+    if (!this.closest("v-keep")) {
       events.set(this._id, this.update);
     }
     this.update();

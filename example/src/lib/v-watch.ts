@@ -9,7 +9,7 @@ class Component extends HTMLElement {
   _getVal = newFnRun(this.getAttribute("value")!);
   constructor() {
     super();
-    if (!this.closest('v-keep')) {
+    if (!this.closest("v-keep")) {
       events.set(this._id, this._getVal);
     }
   }

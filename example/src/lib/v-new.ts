@@ -19,7 +19,7 @@ class Component extends HTMLElement {
   _loading: any;
   _slot = new Map();
   _tmp = this.querySelector("template");
-  
+
   destroy = false;
 
   constructor() {
@@ -29,7 +29,7 @@ class Component extends HTMLElement {
     this._name = this.getAttribute("src") || this.getAttribute("name")!;
     this._isSrc = this.hasAttribute("src");
     this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
-    let list = this._name.split("/");
+    const list = this._name.split("/");
     list.pop();
     // if (list[0] === ".") {
     //   list.shift();
@@ -56,10 +56,7 @@ class Component extends HTMLElement {
   };
   load = () => {
     if (this._tmp) {
-      this._tmp.innerHTML = this._tmp.innerHTML.replace(
-        renderHookReg,
-        this._id
-      );
+      this._tmp.innerHTML = this._tmp.innerHTML.replace(renderHookReg, this._id);
       this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
         const slot = el.getAttribute("slot")!;
         const node = el.cloneNode(true) as any;

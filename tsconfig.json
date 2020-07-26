@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -23,6 +28,15 @@
     "jsxFactory": "h",
     "jsx": "preserve"
   },
-  "exclude": ["node_modules", "umd", "dev"],
-  "include": ["lib", "addon/bindCss.ts"]
+  "exclude": [
+    "node_modules",
+    "example/node_modules",
+    "umd",
+    "dev"
+  ],
+  "include": [
+    "example/src",
+    "lib",
+    "addon/bindCss.ts"
+  ]
 }
