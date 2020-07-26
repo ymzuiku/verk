@@ -33,6 +33,7 @@ function haveArgv(...args) {
 }
 
 clearDir(pwd("umd"));
+fs.copySync("./example/src/lib", "./lib");
 
 const watchOptions = [
   {
@@ -73,9 +74,12 @@ watcher.on("event", (event) => {
     if (!haveArgv("--watch", "-w")) {
       watcher.close();
     }
-    fs.copySync("./lib", "./example/src/lib");
+    fs.copySync("./example/src/lib", "./lib");
     fs.copySync("./umd/index.js", "./webside/js/verk.js");
-    fs.copySync("./umd/index.js", "/Users/pillar/work/github/tinyci/static/js/verk.js");
+    fs.copySync(
+      "./umd/index.js",
+      "/Users/pillar/work/github/tinyci/static/js/verk.js"
+    );
 
     // fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }
