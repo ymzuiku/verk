@@ -57,7 +57,7 @@
       if (n > 9990) {
           n = 0;
       }
-      return u + Date.now().toString().slice(4, 13) + n + '_';
+      return u + Date.now().toString().slice(4, 13) + n + "_";
   }
 
   const tag = "v-for";
@@ -122,7 +122,7 @@
               }
               this._lastLen = len;
           };
-          if (!this.closest('v-keep')) {
+          if (!this.closest("v-keep")) {
               events.set(this._id, this.update);
           }
           this.update();
@@ -176,7 +176,7 @@
                   this.innerHTML = "";
               }
           };
-          if (!this.closest('v-keep')) {
+          if (!this.closest("v-keep")) {
               events.set(this._id, this.update);
           }
           this.update();
@@ -548,7 +548,7 @@
           this._name = this.getAttribute("src") || this.getAttribute("name");
           this._isSrc = this.hasAttribute("src");
           this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
-          let list = this._name.split("/");
+          const list = this._name.split("/");
           list.pop();
           // if (list[0] === ".") {
           //   list.shift();

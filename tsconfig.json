@@ -24,7 +24,7 @@
     "inlineSourceMap": false,
     "declaration": true,
     "outDir": "./umd",
-    "declarationDir": "./",
+    "declarationDir": "./lib",
     "jsxFactory": "h",
     "jsx": "preserve"
   },
@@ -35,8 +35,6 @@
     "dev"
   ],
   "include": [
-    "example/src",
-    "lib",
-    "addon/bindCss.ts"
+    "lib"
   ]
 }

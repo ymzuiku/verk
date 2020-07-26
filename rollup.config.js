@@ -36,7 +36,7 @@ clearDir(pwd("umd"));
 
 const watchOptions = [
   {
-    input: "./example/src/lib/index.ts",
+    input: "./lib/index.ts",
     output: {
       file: "./umd/index.js",
       format: "umd",
@@ -73,12 +73,9 @@ watcher.on("event", (event) => {
     if (!haveArgv("--watch", "-w")) {
       watcher.close();
     }
-
+    fs.copySync("./lib", "./example/src/lib");
     fs.copySync("./umd/index.js", "./webside/js/verk.js");
-    fs.copySync(
-      "./umd/index.js",
-      "/Users/pillar/work/github/tinyci/static/js/verk.js"
-    );
+    fs.copySync("./umd/index.js", "/Users/pillar/work/github/tinyci/static/js/verk.js");
 
     // fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }
