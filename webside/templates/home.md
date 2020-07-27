@@ -118,10 +118,14 @@ $ npx live-server ./
 我们可以将一个 html 下面的一个例子，我们将此文档的 index.html 进行实力化，并且传递了一个新的 markdown 文件作为参数，渲染当前页面：
 
 ```html::{view:true, style:""}
-<v-new props="{url:'./templates/example_home.md'}" src="http://verk.writeflowy.com/index.html">
+<v-new props="{url:'./templates/example_home.md'}" src="http://verk.writeflowy.com/components/layout.html">
 ```
 
-我们可以看到，它并不是一个 iframe，而是渲染了真实的 dom 树，并且它有着自己的生命周期和属性。
+我们可以看到，它并不是一个 iframe，而是渲染了真实的 dom 树，并且它有着自己的生命周期和属性，同时我们有以下几个注意点：
+
+1. 跨应用引用组件，受浏览器同源策略影响，建议配置 nginx 代理，以确保工程同源；若配置 nginx 资源跨域策略，就失去了组件保护，组件可以被其他工程引用。
+2. 本网站为了演示，开启了 nginx 资源跨域策略，你可以参考上面代码，直接引用本网站的 layout 组件，并且使用其他 markdown 文件作为参数渲染文档。
+3. 请不要在组件内部实例自己，这样会造成循环。
 
 # 交互式教程
 
