@@ -391,10 +391,29 @@
           document.head.append(sc2);
       }));
   }
-  function elementLoadScript(el, query, list) {
-      el.querySelectorAll(query).forEach((sc) => {
-          appendSc(sc, list);
-          sc.remove();
+  function loadScripts(el, name) {
+      return __awaiter(this, void 0, void 0, function* () {
+          yield elementLoadScript(el, "script[src]:not([defer])");
+          if (el.querySelector("script[defer]")) {
+              yield elementLoadScript(el, 'script[defer=""]');
+              yield elementLoadScript(el, 'script[defer="1"]');
+              yield elementLoadScript(el, 'script[defer="2"]');
+              yield elementLoadScript(el, 'script[defer="3"]');
+          }
+          el.querySelectorAll("script:not([src])").forEach((sc) => {
+              fns.set(name, newFnRun(sc.innerHTML));
+              sc.remove();
+          });
+      });
+  }
+  function elementLoadScript(el, query) {
+      return __awaiter(this, void 0, void 0, function* () {
+          const list = [];
+          el.querySelectorAll(query).forEach((sc) => {
+              appendSc(sc, list);
+              sc.remove();
+          });
+          yield Promise.all(list);
       });
   }
   function loadComponent(html, name) {
@@ -416,25 +435,13 @@
               yield loadComponent(tmp.innerHTML, name);
               return;
           }
-          const promiseList = [];
-          elementLoadScript(el, "script[src]:not([defer])", promiseList);
-          if (el.querySelector("script[defer]")) {
-              elementLoadScript(el, 'script[defer=""]', promiseList);
-              elementLoadScript(el, 'script[defer="1"]', promiseList);
-              elementLoadScript(el, 'script[defer="2"]', promiseList);
-              elementLoadScript(el, 'script[defer="3"]', promiseList);
-          }
-          yield Promise.all(promiseList);
-          el.querySelectorAll("script:not([src])").forEach((sc) => {
-              fns.set(name, newFnRun(sc.innerHTML));
-              sc.remove();
-          });
+          yield loadScripts(el, name);
           html = el.innerHTML;
           html = html.replace(sstart, "<v-");
           html = html.replace(send, "</v-");
           comps.set(name, html);
           fetchs.set(name, 2);
-          res();
+          res(html);
       }));
   }
 
@@ -450,7 +457,8 @@
   customElements.define(tag$5, Component$5);
 
   const tag$6 = "v-new";
-  const srcReg = new RegExp('(src|href)=".', "g");
+  const srcReg = new RegExp('src=".', "g");
+  const hrefReg = new RegExp('href=".', "g");
   const hookReg = /(\$hook|verk-)/g;
   const renderHookReg = /\$renderHook/g;
   class Component$6 extends HTMLElement {
@@ -497,6 +505,7 @@
                       .then((v) => v.text())
                       .then((v) => {
                       v = v.replace(srcReg, 'src="' + this._hook.dir);
+                      v = v.replace(hrefReg, 'href="' + this._hook.dir);
                       fetchs.set(this._name, 2);
                       loadComponent(v, this._name).then(() => {
                           this.onload();
@@ -674,9 +683,12 @@
   customElements.define(tag$a, Component$a);
 
   const verk = {
+      uuid,
       watch,
       dispatch,
       events,
+      load: loadComponent,
+      loadScripts,
   };
   window.$verk = verk;
 

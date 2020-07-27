@@ -15,10 +15,10 @@ renderer.code = function (code, language, isEscaped) {
   window[id] = code;
 
   if (code && language === "html") {
-    return `<template set-code="window.${id}" init="monaco_verk_editor_design"></template>`;
+    return `<v-new props="{code:window.${id}}" src="${window.vanillaMarkdownDir}/monaco_verk_editor_design.html"></v-new>`;
   }
   if (code) {
-    return `<template set-options="{language:'${language}'}" set-code="window.${id}" set-hidden-view="true" init="monaco_verk_editor_design"></template>`;
+    return `<v-new props="{code:window.${id}, options: {language:'${language}', hiddenView:true}}" src="${window.vanillaMarkdownDir}/monaco_verk_editor_design.html"></v-new>`;
   }
   return "<pre><code>" + code + "</code></pre>";
 };

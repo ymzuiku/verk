@@ -3,7 +3,8 @@ import { uuid } from "./uuid";
 import { comps, fns, loadComponent, fetchs } from "./component";
 
 const tag = "v-new";
-const srcReg = new RegExp('(src|href)=".', "g");
+const srcReg = new RegExp('src=".', "g");
+const hrefReg = new RegExp('href=".', "g");
 const hookReg = /(\$hook|verk-)/g;
 const renderHookReg = /\$renderHook/g;
 
@@ -84,6 +85,7 @@ class Component extends HTMLElement {
         .then((v) => v.text())
         .then((v) => {
           v = v.replace(srcReg, 'src="' + this._hook.dir);
+          v = v.replace(hrefReg, 'href="' + this._hook.dir);
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
             this.onload();

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */
 const rollup = require("rollup");
 const rollupTypescript = require("rollup-plugin-typescript2");
 const { uglify } = require("rollup-plugin-uglify");
@@ -33,7 +34,7 @@ function haveArgv(...args) {
 }
 
 clearDir(pwd("umd"));
-fs.copySync("./example/src/lib", "./lib");
+// fs.copySync("./example/src/lib", "./lib");
 
 const watchOptions = [
   {
@@ -74,12 +75,12 @@ watcher.on("event", (event) => {
     if (!haveArgv("--watch", "-w")) {
       watcher.close();
     }
-    fs.copySync("./example/src/lib", "./lib");
+    // fs.copySync("./example/src/lib", "./lib");
     fs.copySync("./umd/index.js", "./webside/js/verk.js");
-    fs.copySync(
-      "./umd/index.js",
-      "/Users/pillar/work/github/tinyci/static/js/verk.js"
-    );
+    // fs.copySync(
+    //   "./umd/index.js",
+    //   "/Users/pillar/work/github/tinyci/static/js/verk.js"
+    // );
 
     // fs.copySync("./dev/bindcss.js", "./webside/verk/bindcss.js");
   }

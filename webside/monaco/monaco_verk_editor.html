@@ -4,24 +4,40 @@
       Loading Editor...
     </div>
   </v-new>
-  <v-show
-    value="!$hook.props.hiddenView"
-    class="full pl-sm pt-sm overflow-auto mini-scrollbar"
-  >
+  <v-show runner value="!$hook.props.hiddenView" class="full pl-sm  overflow-auto mini-scrollbar">
   </v-show>
 </div>
 <script>
   $hook.editorProps = {
-    // time: 10,
-    setValue: function (cb) {
+    setValue: (cb) => {
       cb();
     },
-    onChange: function (code) {
-      if (!$hook.props["hidden-view"]) {
+    onChange: (code) => {
+      if (!$hook.props["hiddenView"]) {
         const el = $hook.el.querySelector("[runner]");
-        // code.replace(/(\$hook|verk-)/g, Date.now());
-        el.innerHTML = code;
-        // $verk.updateInnerHTML(el, true);
+        const name = $verk.uuid()
+        window[name] = {};
+        code = code.replace(/(\$hook|verk-)/g, name);
+        const tmp = document.createElement('div');
+        try {
+          tmp.innerHTML = code;
+        } catch (err) { }
+
+        if (tmp.querySelector('script[src]')) {
+          tmp.querySelectorAll('script[src]').forEach(e => {
+            document.head.append(e.cloneNode(true))
+          })
+        }
+
+        try {
+          tmp.querySelectorAll('script:not([src])').forEach(e => {
+            eval(e.innerHTML);
+          });
+          el.innerHTML = code;
+        } catch (err) {
+
+        }
+
       }
     },
     options: {
@@ -29,15 +45,15 @@
       language: "html",
       ...$hook.props.options,
     },
-    onMount: function (state) {
+    onMount: (editor) => {
       if ($hook.props.getValue) {
         Promise.resolve($hook.props.getValue).then(function (v) {
-          $hook.editorProps.onChange(v);
+          editor.setValue(v);
         });
       } else {
         const v = $hook.editorProps.options.value;
-        $hook.editorProps.onChange(v);
+        editor.setValue(v);
       }
-    },
+    }
   };
 </script>

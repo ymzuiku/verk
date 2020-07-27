@@ -1,23 +1,27 @@
 <style>
-  .-id-simple h1 {
+  .verk-simple h1 {
     font-size: 24px;
   }
-  .-id-simple input {
+
+  .verk-simple input {
     border: 1px solid #f0f0f0;
   }
 </style>
 
-<div class="-id-simple">
-  <h1 >Use Simple</h1>
-  <input on-input="e=>simple.text=e.value" placeholder="Plase input"></input>
+<div class="verk-simple">
+  <h1>Use Simple</h1>
+  <v-set oninput="e=>$hook.simple.text=e.target.value">
+    <input placeholder="Plase input"></input>
+  </v-set>
   <div>
     <span>text: </span>
-    <span text>simple.text</span>
+    <v-txt>$hook.simple.text</v-txt>
   </div>
 </div>
 
 <script>
-  window.simple = {
-    text:'',
+  console.log('hello simple');
+  $hook.simple = {
+    text: '',
   }
 </script>

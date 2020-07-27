@@ -1,4 +1,4 @@
-# Simple
+# Verk
 
 simple
 
@@ -16,32 +16,6 @@ function hello() {
 }
 ```
 
-```html
-<style>
-  .-id-simple h1 {
-    font-size: 24px;
-  }
-  .-id-simple input {
-    border: 1px solid #f0f0f0;
-  }
-</style>
-
-<div class="-id-simple">
-  <h1>Use Simple</h1>
-  <input on-input="e=>simple.text=e.value" placeholder="Plase input"></input>
-  <div>
-    <span>text: </span>
-    <span text>simple.text</span>
-  </div>
-</div>
-
-<script>
-  window.simple = {
-    text:'',
-  }
-</script>
-
-```
 
 # Marked - Markdown Parser
 
@@ -86,13 +60,17 @@ Ready to start writing?  Either start changing stuff on the left or
 
 
 ```html
-<template init="dog"></template>
-<template component="dog">
-  <div show="$hook.state.hello">hello verk</div>
+<v-new name="dog"></v-new>
+<v-set oninput="e=>$hook.state.hello = e.target.value">
+  <input>
+</v-set>
+<v-txt>$hook.state.hello</v-txt>
+<v-component>
+<div show="$hook.state.hello">hello verk</div>
   <script>
-    return {
+    $hook.state = {
       hello: true,
     };
   </script>
-</template>
+</v-component>
 ```

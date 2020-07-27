@@ -1,14 +1,14 @@
-<template component="monaco_markdown">
-  <link rel="verk" href="./monaco_verk_editor_design.html" />
-  <script src="./amd/marked.js"></script>
-  <script src="./amd/mermaid.js"></script>
-  <script defer src="./js/vanilla_markdown.js"></script>
-  <link rel="stylesheet" href="./js/vanilla_markdown.css" />
-  <div css="p-md pc:p-lg max-w-screen-lg m-auto">
-    <div ref="md"></div>
-  </div>
-  <script>
-    const md = $hook.ref("md");
+<link rel="stylesheet" href="./js/vanilla_markdown.css" />
+<script src="./amd/marked.js"></script>
+<script src="./amd/mermaid.js"></script>
+<script defer="1" src="./js/vanilla_markdown.js"></script>
+<div css="p-md pc:p-lg max-w-screen-lg m-auto">
+  <div md></div>
+</div>
+<script>
+  window.vanillaMarkdownDir = $hook.dir;
+  return () => {
+    const md = $hook.el.querySelector("[md]");
     if ($hook.props.url) {
       fetch($hook.props.url)
         .then(function (v) {
@@ -16,8 +16,7 @@
         })
         .then(function (v) {
           VanillaMarkdown(md, v, $hook.props['moc-level'], $hook.props['moc-last']);
-          $verk.update(md);
         });
     }
-  </script>
-</template>
+  }
+</script>
