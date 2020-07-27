@@ -1,5 +1,5 @@
 <v-set
-  class="['flex-1 radius-lg shadow-lg shadow-opacity-5 mb-lg bg-white p-sm b-px b-gray-400 b-opacity-50 hover:b-opacity-100 hover:transition-500', $hook.props.hiddenView ? 'h-5xl pc:h-5xl' : 'h-screen-sm pc:h-6xl' ].join(' ')">
+  class="['flex-1 radius-lg shadow-lg shadow-opacity-5 mb-lg bg-white p-sm b-px b-gray-400 b-opacity-50 hover:b-opacity-100 hover:transition-500', $hook.props.showView ? 'h-screen-sm pc:h-6xl' : 'h-5xl pc:h-5xl' ].join(' ')" style="$hook.props.style">
   <div>
     <v-new src="./monaco_verk_editor.html" props="$hook.state" />
   </div>
@@ -7,8 +7,7 @@
 
 <script>
   $hook.state = {
-    options: $hook.props.options,
-    hiddenView: $hook.props.hiddenView,
+    ...$hook.props,
     getValue: new Promise((res) => {
       if ($hook.props.code) {
         res($hook.props.code);

@@ -1,5 +1,10 @@
 import { newFnRun } from "./newFn";
 
+(window as any).$hook = {
+  props: {},
+  state: {},
+};
+
 export const comps = new Map();
 export const fns = new Map();
 export const fetchs = new Map();
@@ -9,11 +14,19 @@ const vend = new RegExp("</v-", "g");
 const sstart = new RegExp("<v_", "g");
 const send = new RegExp("</v_", "g");
 
+export function stringToHex(str: string, pix = "hex") {
+  for (let i = 0; i < str.length; i++) {
+    pix += str.charCodeAt(i).toString(32);
+  }
+  return pix;
+}
+
 function appendSc(sc: Element, list: any[]) {
   list.push(
     new Promise((res) => {
+      const src = sc.getAttribute("src")!;
       const sc2 = document.createElement("script");
-      sc2.setAttribute("src", sc.getAttribute("src")!);
+      sc2.setAttribute("src", src);
       sc2.setAttribute("type", sc.getAttribute("type") || "");
       sc2.onload = res;
       document.head.append(sc2);

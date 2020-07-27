@@ -1,3 +1,4 @@
+import { loadComponent, loadScripts } from "./component";
 import "./v-for";
 import "./v-txt";
 import "./v-if";
@@ -10,7 +11,6 @@ import "./v-watch";
 import "./v-route";
 import "./v-shadow";
 import "./v-preload";
-import { loadComponent, loadScripts } from "./component";
 
 import { watch, dispatch, events } from "./ob";
 import { uuid } from "./uuid";
@@ -22,6 +22,7 @@ const verk = {
   events,
   load: loadComponent,
   loadScripts,
+  onError: console.error,
 };
 
 (window as any).$verk = verk;

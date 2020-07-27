@@ -3,8 +3,8 @@ import { uuid } from "./uuid";
 import { comps, fns, loadComponent, fetchs } from "./component";
 
 const tag = "v-new";
-const srcReg = new RegExp('src=".', "g");
-const hrefReg = new RegExp('href=".', "g");
+const srcReg = new RegExp('src="', "g");
+const hrefReg = new RegExp('href="', "g");
 const hookReg = /(\$hook|verk-)/g;
 const renderHookReg = /\$renderHook/g;
 
@@ -12,7 +12,7 @@ class Component extends HTMLElement {
   _id = uuid();
   _name: any;
   _isSrc: any;
-  _html: any;
+  html: any;
   _child: any;
   _fn: any;
   _props: any;
@@ -84,8 +84,8 @@ class Component extends HTMLElement {
       fetch(this._name)
         .then((v) => v.text())
         .then((v) => {
-          v = v.replace(srcReg, 'src="' + this._hook.dir);
-          v = v.replace(hrefReg, 'href="' + this._hook.dir);
+          v = v.replace(srcReg, 'src="' + this._hook.dir + "/");
+          v = v.replace(hrefReg, 'href="' + this._hook.dir + "/");
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
             this.onload();
@@ -107,17 +107,17 @@ class Component extends HTMLElement {
     if (!comps.has(this._name)) {
       return;
     }
-    if (!this._html) {
-      this._html = comps.get(this._name);
+    if (!this.html) {
+      this.html = comps.get(this._name);
       this._fn = fns.get(this._name);
     }
 
     (window as any)[this._id] = this._hook;
-    this._html = this._html.replace(hookReg, this._id);
+    this.html = this.html.replace(hookReg, this._id);
 
     if (this._fn) {
       Promise.resolve(this._fn(this._hook)).then((cb) => {
-        this.innerHTML = this._html;
+        this.innerHTML = this.html;
         this._slot.forEach((v: HTMLElement, k) => {
           this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
             Array.from(el.attributes).forEach((attr) => {
@@ -131,7 +131,7 @@ class Component extends HTMLElement {
         }
       });
     } else {
-      this.innerHTML = this._html;
+      this.innerHTML = this.html;
     }
   };
   public disconnectedCallback() {

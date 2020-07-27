@@ -1,0 +1,18 @@
+<div class="w-4xl fixed top-3xl h-vh br-px b-gray-300 z-10 bg-white">
+  <div>概念</div>
+  <v-new name="-item" props="{title:'概念2'}">
+    <template>
+      <span slot="child">概念3</span>
+    </template>
+  </v-new>
+  <div>工程的组织形式</div>
+  <div>基础教程</div>
+  <div>组件教程</div>
+</div>
+
+<v-component name="-item">
+  <template>
+    <slot name="child"></slot>
+    <v-txt>$hook.props.title</v-txt>
+  </template>
+</v-component>

@@ -22,10 +22,10 @@ class Component extends HTMLElement {
   }
   update = () => {
     const v = runFn(this._getVal);
-    if (this._lastVal === v) {
+    if (this._lastVal !== void 0 && !!this._lastVal === !!v) {
       return;
     }
-    this._lastVal = v;
+    this._lastVal = !!v;
     if (v) {
       this.style.display = this._display;
     } else {

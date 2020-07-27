@@ -4,7 +4,8 @@
       Loading Editor...
     </div>
   </v-new>
-  <v-show runner value="!$hook.props.hiddenView" class="full pl-sm  overflow-auto mini-scrollbar">
+  <v-show value="$hook.props.view" class="full pl-sm  overflow-auto mini-scrollbar">
+    <div runner class="full"></div>
   </v-show>
 </div>
 <script>
@@ -13,7 +14,7 @@
       cb();
     },
     onChange: (code) => {
-      if (!$hook.props["hiddenView"]) {
+      if ($hook.props.view) {
         const el = $hook.el.querySelector("[runner]");
         const name = $verk.uuid()
         window[name] = {};

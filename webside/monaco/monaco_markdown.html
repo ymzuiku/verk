@@ -17,6 +17,8 @@
         .then(function (v) {
           VanillaMarkdown(md, v, $hook.props['moc-level'], $hook.props['moc-last']);
         });
+    } else {
+      VanillaMarkdown(md, $hook.props.code, $hook.props['moc-level'], $hook.props['moc-last']);
     }
   }
 </script>
