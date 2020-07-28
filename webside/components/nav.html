@@ -1,5 +1,6 @@
-<div class="bg-white shadow h-3xl w-12/12 mb-lg sticky top-0 left-0 z-50">
-  <div class="row start-center h-12/12 px-lg m-auto">
+<div class="bg-white h-3xl w-12/12 relative">
+  <div class="w-12/12 h-3xl shadow absolute left-0 top-0 z-50 events-none"></div>
+  <div class="row start-center h-12/12 px-lg bg-white">
     <img class="w-xl h-xl" src="../img/home-logo.svg" />
     <h2 class="mx-md fs-2xl">Verk</h2>
     <div class="flex-1"></div>
@@ -8,3 +9,13 @@
     </a>
   </div>
 </div>
+
+<style>
+  .verk-menu {
+    height: calc(100vh - var(--pt-4xl));
+  }
+</style>
+
+<script>
+  $hook.showMenu = false;
+</script>

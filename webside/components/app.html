@@ -1,0 +1,15 @@
+<v-new src="./layout.html">
+  <template>
+    <v-new slot="header" src="./nav.html"></v-new>
+    <!-- <div slot="menu" class="w-4xl">
+      <v-new src="./menu.html"></v-new>
+    </div> -->
+    <div slot="menu"></div>
+    <div slot="main">
+      <div class="px-md max-w-screen-lg m-auto">
+        <v-new props="{url:$hook.props.url || './templates/home.md'}" src="../monaco/monaco_markdown.html">
+        </v-new>
+      </div>
+    </div>
+  </template>
+</v-new>

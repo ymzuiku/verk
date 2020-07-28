@@ -1,18 +1,17 @@
-<div class="w-4xl fixed top-3xl h-vh br-px b-gray-300 z-10 bg-white">
-  <div>概念</div>
-  <v-new name="-item" props="{title:'概念2'}">
-    <template>
-      <span slot="child">概念3</span>
-    </template>
-  </v-new>
-  <div>工程的组织形式</div>
+<aside class="w-12/12 h-12/12 br-px b-gray-300 bg-white">
+  <div class="h-md"></div>
+  <v-new name="-item" props="{title:'概念', url:'./templates/home.md'}"></v-new>
+  <v-new name="-item" props="{title:'工程的组织形式', url:'./templates/vscode.md'}"></v-new>
   <div>基础教程</div>
   <div>组件教程</div>
-</div>
+</aside>
 
 <v-component name="-item">
   <template>
-    <slot name="child"></slot>
-    <v-txt>$hook.props.title</v-txt>
+    <v-set onclick="">
+      <div class="p-sm hover:bg-gray-200">
+        <v-txt>$hook.props.title</v-txt>
+      </div>
+    </v-set>
   </template>
 </v-component>

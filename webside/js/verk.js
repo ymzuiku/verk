@@ -125,15 +125,21 @@
             html = html.replace(vend, "</v_");
             const el = document.createElement("div");
             el.innerHTML = html;
+            const subComps = [];
             el.querySelectorAll("v_component").forEach((com) => {
-                loadComponent(com.innerHTML, com.getAttribute("name"));
-                com.remove();
+                subComps.push(new Promise((res) => {
+                    loadComponent(com.firstElementChild.innerHTML, com.getAttribute("name")).then(() => {
+                        com.remove();
+                        res();
+                    });
+                }));
             });
-            const tmp = el.querySelector("template");
-            if (tmp) {
-                yield loadComponent(tmp.innerHTML, name);
-                return;
-            }
+            yield Promise.all(subComps);
+            // const tmp = el.querySelector("template")!;
+            // if (tmp) {
+            //   await loadComponent(tmp.innerHTML, name);
+            //   // return;
+            // }
             yield loadScripts(el, name);
             html = el.innerHTML;
             html = html.replace(sstart, "<v-");
@@ -193,7 +199,7 @@
             super();
             this._id = uuid("v_for");
             this._len = newFnReturn(this.getAttribute("len"));
-            this._i = new RegExp(this.getAttribute("index") || "\\$i", "g");
+            this._i = new RegExp(this.getAttribute("index") || "@i", "g");
             this._getVal = newFnReturn(this.getAttribute("len"));
             this._html = this.innerHTML;
             this.getH = (i) => {
@@ -390,10 +396,20 @@
             };
             this.update = () => {
                 this.updateModel();
-                if (this.firstElementChild) {
-                    this._attrs.forEach((v, k) => {
-                        if (this.firstElementChild.getAttribute(k) !== v) {
-                            this.firstElementChild.setAttribute(k, v);
+                const child = this.firstElementChild;
+                if (child) {
+                    this._attrs.forEach((fn, k) => {
+                        let v = runFn(fn);
+                        if (typeof v === "function") {
+                            v = runFn(v, this.firstElementChild);
+                        }
+                        if (k === "value") {
+                            if (child[k] !== v) {
+                                child[k] = v;
+                            }
+                        }
+                        else if (child.getAttribute(k) !== v) {
+                            child.setAttribute(k, v);
                         }
                     });
                 }
@@ -441,11 +457,7 @@
                     else if (!ignoreAttr[attr.name]) {
                         isNeedListen = true;
                         const name = attr.name.replace(/^v-/, "");
-                        let v = runFn(newFnReturn(attr.value));
-                        if (typeof v === "function") {
-                            v = runFn(v, this.firstElementChild);
-                        }
-                        this._attrs.set(name, v);
+                        this._attrs.set(name, newFnReturn(attr.value));
                     }
                     this.removeAttribute(attr.name);
                 });
@@ -486,6 +498,7 @@
             super();
             this._id = uuid();
             this._slot = new Map();
+            this._html = this.innerHTML;
             this._tmp = this.querySelector("template");
             this.destroy = false;
             this.renderLoading = () => {
@@ -546,30 +559,31 @@
                 if (!comps.has(this._name)) {
                     return;
                 }
-                if (!this.html) {
-                    this.html = comps.get(this._name);
+                if (!this._buildHtml) {
+                    this._buildHtml = comps.get(this._name);
                     this._fn = fns.get(this._name);
                 }
                 window[this._id] = this._hook;
-                this.html = this.html.replace(hookReg, this._id);
-                if (this._fn) {
-                    Promise.resolve(this._fn(this._hook)).then((cb) => {
-                        this.innerHTML = this.html;
-                        this._slot.forEach((v, k) => {
-                            this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
-                                Array.from(el.attributes).forEach((attr) => {
-                                    v.setAttribute(attr.name, attr.value);
-                                });
-                                el.replaceWith(v.cloneNode(true));
+                this._buildHtml = this._buildHtml.replace(hookReg, this._id);
+                const initDetail = (cb) => {
+                    this.innerHTML = this._buildHtml;
+                    this._slot.forEach((v, k) => {
+                        this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
+                            Array.from(el.attributes).forEach((attr) => {
+                                v.setAttribute(attr.name, attr.value);
                             });
+                            el.replaceWith(v.cloneNode(true));
                         });
-                        if (typeof cb === "function") {
-                            cb();
-                        }
                     });
+                    if (typeof cb === "function") {
+                        cb();
+                    }
+                };
+                if (this._fn) {
+                    Promise.resolve(this._fn(this._hook)).then(initDetail);
                 }
                 else {
-                    this.innerHTML = this.html;
+                    initDetail(null);
                 }
             };
         }
@@ -579,9 +593,6 @@
             this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
             const list = this._name.split("/");
             list.pop();
-            // if (list[0] === ".") {
-            //   list.shift();
-            // }
             const dir = list.join("/");
             this._hook = {
                 el: this,
@@ -605,9 +616,15 @@
         constructor() {
             super();
             this._id = uuid("v_watch");
-            this._getVal = newFnRun(this.getAttribute("value"));
+            this._getVal = newFnReturn(this.getAttribute("value"));
+            this.update = () => {
+                const v = runFn(this._getVal);
+                if (typeof v === "function") {
+                    runFn(v);
+                }
+            };
             if (!this.closest("v-keep")) {
-                events.set(this._id, this._getVal);
+                events.set(this._id, this.update);
             }
         }
         disconnectedCallback() {

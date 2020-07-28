@@ -83,11 +83,7 @@ class Component extends HTMLElement {
         } else if (!(ignoreAttr as any)[attr.name]) {
           isNeedListen = true;
           const name = attr.name.replace(/^v-/, "");
-          let v = runFn(newFnReturn(attr.value));
-          if (typeof v === "function") {
-            v = runFn(v, this.firstElementChild);
-          }
-          this._attrs.set(name, v);
+          this._attrs.set(name, newFnReturn(attr.value));
         }
         this.removeAttribute(attr.name);
       });
@@ -108,10 +104,19 @@ class Component extends HTMLElement {
   };
   update = () => {
     this.updateModel();
-    if (this.firstElementChild) {
-      this._attrs.forEach((v, k) => {
-        if (this.firstElementChild!.getAttribute(k) !== v) {
-          this.firstElementChild!.setAttribute(k, v);
+    const child = this.firstElementChild as any;
+    if (child) {
+      this._attrs.forEach((fn, k) => {
+        let v = runFn(fn);
+        if (typeof v === "function") {
+          v = runFn(v, this.firstElementChild);
+        }
+        if (k === "value") {
+          if (child[k] !== v) {
+            child[k] = v;
+          }
+        } else if (child.getAttribute(k) !== v) {
+          child.setAttribute(k, v);
         }
       });
     }

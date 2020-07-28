@@ -19,7 +19,7 @@ function getLen(val: any) {
 class Component extends HTMLElement {
   _id = uuid("v_for");
   _len = newFnReturn(this.getAttribute("len")!);
-  _i = new RegExp(this.getAttribute("index") || "\\$i", "g");
+  _i = new RegExp(this.getAttribute("index") || "@i", "g");
   _getVal = newFnReturn(this.getAttribute("len")!);
   _html = this.innerHTML;
   _lastLen: any;

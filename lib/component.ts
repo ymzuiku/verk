@@ -70,16 +70,25 @@ export function loadComponent(html: string, name: string) {
     const el = document.createElement("div");
     el.innerHTML = html;
 
+    const subComps: Promise<any>[] = [];
     el.querySelectorAll("v_component").forEach((com) => {
-      loadComponent(com.innerHTML, (com as any).getAttribute("name"));
-      com.remove();
+      subComps.push(
+        new Promise((res) => {
+          loadComponent(com.firstElementChild!.innerHTML, (com as any).getAttribute("name")).then(() => {
+            com.remove();
+            res();
+          });
+        })
+      );
     });
 
-    const tmp = el.querySelector("template");
-    if (tmp) {
-      await loadComponent(tmp.innerHTML, name);
-      return;
-    }
+    await Promise.all(subComps);
+
+    // const tmp = el.querySelector("template")!;
+    // if (tmp) {
+    //   await loadComponent(tmp.innerHTML, name);
+    //   // return;
+    // }
     await loadScripts(el, name);
 
     html = el.innerHTML;

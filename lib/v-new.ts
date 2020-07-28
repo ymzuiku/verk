@@ -12,13 +12,14 @@ class Component extends HTMLElement {
   _id = uuid();
   _name: any;
   _isSrc: any;
-  html: any;
+  _buildHtml: any;
   _child: any;
   _fn: any;
   _props: any;
   _hook: any;
   _loading: any;
   _slot = new Map();
+  _html = this.innerHTML;
   _tmp = this.querySelector("template");
 
   destroy = false;
@@ -29,12 +30,11 @@ class Component extends HTMLElement {
   public connectedCallback() {
     this._name = this.getAttribute("src") || this.getAttribute("name")!;
     this._isSrc = this.hasAttribute("src");
+
     this._props = runFn(newFnReturn(this.getAttribute("props") || "{}"));
     const list = this._name.split("/");
     list.pop();
-    // if (list[0] === ".") {
-    //   list.shift();
-    // }
+
     const dir = list.join("/");
     this._hook = {
       el: this,
@@ -107,31 +107,33 @@ class Component extends HTMLElement {
     if (!comps.has(this._name)) {
       return;
     }
-    if (!this.html) {
-      this.html = comps.get(this._name);
+    if (!this._buildHtml) {
+      this._buildHtml = comps.get(this._name);
       this._fn = fns.get(this._name);
     }
 
     (window as any)[this._id] = this._hook;
-    this.html = this.html.replace(hookReg, this._id);
+    this._buildHtml = this._buildHtml.replace(hookReg, this._id);
+
+    const initDetail = (cb: any) => {
+      this.innerHTML = this._buildHtml;
+      this._slot.forEach((v: HTMLElement, k) => {
+        this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
+          Array.from(el.attributes).forEach((attr) => {
+            v.setAttribute(attr.name, attr.value);
+          });
+          el.replaceWith(v.cloneNode(true));
+        });
+      });
+      if (typeof cb === "function") {
+        cb();
+      }
+    };
 
     if (this._fn) {
-      Promise.resolve(this._fn(this._hook)).then((cb) => {
-        this.innerHTML = this.html;
-        this._slot.forEach((v: HTMLElement, k) => {
-          this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
-            Array.from(el.attributes).forEach((attr) => {
-              v.setAttribute(attr.name, attr.value);
-            });
-            el.replaceWith(v.cloneNode(true));
-          });
-        });
-        if (typeof cb === "function") {
-          cb();
-        }
-      });
+      Promise.resolve(this._fn(this._hook)).then(initDetail);
     } else {
-      this.innerHTML = this.html;
+      initDetail(null);
     }
   };
   public disconnectedCallback() {
