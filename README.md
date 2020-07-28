@@ -1,11 +1,13 @@
 # Verk
 
+[Webside Document](http://verk.writeflowy.com)
+
 ## Use
 
 Includ or download the verk.js:
 
 ```html
-<script src="https://unpkg.com/verk@0.0.1/umd/index.js"></script>
+<script src="https://unpkg.com/verk@0.1.0/umd/index.min.js"></script>
 ```
 
 ## Route map
@@ -21,7 +23,6 @@ Includ or download the verk.js:
 - [x] v-watch
 - [x] v-shadow
 - [x] v-keep
-- [x] v-model
 - [x] v-preload
 
 ### Template
@@ -31,9 +32,9 @@ Includ or download the verk.js:
 - [x] v-new src
 - [x] v-new props
 - [x] v-new script
-- [x] v-new verk-css
 - [x] v-new loading
 - [x] v-new slot
+- [x] v-new uuid-
 - [x] v-new $renderHook
 
 

@@ -489,9 +489,9 @@
     customElements.define(tag$5, Component$5);
 
     const tag$6 = "v-new";
-    const srcReg = new RegExp('src="', "g");
-    const hrefReg = new RegExp('href="', "g");
-    const hookReg = /(\$hook|verk-)/g;
+    const srcReg = new RegExp('src="./', "g");
+    const hrefReg = new RegExp('href="./', "g");
+    const hookReg = /(\$hook|uuid-)/g;
     const renderHookReg = /\$renderHook/g;
     class Component$6 extends HTMLElement {
         constructor() {
@@ -512,6 +512,11 @@
                 }
             };
             this.load = () => {
+                if (fetchs.get(this._name) === 1) {
+                    this.renderLoading();
+                    requestAnimationFrame(this.load);
+                    return;
+                }
                 if (this._tmp) {
                     this._tmp.innerHTML = this._tmp.innerHTML.replace(renderHookReg, this._id);
                     this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
@@ -520,11 +525,6 @@
                         node.removeAttribute("slot");
                         this._slot.set(slot, node);
                     });
-                }
-                if (fetchs.get(this._name) === 1) {
-                    this.renderLoading();
-                    requestAnimationFrame(this.load);
-                    return;
                 }
                 if (fetchs.get(this._name) === 2) {
                     this.onload();
@@ -537,8 +537,8 @@
                     fetch(this._name)
                         .then((v) => v.text())
                         .then((v) => {
-                        v = v.replace(srcReg, 'src="' + this._hook.dir + "/");
-                        v = v.replace(hrefReg, 'href="' + this._hook.dir + "/");
+                        v = v.replace(srcReg, 'src="./' + this._hook.dir + "/");
+                        v = v.replace(hrefReg, 'href="./' + this._hook.dir + "/");
                         fetchs.set(this._name, 2);
                         loadComponent(v, this._name).then(() => {
                             this.onload();
@@ -570,7 +570,16 @@
                     this._slot.forEach((v, k) => {
                         this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
                             Array.from(el.attributes).forEach((attr) => {
-                                v.setAttribute(attr.name, attr.value);
+                                if (attr.name === "style" || attr.name === "class") {
+                                    let old = v.getAttribute(attr.name) || "";
+                                    if (old) {
+                                        old += " ";
+                                    }
+                                    v.setAttribute(attr.name, old + attr.value);
+                                }
+                                else {
+                                    v.setAttribute(attr.name, attr.value);
+                                }
                             });
                             el.replaceWith(v.cloneNode(true));
                         });
@@ -687,37 +696,74 @@
         constructor() {
             super();
             this._id = uuid("v_preload");
-            this._showQuery = this.getAttribute("show-query");
             this.onload = newFnRun(this.getAttribute("onload"));
             const pList = [];
-            if (this._showQuery) {
-                document.body.querySelectorAll(this._showQuery).forEach((el) => {
-                    el.style.visibility = "hidden";
-                });
-            }
             this.querySelectorAll('link[rel="verk"]').forEach((el) => {
                 const href = el.getAttribute("href");
                 el.remove();
                 const vn = document.createElement("v-new");
                 vn.destory = true;
-                vn.setAttribute("src", href);
-                pList.push(new Promise((res) => {
-                    vn.onload = res;
-                    this.append(vn);
-                }));
+                if (fetchs.get(href) === 1) {
+                    pList.push(new Promise((res) => {
+                        function checkHref() {
+                            requestAnimationFrame(() => {
+                                if (fetchs.get(href) !== 2) {
+                                    checkHref();
+                                }
+                                else {
+                                    res();
+                                }
+                            });
+                        }
+                        checkHref();
+                    }));
+                }
+                else {
+                    fetchs.set(href, 1);
+                    vn.setAttribute("src", href);
+                    pList.push(new Promise((res) => {
+                        vn.onload = () => {
+                            fetchs.set(href, 2);
+                            res();
+                        };
+                        this.append(vn);
+                    }));
+                }
             });
             Promise.all(pList).then(() => {
                 this.innerHTML = "";
-                if (this._showQuery) {
-                    document.body.querySelectorAll(this._showQuery).forEach((el) => {
-                        el.style.visibility = "visible";
-                    });
-                }
                 this.onload();
             });
         }
     }
     customElements.define(tag$a, Component$a);
+
+    function initByCode(code) {
+        return new Promise((res) => {
+            const name = uuid();
+            window[name] = {};
+            code = code.replace(/(\$hook|uuid-)/g, name);
+            const tmp = document.createElement("div");
+            try {
+                tmp.innerHTML = code;
+            }
+            catch (err) { }
+            loadComponent(tmp.innerHTML, name).then(() => {
+                if (tmp.querySelector("script[src]")) {
+                    tmp.querySelectorAll("script[src]").forEach((e) => {
+                        document.head.append(e.cloneNode(true));
+                    });
+                }
+                try {
+                    tmp.querySelectorAll("script:not([src])").forEach((e) => {
+                        eval(e.innerHTML);
+                    });
+                    res(code);
+                }
+                catch (err) { }
+            });
+        });
+    }
 
     const verk = {
         uuid,
@@ -727,6 +773,7 @@
         load: loadComponent,
         loadScripts,
         onError: console.error,
+        initByCode,
     };
     window.$verk = verk;
 

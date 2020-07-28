@@ -51,6 +51,9 @@ const watchOptions = [
         useTsconfigDeclarationDir: false,
       }),
       // uglify({
+      //   mangle: {
+      //     eval: true,
+      //   },
       //   sourcemap: false,
       // }),
     ],

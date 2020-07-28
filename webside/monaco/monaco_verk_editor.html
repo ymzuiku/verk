@@ -16,29 +16,11 @@
     onChange: (code) => {
       if ($hook.props.view) {
         const el = $hook.el.querySelector("[runner]");
-        const name = $verk.uuid()
-        window[name] = {};
-        code = code.replace(/(\$hook|verk-)/g, name);
-        const tmp = document.createElement('div');
-        try {
-          tmp.innerHTML = code;
-        } catch (err) { }
-
-        if (tmp.querySelector('script[src]')) {
-          tmp.querySelectorAll('script[src]').forEach(e => {
-            document.head.append(e.cloneNode(true))
-          })
-        }
-
-        try {
-          tmp.querySelectorAll('script:not([src])').forEach(e => {
-            eval(e.innerHTML);
+        if (el) {
+          $verk.initByCode(code).then(v => {
+            el.innerHTML = v;
           });
-          el.innerHTML = code;
-        } catch (err) {
-
         }
-
       }
     },
     options: {

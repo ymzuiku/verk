@@ -14,6 +14,7 @@ import "./v-preload";
 
 import { watch, dispatch, events } from "./ob";
 import { uuid } from "./uuid";
+import { initByCode } from "./initByCode";
 
 const verk = {
   uuid,
@@ -23,6 +24,7 @@ const verk = {
   load: loadComponent,
   loadScripts,
   onError: console.error,
+  initByCode,
 };
 
 (window as any).$verk = verk;

@@ -450,7 +450,7 @@
 
   const tag$6 = "v-new";
   const srcReg = new RegExp('(src|href)=".', "g");
-  const hookReg = /(\$hook|verk-)/g;
+  const hookReg = /(\$hook|uuid-)/g;
   const renderHookReg = /\$renderHook/g;
   class Component$6 extends HTMLElement {
       constructor() {

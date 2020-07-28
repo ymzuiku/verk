@@ -3,9 +3,9 @@ import { uuid } from "./uuid";
 import { comps, fns, loadComponent, fetchs } from "./component";
 
 const tag = "v-new";
-const srcReg = new RegExp('src="', "g");
-const hrefReg = new RegExp('href="', "g");
-const hookReg = /(\$hook|verk-)/g;
+const srcReg = new RegExp('src="./', "g");
+const hrefReg = new RegExp('href="./', "g");
+const hookReg = /(\$hook|uuid-)/g;
 const renderHookReg = /\$renderHook/g;
 
 class Component extends HTMLElement {
@@ -56,6 +56,12 @@ class Component extends HTMLElement {
     }
   };
   load = () => {
+    if (fetchs.get(this._name) === 1) {
+      this.renderLoading();
+      requestAnimationFrame(this.load);
+      return;
+    }
+
     if (this._tmp) {
       this._tmp.innerHTML = this._tmp.innerHTML.replace(renderHookReg, this._id);
       this._tmp.content.querySelectorAll("[slot]").forEach((el) => {
@@ -64,12 +70,6 @@ class Component extends HTMLElement {
         node.removeAttribute("slot");
         this._slot.set(slot, node);
       });
-    }
-
-    if (fetchs.get(this._name) === 1) {
-      this.renderLoading();
-      requestAnimationFrame(this.load);
-      return;
     }
 
     if (fetchs.get(this._name) === 2) {
@@ -84,8 +84,8 @@ class Component extends HTMLElement {
       fetch(this._name)
         .then((v) => v.text())
         .then((v) => {
-          v = v.replace(srcReg, 'src="' + this._hook.dir + "/");
-          v = v.replace(hrefReg, 'href="' + this._hook.dir + "/");
+          v = v.replace(srcReg, 'src="./' + this._hook.dir + "/");
+          v = v.replace(hrefReg, 'href="./' + this._hook.dir + "/");
           fetchs.set(this._name, 2);
           loadComponent(v, this._name).then(() => {
             this.onload();
@@ -120,7 +120,15 @@ class Component extends HTMLElement {
       this._slot.forEach((v: HTMLElement, k) => {
         this.querySelectorAll(`slot[name="${k}"]`).forEach((el) => {
           Array.from(el.attributes).forEach((attr) => {
-            v.setAttribute(attr.name, attr.value);
+            if (attr.name === "style" || attr.name === "class") {
+              let old = v.getAttribute(attr.name)! || "";
+              if (old) {
+                old += " ";
+              }
+              v.setAttribute(attr.name, old + attr.value);
+            } else {
+              v.setAttribute(attr.name, attr.value);
+            }
           });
           el.replaceWith(v.cloneNode(true));
         });

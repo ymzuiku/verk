@@ -13,6 +13,7 @@ import "./v-shadow";
 import "./v-preload";
 import { dispatch } from "./ob";
 import { uuid } from "./uuid";
+import { initByCode } from "./initByCode";
 declare const verk: {
     uuid: typeof uuid;
     watch: Set<unknown>;
@@ -25,5 +26,6 @@ declare const verk: {
         (message?: any, ...optionalParams: any[]): void;
         (message?: any, ...optionalParams: any[]): void;
     };
+    initByCode: typeof initByCode;
 };
 export default verk;

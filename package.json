@@ -1,7 +1,7 @@
 {
   "name": "verk",
-  "version": "0.0.1",
-  "description": "Only a library, Use library create web application, We don't need a framework",
+  "version": "0.1.0",
+  "description": "http://verk.writeflowy.com Only a library, Use library create web application, We don't need a framework",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",
   "private": false,
@@ -48,5 +48,5 @@
   "bugs": {
     "url": "git+https://github.com/ymzuiku/violent.git"
   },
-  "homepage": "git+https://github.com/ymzuiku/violent.git"
+  "homepage": "http://verk.writeflowy.com"
 }
