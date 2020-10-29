@@ -32,7 +32,7 @@ Verk 是一个颠覆现有前端开发方式的**尝试**，其实还未准备�
 
 ## Use
 
-Includ or download the verk.js:
+在问的底部引入 verk.js，必须在**底部**：
 
 ```html
 <script src="https://unpkg.com/verk@0.1.0/umd/index.min.js"></script>
