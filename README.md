@@ -1,6 +1,6 @@
 # Verk
 
-详细文档：[Webside Document](http://verk.writeflowy.com)
+详细文档：[http://verk.writeflowy.com](http://verk.writeflowy.com)
 
 ## Welcome
 
