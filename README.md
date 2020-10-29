@@ -76,9 +76,9 @@ Verk 是一个颠覆现有前端开发方式的**尝试**，其实还未准备�
 
 ### Document
 
-- [ ] home page
+- [x] home page
 - [ ] document mobile
-- [ ] live edtor
+- [x] live edtor
 
 ### addon
 
