@@ -1,4 +1,4 @@
-# Welcome
+# Welcome Verk
 
 首先恭喜你找到 Verk，它立志提供一个全新的 web 开发方式。
 
@@ -113,7 +113,7 @@ Verk 所有功能建立在 Web-components 上，通过组件的组合，代替�
 
 | 关键词 | 描述 |
 | :-----| :---- |
-|**$hook**| 组件实例化时创建的全局变量，内部有一个默认值：props、id、dir、el（组件本身）|
+|**$hook**| 组件实例化时创建的组件内局部变量，内部有一个默认值：state、props、id、dir、el（组件本身）|
 |**$verk**| Verk 的工具集合, 大部分情况不需要使用|
 |**uuid-**| 每个html文件，内部的 `uuid-` 字符都会在实例化时替换为一个随机id，这可以用规避一些样式污染和组件污染|
 
@@ -128,11 +128,19 @@ v-txt 用于动态渲染文本
 <div>普通计算: <v-txt>100+200</v-txt></div>
 <div>字符串拼接: <v-txt>'location.href: '+ location.href</v-txt></div>
 <div>任何js计算: <v-txt>document ? 'have document':'no have document'</v-txt></div>
-<div>从全局变量中获取值: <v-txt>$hook.name</v-txt></div>
+<div>从全局变量中获取值: <v-txt>$hook.state.name</v-txt></div>
 
 <script>
-  // $hook 是在每个组件内部的上下文全局变量
-  $hook = {
+  /* 若在非组件内，如 index.html，需要主动声明 $hook:
+  var $hook = {
+    state: {
+      name:'The dog'
+    }
+  };
+  */
+
+  // $hook 是在每个组件内部的上下文全局变量, 当前交互式教程均是组件内部
+  $hook.state = {
     name:'The dog'
   }
 </script>
@@ -147,21 +155,21 @@ v-set 设置的属性、事件，都必须是js脚本，其中以on开头的属�
 ```html::{view:true, style:"height:500px"}
 <!-- 双向绑定例子： -->
 <div>
-  <v-txt>$hook.name</v-txt>
-  <v-set value="$hook.name" oninput="e=>$hook.name=e.target.value">
+  <v-txt>$hook.state.name</v-txt>
+  <v-set value="$hook.state.name" oninput="e=>$hook.state.name=e.target.value">
     <input placeholder="Plase input" />
   </v-set>
 </div>
 
 <div>
-  <v-txt>$hook.name</v-txt>
-  <v-set value="$hook.name" type="$hook.type" oninput="e=>$hook.name=e.target.value">
+  <v-txt>$hook.state.name</v-txt>
+  <v-set value="$hook.state.name" type="$hook.state.type" oninput="e=>$hook.state.name=e.target.value">
     <input placeholder="Plase input" />
   </v-set>
 </div>
 
 <script>
-  $hook = {
+  $hook.state = {
     type:'password',
     name:'The dog'
   }
@@ -174,14 +182,14 @@ v-if:  用于动态控制内部元素是否存在于 DOM 中
 
 ```html::{view:true, style:"height:300px"}
 <div>
-  <v-set onclick="()=>$hook.show = !$hook.show"><button>Change If</button></v-set>
-  <v-if value="$hook.show">
+  <v-set onclick="()=>$hook.state.show = !$hook.state.show"><button>Change If</button></v-set>
+  <v-if value="$hook.state.show">
     <h1>Detail Hello</h1>
   </v-if>
 </div>
 
 <script>
-  $hook = {
+  $hook.state = {
     show: false
   }
 </script>
@@ -206,12 +214,6 @@ v-route:  用于动态控制内部元素是否存在于 DOM 中
     <h1>User page</h1>
   </v-route>
 </div>
-
-<script>
-  $hook = {
-    show: false
-  }
-</script>
 ```
 
 ## v-show
@@ -220,14 +222,14 @@ v-show: 用于动态控制内部元素是否 display: none
 
 ```html::{view:true, style:"height:300px"}
 <div>
-  <v-set onclick="()=>$hook.show = !$hook.show"><button>Change show</button></v-set>
-  <v-show value="$hook.show">
+  <v-set onclick="()=>$hook.state.show = !$hook.state.show"><button>Change show</button></v-set>
+  <v-show value="$hook.state.show">
     <h1>Detail Hello</h1>
   </v-show>
 </div>
 
 <script>
-  $hook = {
+  $hook.state = {
     show: false
   }
 </script>
@@ -271,14 +273,14 @@ v-watch: 用于监听组件更新时，做额外的事件。
 
 ```html::{view:true, style:"height:500px"}
 <div>
-  <v-watch value="$hook.event"></v-watch>
+  <v-watch value="$hook.state.event"></v-watch>
   <v-set onclick="()=>{}">
     <button>Emit v-watch</button>
   </v-set>
   <div data-list="1"></div>
 </div>
 <script>
-  $hook = {
+  $hook.state = {
     event: () => {
       const el = document.createElement("div");
       el.textContent = "label";
@@ -297,14 +299,16 @@ v-keep: 用于拦截组件更新，当有大列表时，可以使用。一般配
 
 ```html::{view:true, style:"height:300px"}
 <div>请编辑左侧的数组长度，把Array(100)改为Array(5000)</div>
-<v-for len="$hook.list.length">
-  <div>item: <v-txt>$hook.list[@i]</v-txt></div>
-  <v-set oninput="e=>$hook.list[@i] = e.target.value">
+<v-for len="$hook.state.list.length">
+  <div>item: <v-txt>$hook.state.list[@i]</v-txt></div>
+  <v-set oninput="e=>$hook.state.list[@i] = e.target.value">
     <input />
   </v-set>
 </v-for>
 <script>
-  $hook.list = Array(100).fill('');
+  $hook.state = {
+    list:Array(100).fill(''),
+  };
 </script>
 ```
 
@@ -313,15 +317,17 @@ v-keep: 用于拦截组件更新，当有大列表时，可以使用。一般配
 ```html::{view:false, style:"height:300px"}
 <div>请编辑左侧的数组长度，把Array(100)改为Array(5000)：</div>
 <v-keep>
-  <v-for len="$hook.list.length">
-    <div>item: <v-txt item-@i>$hook.list[@i]</v-txt></div>
-    <v-set query="[item-@i]" oninput="e=>$hook.list[@i] = e.target.value">
+  <v-for len="$hook.state.list.length">
+    <div>item: <v-txt item-@i>$hook.state.list[@i]</v-txt></div>
+    <v-set query="[item-@i]" oninput="e=>$hook.state.list[@i] = e.target.value">
       <input />
     </v-set>
   </v-for>
 </v-keep>
 <script>
-  $hook.list = Array(100).fill('');
+  $hook.state = {
+    list : Array(100).fill(''),
+  };
 </script>
 ```
 
@@ -417,7 +423,7 @@ $renderHook 可以获取组件内部 $hook 对象，不过这个功能无法在�
 <v-new name="uuid-dog">
   <template>
     <h1 style="font-size: 14px;" slot="title">
-      <v-txt>$renderHook.data</v-txt>
+      <v-txt>$renderHook.state.data</v-txt>
     </h1>
     <h3 slot="label">Slot Label</h3>
   </template>
@@ -427,9 +433,11 @@ $renderHook 可以获取组件内部 $hook 对象，不过这个功能无法在�
     <slot style="color:#00f;" name="title"></slot>
     <slot name="label"></slot>
     <script>
-      $hook.data = {
-        name: 'dog'
-      }
+      $hook.state = {
+        data: {
+          name: 'dog'
+        }
+      };
     </script>
   </template>
 </v-component>
