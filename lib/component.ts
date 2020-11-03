@@ -58,45 +58,43 @@ export async function elementLoadScript(el: Element, query: string) {
   await Promise.all(list);
 }
 
-export function loadComponent(html: string, name: string) {
-  return new Promise(async (res) => {
-    if (!html) {
-      return;
-    }
-    fetchs.set(name, 1);
-    html = html.replace(vstart, "<v_");
-    html = html.replace(vend, "</v_");
+export async function loadComponent(html: string, name: string) {
+  if (!html) {
+    return;
+  }
+  fetchs.set(name, 1);
+  html = html.replace(vstart, "<v_");
+  html = html.replace(vend, "</v_");
 
-    const el = document.createElement("div");
-    el.innerHTML = html;
+  const el = document.createElement("div");
+  el.innerHTML = html;
 
-    const subComps: Promise<any>[] = [];
-    el.querySelectorAll("v_component").forEach((com) => {
-      subComps.push(
-        new Promise((res) => {
-          loadComponent(com.firstElementChild!.innerHTML, (com as any).getAttribute("name")).then(() => {
-            com.remove();
-            res();
-          });
-        })
-      );
-    });
-
-    await Promise.all(subComps);
-
-    // const tmp = el.querySelector("template")!;
-    // if (tmp) {
-    //   await loadComponent(tmp.innerHTML, name);
-    //   // return;
-    // }
-    await loadScripts(el, name);
-
-    html = el.innerHTML;
-    html = html.replace(sstart, "<v-");
-    html = html.replace(send, "</v-");
-
-    comps.set(name, html);
-    fetchs.set(name, 2);
-    res(html);
+  const subComps: Promise<any>[] = [];
+  el.querySelectorAll("v_component").forEach((com) => {
+    subComps.push(
+      new Promise((res) => {
+        loadComponent(com.firstElementChild!.innerHTML, (com as any).getAttribute("name")).then(() => {
+          com.remove();
+          res();
+        });
+      })
+    );
   });
+
+  await Promise.all(subComps);
+
+  // const tmp = el.querySelector("template")!;
+  // if (tmp) {
+  //   await loadComponent(tmp.innerHTML, name);
+  //   // return;
+  // }
+  await loadScripts(el, name);
+
+  html = el.innerHTML;
+  html = html.replace(sstart, "<v-");
+  html = html.replace(send, "</v-");
+
+  comps.set(name, html);
+  fetchs.set(name, 2);
+  return html;
 }
