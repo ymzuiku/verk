@@ -1,20 +1,35 @@
-import { vIf } from "./vIf";
-import { vNew } from "./vNew";
-import { vDyn } from "./vDyn";
-import { vFor } from "./vFor";
+import { changeEle } from "./changeEle";
+import { next } from "./next";
+// import { changeEle } from "./changeEle";
+
+(window as any).next = next;
 
 window.onload = () => {
-  document.querySelectorAll("[v-if]").forEach((node) => {
-    vIf(node as any, null);
-  });
-  document.querySelectorAll("[v-new]").forEach((node) => {
-    vNew(node as any, null);
-  });
-  document.querySelectorAll("[v-for]").forEach((node) => {
-    vFor(node as any, null);
-  });
-  document.querySelectorAll("*:not([v-dyn])").forEach((node) => {
-    vDyn(node as any, null);
-  });
+  changeEle(document.body, window);
   document.body.hidden = false;
+
+  // 页面内容变更监听 recordSetAttr
+  // const onMutations = (mutationsList: any, ...args: any[]) => {
+  //   const len = mutationsList.length;
+  //   for (let i = 0; i < len; i++) {
+  //     const mutation = mutationsList[i];
+  //     if (mutation.type === "childList") {
+  //       const ele = mutation.target as HTMLElement;
+  //       console.log(ele);
+  //       if (!ele.getAttribute("v-ob")) {
+  //         changeEle(ele, window);
+  //       }
+  //     }
+  //   }
+  // };
+
+  // const observer = new MutationObserver(onMutations);
+  // observer.observe(document.body, {
+  //   childList: true,
+  //   subtree: true,
+  //   attributes: false,
+  //   characterData: false,
+  //   attributeOldValue: false,
+  //   characterDataOldValue: false,
+  // });
 };

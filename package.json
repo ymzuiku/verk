@@ -1,6 +1,6 @@
 {
   "name": "verk",
-  "version": "0.1.0",
+  "version": "2.0.0-beta.0",
   "description": "http://verk.writeflowy.com Only a library, Use library create web application, We don't need a framework",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",

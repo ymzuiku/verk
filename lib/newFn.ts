@@ -17,7 +17,7 @@ export const newFn = async (code: string, self: any) => {
   let keys = [] as string[];
   let values = [] as any[];
 
-  if (self) {
+  if (self !== window) {
     keys = Object.keys(self);
     keys.forEach((k) => {
       values.push(self[k]);
@@ -27,7 +27,6 @@ export const newFn = async (code: string, self: any) => {
   let fn: Function;
   try {
     fn = new Function(...keys, code);
-    console.log(fn);
   } catch (err) {
     console.error("[verk parse Fn]", code, err);
     return void 0;

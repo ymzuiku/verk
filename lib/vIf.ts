@@ -6,16 +6,20 @@ export interface IfElement extends HTMLElement {
   _ifCode: string;
 }
 
-export function vIf(node: IfElement, data: any, props: any = {}) {
-  const el = node;
+export function vIf(el: IfElement, self: any) {
+  const _text = el.getAttribute("v-if");
+  if (!_text) {
+    return;
+  }
   el._html = el.innerHTML;
   if (!el._events) {
     el._events = [];
   }
-  el._ifCode = parseNewFnCode(el.getAttribute("v-if"));
+  el._ifCode = parseNewFnCode(_text);
+  el.setAttribute("v-ob", "1");
 
-  const onChangeIf = async () => {
-    const _if = await newFn(el._ifCode, data, props);
+  const event = async () => {
+    const _if = await newFn(el._ifCode, self);
     if (_if) {
       el.innerHTML = el._html;
       el.style.all = "";
@@ -24,6 +28,6 @@ export function vIf(node: IfElement, data: any, props: any = {}) {
       el.style.all = "unset";
     }
   };
-  el._events.push(onChangeIf);
-  onChangeIf();
+  el._events.push(event);
+  event();
 }

@@ -14,17 +14,36 @@
     <div v-if="false">
       <h1>world</h1>
     </div>
-    <input :value="data.name+100" />
+    <div v-for="aa in list">
+      <input :value="data.name" :placeholder="data.name" @input="inputChange" />
+    </div>
+
+    <button @click="inputDel">pop list</button>
     <div>{{300/2}}</div>
-    <!-- <ul>
+    <ul>
       <li v-for="v in list">{{v}}</li>
-    </ul> -->
+    </ul>
+    <!-- <div>
+      <div v-for="a in list">
+        <div v-for="b in list">{{a + '/' + b}}</div>
+      </div>
+    </div> -->
     <script type="module" src="lib/index.ts"></script>
     <script>
       this.data = {
         name: "sss",
       };
-      console.log(this);
+      this.list = ["aa", "bb", "cc"];
+      this.inputChange = (e) => {
+        this.data.name = e.target.value;
+        this.list = [];
+        for (let i = 0; i < this.data.name.length; i++) {
+          this.list.push(i);
+        }
+      };
+      this.inputDel = () => {
+        this.list.pop();
+      };
     </script>
   </body>
 </html>
