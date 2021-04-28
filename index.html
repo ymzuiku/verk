@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body hidden>
+    <div v-if="data.name.length > 3">
+      <h1>hello</h1>
+    </div>
+    <div v-if="false">
+      <h1>world</h1>
+    </div>
+    <input :value="data.name+100" />
+    <div>{{300/2}}</div>
+    <!-- <ul>
+      <li v-for="v in list">{{v}}</li>
+    </ul> -->
+    <script type="module" src="lib/index.ts"></script>
+    <script>
+      this.data = {
+        name: "sss",
+      };
+      console.log(this);
+    </script>
+  </body>
+</html>
